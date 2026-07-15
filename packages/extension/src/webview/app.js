@@ -796,7 +796,6 @@
       }
     }
   }
-  }
 
   // Run diagnostics check every 4 seconds
   setInterval(runDiagnosticsCheck, 4000);
