@@ -61,9 +61,9 @@ function connectToHost() {
   });
 
   ws.on('close', () => {
-    console.log('SigTrace: Host Server disconnected. Attempting to promote to Host...');
+    console.log('SigTrace: Host Server disconnected. Retrying startServer in 3s...');
     clientSocket = null;
-    startServer();
+    setTimeout(startServer, 3000);
   });
 
   ws.on('error', () => {

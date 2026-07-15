@@ -2,7 +2,7 @@
   "name": "sigtrace-extension",
   "displayName": "SigTrace",
   "description": "Universal Reactive Graph & Signal Lifecycle Tracer",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "publisher": "sigtrace",
   "icon": "icon.jpg",
   "engines": {
