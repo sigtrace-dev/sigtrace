@@ -235,10 +235,7 @@
     var html = '';
     for (var i = 0; i < rows.length; i++) {
       var node = rows[i];
-      var valueStr = '';
-      try { valueStr = JSON.stringify(node.value); } catch(e) { valueStr = String(node.value); }
-      if (valueStr.length > 42) valueStr = valueStr.substring(0, 42) + '…';
-      if (!valueStr || valueStr === 'undefined') valueStr = '—';
+      var valueStr = safeStr(node.value, 42);
 
       var timeStr = node.lastUpdated ? timeSince(node.lastUpdated) : 'never';
       var kindIcon = node.kind === 'signal' ? '&#9679;' : node.kind === 'memo' ? '&#9670;' : '&#9650;';
@@ -283,9 +280,14 @@
   }
 
   function safeStr(val, max) {
+    if (val === undefined) return 'undefined';
+    if (typeof val === 'function') return 'function() {...}';
     var s = '';
-    try { s = JSON.stringify(val); } catch(e) { s = String(val); }
-    if (!s || s === 'undefined') return '';
+    try {
+      var j = JSON.stringify(val);
+      s = (j === undefined) ? String(val) : j;
+    } catch(e) { s = String(val); }
+    if (!s || s === 'undefined') return '—';
     return s.length > max ? s.substring(0, max) + '...' : s;
   }
 
@@ -366,8 +368,9 @@
 
       var deadHtml = '';
       if (deadSignals.length > 0) {
-        deadHtml = '<div class="comp-dead">Unused signals (' + deadSignals.length + '): ' +
-          deadSignals.map(function(s) { return s.name; }).join(', ') + '</div>';
+        var uniqueDead = Array.from(new Set(deadSignals.map(function(s) { return s.name; })));
+        deadHtml = '<div class="comp-dead">Unused signals (' + uniqueDead.length + ' unique): ' +
+          uniqueDead.join(', ') + '</div>';
       }
 
       var slowestHtml = '';
@@ -418,17 +421,19 @@
       .filter(function(n) { return n.kind === 'signal' && n.epoch === 0; });
     if (deadSignals.length > 0) {
       var byComp = {};
+      var totalUnique = 0;
       deadSignals.forEach(function(s) {
         var c = s.component || 'Global';
-        if (!byComp[c]) byComp[c] = [];
-        byComp[c].push(s.name);
+        if (!byComp[c]) byComp[c] = new Set();
+        byComp[c].add(s.name);
       });
       var descParts = Object.keys(byComp).map(function(c) {
-        return '<strong>' + c + '</strong>: ' + byComp[c].join(', ');
+        totalUnique += byComp[c].size;
+        return '<strong>' + c + '</strong>: ' + Array.from(byComp[c]).join(', ');
       });
       alerts.push({
         severity: 'warn',
-        title: deadSignals.length + ' unused signal' + (deadSignals.length > 1 ? 's' : '') +
+        title: totalUnique + ' unused signal' + (totalUnique > 1 ? 's' : '') +
                ' across ' + Object.keys(byComp).length + ' component' + (Object.keys(byComp).length > 1 ? 's' : ''),
         desc: descParts.join('<br>'),
         fix: 'Remove unused signals or connect them to a computed or effect that reads their value.'
