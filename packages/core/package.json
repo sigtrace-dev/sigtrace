@@ -1,12 +1,12 @@
 {
   "name": "@sigtrace/core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "description": "Client-side runtime tracer for SigTrace",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "sigtrace": "./bin/sigtrace.js"
+    "sigtrace": "./bin/sigtrace.cjs"
   },
   "repository": {
     "type": "git",
