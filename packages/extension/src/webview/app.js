@@ -61,7 +61,8 @@
             epoch: 0,
             duration: 0,
             lastUpdated: null,
-            sparkline: []
+            sparkline: [],
+            loc: msg.loc || null
           };
           nodeMap.set(msg.id, node);
           ensureComponent(node);
@@ -174,7 +175,8 @@
         name: node.name,
         component: node.component,
         value: node.value,
-        previousValue: previousValue
+        previousValue: previousValue,
+        loc: node.loc
       },
       updates: []
     };
@@ -189,7 +191,8 @@
       component: node.component,
       kind: node.kind,
       duration: node.duration,
-      value: node.value
+      value: node.value,
+      loc: node.loc
     });
     resetChainTimer();
   }
@@ -240,7 +243,8 @@
     var html = '';
     for (var i = 0; i < rows.length; i++) {
       var node = rows[i];
-      var valueStr = safeStr(node.value, 42);
+      var valueStr = safeStr(node.value, 60);
+      var valueFull = fullStr(node.value);
 
       var timeStr = node.lastUpdated ? timeSince(node.lastUpdated) : 'never';
       var kindIcon = node.kind === 'signal' ? '&#9679;' : node.kind === 'memo' ? '&#9670;' : '&#9650;';
@@ -250,22 +254,42 @@
       var actBar = renderSparkBar(node.sparkline, node.epoch);
       var compShort = shortComponentName(node.component);
 
+      var locHtml = '';
+      if (node.loc) {
+        var fileBase = node.loc.file.split('/').pop();
+        locHtml = '<span class="signal-loc clickable" data-file="' + node.loc.file + '" data-line="' + node.loc.line + '" title="' + node.loc.file + '">' + fileBase + ':' + node.loc.line + '</span>';
+      }
+
       html += '<tr class="signal-row' + (isHot ? ' row-hot' : '') + (isFocused ? ' row-focused' : '') + '" data-id="' + node.id + '">' +
-        '<td class="col-name"><span class="kind-icon ' + kindClass + '">' + kindIcon + '</span><span class="signal-name" title="' + node.name + '">' + node.name + '</span></td>' +
+        '<td class="col-name"><div class="col-name-wrap"><span class="kind-icon ' + kindClass + '">' + kindIcon + '</span><span class="signal-name" title="' + node.name + '">' + node.name + '</span></div>' + (locHtml ? '<div class="loc-wrap">' + locHtml + '</div>' : '') + '</td>' +
         '<td class="col-component" title="' + node.component + '">' + compShort + '</td>' +
-        '<td class="col-value" title="' + valueStr + '">' + valueStr + '</td>' +
+        '<td class="col-value" title="' + escapeHtml(valueFull) + '">' + escapeHtml(valueStr) + '</td>' +
         '<td class="col-updates' + (isHot ? ' hot-count' : '') + '">' + node.epoch + '</td>' +
         '<td class="col-activity">' + actBar + '</td>' +
         '</tr>';
+
+      if (isFocused) {
+        var locDetail = node.loc
+          ? '<span class="detail-label">Location:</span> <span class="detail-loc-link clickable" data-file="' + node.loc.file + '" data-line="' + node.loc.line + '">' + node.loc.file + ':' + node.loc.line + '</span>'
+          : '<span class="detail-label">Location:</span> <span class="detail-val">Unknown</span>';
+
+        html += '<tr class="details-row">' +
+          '<td colspan="5">' +
+            '<div class="details-box">' +
+              '<div class="details-meta">' +
+                '<div><span class="detail-label">Kind:</span> <span class="detail-val">' + node.kind + '</span></div>' +
+                '<div>' + locDetail + '</div>' +
+              '</div>' +
+              '<div class="details-value-wrap">' +
+                '<span class="detail-label">Full Value:</span>' +
+                '<pre class="details-value"><code>' + escapeHtml(valueFull) + '</code></pre>' +
+              '</div>' +
+            '</div>' +
+          '</td>' +
+          '</tr>';
+      }
     }
     activityTableBody.innerHTML = html;
-
-    activityTableBody.querySelectorAll('.signal-row').forEach(function(row) {
-      row.addEventListener('click', function() {
-        focusedSignalId = row.dataset.id;
-        renderActivityTable();
-      });
-    });
   }
 
   function renderSparkBar(sparkline, total) {
@@ -296,6 +320,26 @@
     return s.length > max ? s.substring(0, max) + '...' : s;
   }
 
+  function fullStr(val) {
+    if (val === undefined) return 'undefined';
+    if (typeof val === 'function') return 'function() {...}';
+    try {
+      return JSON.stringify(val, null, 2);
+    } catch(e) {
+      return String(val);
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
   // ── Timeline ──────────────────────────────────────────────────────────────
   function renderTimeline() {
     if (chainLog.length === 0) {
@@ -317,9 +361,12 @@
       if (totalMs > 0.1) summaryParts.push(totalMs.toFixed(1) + 'ms');
       var summaryStr = summaryParts.join(' &middot; ');
 
-      var prevStr = safeStr(chain.trigger.previousValue, 20);
-      var newStr  = safeStr(chain.trigger.value, 25);
+      var prevFull = fullStr(chain.trigger.previousValue);
+      var newFull = fullStr(chain.trigger.value);
+      var prevStr = safeStr(chain.trigger.previousValue, 30);
+      var newStr  = safeStr(chain.trigger.value, 35);
       var valChange = prevStr ? prevStr + ' &rarr; ' + newStr : newStr;
+      var valChangeTitle = prevFull ? prevFull + ' -> ' + newFull : newFull;
 
       var updatesHtml = '';
       for (var j = 0; j < chain.updates.length; j++) {
@@ -328,23 +375,31 @@
         var uKindLabel = u.kind === 'memo' ? 'computed' : 'effect';
         var durStr = u.duration > 0 ? '(' + u.duration.toFixed(1) + 'ms)' : '';
         var isUHot = u.duration > 2;
+        var uValStr = u.value !== undefined ? safeStr(u.value, 30) : '';
+        var uValFull = u.value !== undefined ? fullStr(u.value) : '';
+        
+        var uClickAttr = u.loc ? ' class="chain-node-name clickable" data-file="' + u.loc.file + '" data-line="' + u.loc.line + '"' : ' class="chain-node-name"';
+
         updatesHtml += '<div class="chain-update' + (isUHot ? ' chain-hot' : '') + '">' +
           '<span class="chain-indent">&#9492;&#9472;</span>' +
           '<span class="chain-icon kind-' + u.kind + '">' + uKindIcon + '</span>' +
-          '<span class="chain-node-name">' + u.name + '</span>' +
+          '<span' + uClickAttr + '>' + u.name + '</span>' +
           '<span class="chain-component">[' + shortComponentName(u.component) + ']</span>' +
           '<span class="chain-kind">' + uKindLabel + '</span>' +
+          (uValStr ? '<span class="chain-value" title="' + escapeHtml(uValFull) + '">' + escapeHtml(uValStr) + '</span>' : '') +
           (durStr ? '<span class="chain-duration">' + durStr + '</span>' : '') +
           '</div>';
       }
+
+      var trigClickAttr = chain.trigger.loc ? ' class="chain-trigger-name clickable" data-file="' + chain.trigger.loc.file + '" data-line="' + chain.trigger.loc.line + '"' : ' class="chain-trigger-name"';
 
       html += '<div class="chain-card">' +
         '<div class="chain-header">' +
           '<span class="chain-time">' + timeStr + '</span>' +
           '<span class="chain-trigger-icon kind-signal">&#9679;</span>' +
-          '<span class="chain-trigger-name">' + chain.trigger.name + '</span>' +
+          '<span' + trigClickAttr + '>' + chain.trigger.name + '</span>' +
           '<span class="chain-component">[' + shortComponentName(chain.trigger.component) + ']</span>' +
-          (valChange ? '<span class="chain-value-change">' + valChange + '</span>' : '') +
+          (valChange ? '<span class="chain-value-change" title="' + escapeHtml(valChangeTitle) + '">' + valChange + '</span>' : '') +
           (summaryStr ? '<span class="chain-summary">' + summaryStr + '</span>' : '') +
         '</div>' +
         (chain.updates.length > 0 ? '<div class="chain-updates">' + updatesHtml + '</div>' : '') +
@@ -497,6 +552,64 @@
   sortSelect.addEventListener('change', function() {
     sortBy = sortSelect.value;
     renderActivityTable();
+  });
+
+  // ── Code Navigation Delegation ───────────────────────────────────────────
+  activityTableBody.addEventListener('click', function(e) {
+    var target = e.target.closest('.clickable');
+    if (target) {
+      var file = target.dataset.file;
+      var line = parseInt(target.dataset.line, 10);
+      if (file && line) {
+        vscode.postMessage({
+          command: 'openFile',
+          file: file,
+          line: line,
+          column: 0
+        });
+        e.stopPropagation();
+        return;
+      }
+    }
+
+    var row = e.target.closest('.signal-row');
+    if (row) {
+      var id = row.dataset.id;
+      focusedSignalId = (focusedSignalId === id) ? null : id; // Toggle collapse/expand
+      renderActivityTable();
+    }
+  });
+
+  activityTableBody.addEventListener('dblclick', function(e) {
+    var row = e.target.closest('.signal-row');
+    if (row) {
+      var id = row.dataset.id;
+      var node = nodeMap.get(id);
+      if (node && node.loc) {
+        vscode.postMessage({
+          command: 'openFile',
+          file: node.loc.file,
+          line: node.loc.line,
+          column: 0
+        });
+      }
+    }
+  });
+
+  timelineChainList.addEventListener('click', function(e) {
+    var target = e.target.closest('.clickable');
+    if (target) {
+      var file = target.dataset.file;
+      var line = parseInt(target.dataset.line, 10);
+      if (file && line) {
+        vscode.postMessage({
+          command: 'openFile',
+          file: file,
+          line: line,
+          column: 0
+        });
+      }
+    }
   });
 
   // ── VS Code message handler ───────────────────────────────────────────────
