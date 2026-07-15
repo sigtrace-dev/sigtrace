@@ -1,7 +1,8 @@
 import {
   signal as originalSignal,
   computed as originalComputed,
-  effect as originalEffect
+  effect as originalEffect,
+  model as originalModel
 } from '@angular/core';
 export * from '@angular/core';
 
@@ -195,4 +196,63 @@ export function effect(fn: (onCleanup: any) => void, options?: any) {
   const ref = originalEffect(trackedFn, options);
   registry.register(ref, { id: effectId, component: options?.component || null });
   return ref;
+}
+
+export function model<T>(initialValue?: T, options?: any) {
+  if (!originalModel) {
+    throw new Error('[SigTrace] model() is not supported in this version of Angular. Please upgrade to Angular 17.2+');
+  }
+  const signalId = `model_${Math.random().toString(36).substring(2, 9)}`;
+  const name = options?.name || `model_${signalId.substring(6)}`;
+
+  client.send({
+    type: 'register',
+    id: signalId,
+    name,
+    kind: 'signal',
+    value: initialValue,
+    loc: options?.__source || null,
+    component: options?.component || null
+  });
+
+  const originalSig = originalModel(initialValue, options);
+
+  const trackedSignal = (() => {
+    recordRead(signalId);
+    return originalSig();
+  }) as any;
+
+  trackedSignal.set = (newVal: any) => {
+    originalSig.set(newVal);
+    client.send({
+      type: 'write',
+      id: signalId,
+      value: newVal
+    });
+  };
+
+  trackedSignal.update = (updateFn: any) => {
+    originalSig.update((prev: any) => {
+      const next = updateFn(prev);
+      client.send({
+        type: 'write',
+        id: signalId,
+        value: next
+      });
+      return next;
+    });
+  };
+
+  trackedSignal.asReadonly = () => {
+    const readonlySig = (() => {
+      recordRead(signalId);
+      return originalSig();
+    }) as any;
+    registry.register(readonlySig, { id: signalId, component: options?.component || null });
+    return readonlySig;
+  };
+
+  registry.register(trackedSignal, { id: signalId, component: options?.component || null });
+
+  return trackedSignal;
 }

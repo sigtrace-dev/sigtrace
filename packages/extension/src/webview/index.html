@@ -464,6 +464,88 @@
       color: #cbd5e1;
       word-break: break-all;
     }
+
+    /* Layout Toggle Styling */
+    .layout-toggle {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      padding: 2px;
+      margin-left: 6px;
+    }
+    .layout-toggle button {
+      background: none !important;
+      border: none !important;
+      padding: 3px 8px !important;
+      font-size: 9px !important;
+      border-radius: 2px !important;
+      color: #94a3b8 !important;
+      cursor: pointer;
+      margin: 0 !important;
+    }
+    .layout-toggle button.active {
+      background: var(--accent-color) !important;
+      color: #ffffff !important;
+    }
+
+    /* Camera Toolbar Styling */
+    .camera-toolbar {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 4px;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+    .camera-toolbar button {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      color: #cbd5e1;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .camera-toolbar button:hover {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    /* Glow Flashing Animations */
+    @keyframes flash-green {
+      0% { fill: #10b981; filter: drop-shadow(0 0 12px #10b981); stroke-width: 3px; }
+      100% { stroke-width: 1px; filter: none; }
+    }
+    @keyframes flash-cyan {
+      0% { fill: #06b6d4; filter: drop-shadow(0 0 12px #06b6d4); stroke-width: 3px; }
+      100% { stroke-width: 1px; filter: none; }
+    }
+    @keyframes flash-magenta {
+      0% { fill: #ec4899; filter: drop-shadow(0 0 12px #ec4899); stroke-width: 3px; }
+      100% { stroke-width: 1px; filter: none; }
+    }
+    .node.flash-sig circle, .node.flash-sig polygon, .node.flash-sig path {
+      animation: flash-green 0.8s ease-out;
+    }
+    .node.flash-comp circle, .node.flash-comp polygon, .node.flash-comp path {
+      animation: flash-cyan 0.8s ease-out;
+    }
+    .node.flash-eff circle, .node.flash-eff polygon, .node.flash-eff path {
+      animation: flash-magenta 0.8s ease-out;
+    }
   </style>
   <script src="d3.min.js"></script>
 </head>
@@ -479,6 +561,10 @@
         Rec
       </button>
       <button id="btn-clear" title="Clear Canvas">Clear</button>
+      <div class="layout-toggle">
+        <button id="btn-layout-network" class="active" title="Network Graph View">Network</button>
+        <button id="btn-layout-flow" title="Lineage Flow View">Lineage</button>
+      </div>
     </div>
   </header>
 
@@ -506,6 +592,11 @@
     </div>
     <div id="graph-container">
       <div id="tooltip" class="tooltip"></div>
+      <div class="camera-toolbar">
+        <button id="btn-zoom-in" title="Zoom In">+</button>
+        <button id="btn-zoom-out" title="Zoom Out">-</button>
+        <button id="btn-zoom-reset" title="Fit to Screen">🔄</button>
+      </div>
     </div>
   </div>
 

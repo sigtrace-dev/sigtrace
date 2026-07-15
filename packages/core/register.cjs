@@ -10,7 +10,7 @@ const generate = generateObj.default || generateObj;
 const originalReadFile = fs.readFileSync;
 
 function transformAngularCode(code, filename) {
-  if (!code.includes('signal') && !code.includes('computed') && !code.includes('effect')) {
+  if (!code.includes('signal') && !code.includes('computed') && !code.includes('effect') && !code.includes('model')) {
     return code;
   }
 
@@ -30,7 +30,7 @@ function transformAngularCode(code, filename) {
         const source = path.node.source.value;
         if (source === '@angular/core') {
           const specifiers = path.node.specifiers;
-          const targetPrims = ['signal', 'computed', 'effect'];
+          const targetPrims = ['signal', 'computed', 'effect', 'model'];
           
           const targetSpecifiers = specifiers.filter((s) => 
             t.isImportSpecifier(s) && targetPrims.includes(s.imported.name)
@@ -62,7 +62,7 @@ function transformAngularCode(code, filename) {
           funcName = callee.property.name;
         }
 
-        if (funcName === 'signal' || funcName === 'computed' || funcName === 'effect') {
+        if (funcName === 'signal' || funcName === 'computed' || funcName === 'effect' || funcName === 'model') {
           const loc = path.node.loc;
           const line = loc ? loc.start.line : 0;
           const column = loc ? loc.start.column : 0;
@@ -136,7 +136,7 @@ function transformAngularCode(code, filename) {
             t.objectProperty(t.identifier('__source'), sourceLocNode)
           ]);
 
-          if (funcName === 'signal') {
+          if (funcName === 'signal' || funcName === 'model') {
             if (path.node.arguments.length === 0) {
               path.node.arguments.push(t.identifier('undefined'));
             }

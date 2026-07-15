@@ -81,6 +81,14 @@
 
   svg.call(zoom);
 
+  // Shape generator and helpers
+  const shapeGenerator = d3.symbol().size(150);
+  function getSymbolType(kind) {
+    if (kind === 'memo') return d3.symbolDiamond;
+    if (kind === 'effect') return d3.symbolTriangle;
+    return d3.symbolCircle;
+  }
+
   // Custom clustering force to keep component group nodes together
   function componentClusterForce(alpha) {
     const centers = {};
@@ -238,8 +246,15 @@
       .on('mousemove', moveTooltip)
       .on('mouseout', hideTooltip);
 
-    nodeEnter.append('circle')
-      .attr('r', 7);
+    nodeEnter.append('path')
+      .attr('d', d => shapeGenerator.type(getSymbolType(d.kind))())
+      .attr('fill', d => {
+        if (d.kind === 'signal') return 'var(--accent-color)';
+        if (d.kind === 'memo') return '#06b6d4';
+        return '#ec4899';
+      })
+      .attr('stroke', 'rgba(255,255,255,0.2)')
+      .attr('stroke-width', '1px');
 
     nodeEnter.append('text')
       .attr('class', 'node-label')
@@ -261,10 +276,41 @@
     // Apply Focus Filtering and Search queries
     applyFilters();
 
-    // Restart simulation
-    simulation.nodes(nodes);
-    simulation.force('link').links(links);
-    simulation.alpha(0.3).restart();
+    if (currentLayout === 'flow') {
+      const signals = nodes.filter(n => n.kind === 'signal');
+      const memos = nodes.filter(n => n.kind === 'memo');
+      const effects = nodes.filter(n => n.kind === 'effect');
+
+      const marginY = 50;
+      const startY = height / 2 - ((Math.max(signals.length, memos.length, effects.length) - 1) * marginY) / 2 || 50;
+
+      signals.forEach((n, idx) => {
+        n.x = width * 0.2; n.y = Math.max(50, startY + idx * marginY);
+        n.fx = n.x; n.fy = n.y;
+      });
+      memos.forEach((n, idx) => {
+        n.x = width * 0.5; n.y = Math.max(50, startY + idx * marginY);
+        n.fx = n.x; n.fy = n.y;
+      });
+      effects.forEach((n, idx) => {
+        n.x = width * 0.8; n.y = Math.max(50, startY + idx * marginY);
+        n.fx = n.x; n.fy = n.y;
+      });
+
+      nodeSelection.attr('transform', d => `translate(${d.x},${d.y})`);
+      linkSelection
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y);
+      
+      simulation.stop();
+    } else {
+      // Restart simulation
+      simulation.nodes(nodes);
+      simulation.force('link').links(links);
+      simulation.alpha(0.3).restart();
+    }
   }
 
   // Focus & Search Filtering Logic
@@ -449,10 +495,17 @@
   // Flash node on update
   function flashNode(id) {
     const nodeEl = nodeSelection.filter(d => d.id === id);
-    nodeEl.classed('flash', true);
+    const node = nodeMap.get(id);
+    if (!node) return;
+
+    let flashClass = 'flash-sig';
+    if (node.kind === 'memo') flashClass = 'flash-comp';
+    else if (node.kind === 'effect') flashClass = 'flash-eff';
+
+    nodeEl.classed(flashClass, true);
     setTimeout(() => {
-      nodeEl.classed('flash', false);
-    }, 400);
+      nodeEl.classed(flashClass, false);
+    }, 800);
   }
 
   function applyEvent(msg, updateDOM = true) {
@@ -628,7 +681,10 @@
     let label = msg.name || msg.id;
     let actionDesc = '';
 
-    if (msg.type === 'register') actionDesc = `Registered [${msg.component || 'Global'}]`;
+    if (msg.type === 'register') {
+      const initialValDesc = msg.value !== undefined ? ` with initial value: ${JSON.stringify(msg.value)}` : '';
+      actionDesc = `Registered [${msg.component || 'Global'}]${initialValDesc}`;
+    }
     else if (msg.type === 'read') actionDesc = `Read value: ${JSON.stringify(msg.value)}`;
     else if (msg.type === 'write') actionDesc = `Write value: ${JSON.stringify(msg.value)}`;
     else if (msg.type === 'update') actionDesc = `Re-evaluated in ${msg.duration?.toFixed(2)}ms`;
@@ -861,4 +917,143 @@
     simulation.force('center', d3.forceCenter(newWidth / 2, newHeight / 2));
     simulation.alpha(0.1).restart();
   });
+
+  // Camera Controls
+  d3.select('#btn-zoom-in').on('click', () => {
+    svg.transition().duration(300).call(zoom.scaleBy, 1.3);
+  });
+
+  d3.select('#btn-zoom-out').on('click', () => {
+    svg.transition().duration(300).call(zoom.scaleBy, 0.7);
+  });
+
+  d3.select('#btn-zoom-reset').on('click', () => {
+    resetCamera();
+  });
+
+  function resetCamera() {
+    if (nodes.length === 0) {
+      svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+      return;
+    }
+
+    const minX = d3.min(nodes, d => d.x) || 0;
+    const maxX = d3.max(nodes, d => d.x) || 100;
+    const minY = d3.min(nodes, d => d.y) || 0;
+    const maxY = d3.max(nodes, d => d.y) || 100;
+
+    const pad = 40;
+    const graphWidth = (maxX - minX) || 100;
+    const graphHeight = (maxY - minY) || 100;
+    const scale = Math.min(1.2, Math.min((width - pad * 2) / graphWidth, (height - pad * 2) / graphHeight));
+
+    const tx = width / 2 - (minX + graphWidth / 2) * scale;
+    const ty = height / 2 - (minY + graphHeight / 2) * scale;
+
+    svg.transition().duration(750).call(
+      zoom.transform,
+      d3.zoomIdentity.translate(tx, ty).scale(scale)
+    );
+  }
+
+  // Layout Management
+  let currentLayout = 'network';
+
+  function updateLayoutUI(layout) {
+    document.getElementById('btn-layout-network').classList.toggle('active', layout === 'network');
+    document.getElementById('btn-layout-flow').classList.toggle('active', layout === 'flow');
+  }
+
+  function applyFlowLayout() {
+    simulation.stop();
+
+    const signals = nodes.filter(n => n.kind === 'signal');
+    const memos = nodes.filter(n => n.kind === 'memo');
+    const effects = nodes.filter(n => n.kind === 'effect');
+
+    const marginY = 50;
+    const startY = height / 2 - ((Math.max(signals.length, memos.length, effects.length) - 1) * marginY) / 2 || 50;
+
+    signals.forEach((n, idx) => {
+      n.targetX = width * 0.2;
+      n.targetY = Math.max(50, startY + idx * marginY);
+    });
+    memos.forEach((n, idx) => {
+      n.targetX = width * 0.5;
+      n.targetY = Math.max(50, startY + idx * marginY);
+    });
+    effects.forEach((n, idx) => {
+      n.targetX = width * 0.8;
+      n.targetY = Math.max(50, startY + idx * marginY);
+    });
+
+    nodeSelection.transition()
+      .duration(750)
+      .ease(d3.easeCubicOut)
+      .attrTween('transform', function(d) {
+        const fromX = d.x;
+        const fromY = d.y;
+        d.x = d.targetX;
+        d.y = d.targetY;
+        d.fx = d.targetX;
+        d.fy = d.targetY;
+        return function(t) {
+          const curX = fromX + (d.targetX - fromX) * t;
+          const curY = fromY + (d.targetY - fromY) * t;
+          return `translate(${curX},${curY})`;
+        };
+      })
+      .end()
+      .then(() => {
+        resetCamera();
+      });
+
+    linkSelection.transition()
+      .duration(750)
+      .ease(d3.easeCubicOut)
+      .attr('x1', d => d.source.x)
+      .attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x)
+      .attr('y2', d => d.target.y);
+  }
+
+  function applyNetworkLayout() {
+    nodes.forEach(d => {
+      d.fx = null;
+      d.fy = null;
+    });
+    simulation.alpha(0.3).restart();
+    setTimeout(resetCamera, 600);
+  }
+
+  function setLayout(layout) {
+    if (currentLayout === layout) return;
+    currentLayout = layout;
+    updateLayoutUI(layout);
+
+    const state = vscode.getState() || {};
+    state.layout = layout;
+    vscode.setState(state);
+
+    if (layout === 'flow') {
+      applyFlowLayout();
+    } else {
+      applyNetworkLayout();
+    }
+  }
+
+  d3.select('#btn-layout-network').on('click', () => setLayout('network'));
+  d3.select('#btn-layout-flow').on('click', () => setLayout('flow'));
+
+  // Load and restore layout state
+  const savedState = vscode.getState();
+  if (savedState && savedState.layout) {
+    currentLayout = savedState.layout;
+    updateLayoutUI(currentLayout);
+    setTimeout(() => {
+      if (currentLayout === 'flow') {
+        applyFlowLayout();
+      }
+    }, 500);
+  }
 })();
