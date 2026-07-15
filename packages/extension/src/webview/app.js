@@ -70,6 +70,11 @@
       }
       case 'write': {
         var node = nodeMap.get(msg.id);
+        if (!node) {
+          node = { id: msg.id, name: 'Unknown (' + msg.id + ')', component: 'Global', kind: 'signal', value: undefined, epoch: 0, lastUpdated: 0, sparkline: [] };
+          nodeMap.set(msg.id, node);
+          ensureComponent(node);
+        }
         if (node) {
           var prev = node.value;
           node.value = msg.value;
@@ -85,6 +90,11 @@
       }
       case 'update': {
         var node = nodeMap.get(msg.id);
+        if (!node) {
+          node = { id: msg.id, name: 'Unknown (' + msg.id + ')', component: 'Global', kind: 'computed', value: undefined, epoch: 0, lastUpdated: 0, sparkline: [] };
+          nodeMap.set(msg.id, node);
+          ensureComponent(node);
+        }
         if (node) {
           if (msg.value !== undefined) node.value = msg.value;
           node.epoch++;
