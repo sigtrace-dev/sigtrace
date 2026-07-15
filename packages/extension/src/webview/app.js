@@ -348,11 +348,29 @@
     });
   }
 
+  function centerNode(id) {
+    if (!id) return;
+    const node = nodeMap.get(id);
+    if (!node) return;
+
+    const scale = 1.3;
+    const x = width / 2 - node.x * scale;
+    const y = height / 2 - node.y * scale;
+
+    svg.transition()
+      .duration(750)
+      .call(
+        zoom.transform,
+        d3.zoomIdentity.translate(x, y).scale(scale)
+      );
+  }
+
   function toggleNodeFocus(id) {
     if (focusedNodeId === id) {
       focusedNodeId = null;
     } else {
       focusedNodeId = id;
+      centerNode(id);
     }
     applyFilters();
   }
@@ -633,6 +651,15 @@
     const exists = alerts.find(a => a.title === title && a.desc === desc);
     if (exists) return;
 
+    let solution = '';
+    if (type === 'dead-code') {
+      solution = '<strong>Fix:</strong> This signal is declared but never read by any template, computed value, or effect reaction. If it is unused code, delete the declaration to save memory. Otherwise, ensure it is consumed in your component.';
+    } else if (type === 'circular') {
+      solution = '<strong>Fix:</strong> Circular invalidations occur when an effect writes to a signal that it also reads (causing it to re-trigger itself infinitely). Decouple the read/write logic, or wrap the reading code inside <code>untracked()</code> (Angular) or <code>untrack()</code> (Solid/Vue) to prevent re-evaluation loops.';
+    } else if (type === 'hotspot') {
+      solution = '<strong>Fix:</strong> This computation is blocking the main thread. Optimize the formula logic, cache intermediate heavy calculations, or split it into smaller, lighter computed selectors.';
+    }
+
     const alert = { type, title, desc, severity, id: Math.random().toString(36).substring(2, 9) };
     alerts.push(alert);
 
@@ -644,6 +671,7 @@
         ${severity === 'warn' ? '⚠️' : '🚨'} ${title}
       </div>
       <div class="alert-desc">${desc}</div>
+      ${solution ? `<div class="alert-solution">${solution}</div>` : ''}
     `;
     alertsList.appendChild(item);
 
@@ -680,6 +708,7 @@
     if (msg.type === 'focus-node') {
       focusedNodeId = msg.id;
       applyFilters();
+      centerNode(msg.id);
       // Auto-switch to visualizer tab
       document.querySelector('[data-tab="tab-graph"]').click();
       return;

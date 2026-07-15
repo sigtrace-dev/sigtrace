@@ -4,6 +4,7 @@
   "description": "Universal Reactive Graph & Signal Lifecycle Tracer",
   "version": "1.0.4",
   "publisher": "sigtrace",
+  "icon": "icon.jpg",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -15,7 +16,8 @@
     "dist/**/*.js",
     "src/webview/**/*",
     "package.json",
-    "LICENSE"
+    "LICENSE",
+    "icon.jpg"
   ],
   "categories": [
     "Other"
