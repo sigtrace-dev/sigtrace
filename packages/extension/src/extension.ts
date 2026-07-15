@@ -7,57 +7,104 @@ let wss: WebSocketServer | null = null;
 let activeWebviews = new Set<vscode.Webview>();
 let cachedSignals = new Map<string, any>();
 let eventBuffer: any[] = [];
+let visualizerSockets = new Set<WebSocket>();
+let isHost = false;
+let clientSocket: WebSocket | null = null;
 
 // Store metrics for CodeLens overlays: filePath -> line -> metricObj
 const nodeMetrics = new Map<string, Map<number, { id: string, name: string, epoch: number, duration?: number, isHotspot?: boolean }>>();
 let codeLensProvider: SigTraceCodeLensProvider | null = null;
 
-function getLocalFsPath(filePath: string): string | null {
-  let p = filePath;
-  if (p.startsWith('http://') || p.startsWith('https://')) {
-    try {
-      const url = new URL(p);
-      p = url.pathname;
-    } catch (e) {
-      return null;
+function broadcastToVisualizers(message: string) {
+  for (const socket of visualizerSockets) {
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(message);
     }
   }
-
-  if (fs.existsSync(p)) {
-    return fs.realpathSync(p);
-  }
-
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (workspaceFolders) {
-    for (const folder of workspaceFolders) {
-      const fullPath = path.join(
-        folder.uri.fsPath,
-        p.startsWith('/') ? p.slice(1) : p
-      );
-      if (fs.existsSync(fullPath)) {
-        return fs.realpathSync(fullPath);
-      }
-    }
-  }
-  return null;
 }
 
-export function activate(context: vscode.ExtensionContext) {
-  console.log('SigTrace Extension is now active!');
+function connectToHost() {
+  const ws = new WebSocket('ws://localhost:8420');
+  clientSocket = ws;
 
-  // Start WebSocket Server
+  ws.on('open', () => {
+    console.log('SigTrace: Connected to Host Server on port 8420');
+    ws.send(JSON.stringify({ type: 'register-visualizer' }));
+  });
+
+  ws.on('message', (message) => {
+    try {
+      const payload = JSON.parse(message.toString());
+      
+      // Update local cache
+      if (payload.type === 'register') {
+        cachedSignals.set(payload.id, payload);
+      } else if (payload.type === 'write' || payload.type === 'update') {
+        const cached = cachedSignals.get(payload.id);
+        if (cached) {
+          cached.value = payload.value;
+          if (payload.duration !== undefined) cached.duration = payload.duration;
+        }
+        eventBuffer.push(payload);
+        if (eventBuffer.length > 200) {
+          eventBuffer.shift();
+        }
+      }
+
+      // Forward to local webviews
+      for (const webview of activeWebviews) {
+        webview.postMessage(payload);
+      }
+    } catch (e) {
+      console.error('Error forwarding message from Host:', e);
+    }
+  });
+
+  ws.on('close', () => {
+    console.log('SigTrace: Host Server disconnected. Attempting to promote to Host...');
+    clientSocket = null;
+    startServer();
+  });
+
+  ws.on('error', () => {
+    // Ignore, close event will trigger retry
+  });
+}
+
+function startServer() {
   const port = 8420;
-  try {
-    wss = new WebSocketServer({ port });
-    console.log(`SigTrace WS Server running on port ${port}`);
-
+  isHost = false;
+  
+  const tempWss = new WebSocketServer({ port });
+  
+  tempWss.on('listening', () => {
+    wss = tempWss;
+    isHost = true;
+    console.log(`SigTrace: WS Server running as Host on port ${port}`);
+    
     wss.on('connection', (ws) => {
-      console.log('SigTrace: Client connected (browser dev bundle)');
-
+      let isVisualizer = false;
+      
       ws.on('message', (message) => {
         try {
-          const payload = JSON.parse(message.toString());
+          const rawStr = message.toString();
+          const payload = JSON.parse(rawStr);
           
+          if (payload.type === 'register-visualizer') {
+            isVisualizer = true;
+            visualizerSockets.add(ws);
+            console.log('SigTrace: Sub-window visualizer connected');
+            // Send current cache to sub-window
+            for (const node of cachedSignals.values()) {
+              ws.send(JSON.stringify(node));
+            }
+            for (const event of eventBuffer) {
+              ws.send(JSON.stringify(event));
+            }
+            return;
+          }
+          
+          // Browser message processing
           if (payload.type === 'register') {
             cachedSignals.set(payload.id, payload);
           } else if (payload.type === 'write' || payload.type === 'update') {
@@ -105,33 +152,74 @@ export function activate(context: vscode.ExtensionContext) {
               }
             }
           }
-
-          // Forward event to all active webviews
+          
+          // Forward event to all active webviews in this window
           for (const webview of activeWebviews) {
             webview.postMessage(payload);
           }
+          
+          // Broadcast to other windows
+          broadcastToVisualizers(rawStr);
+          
         } catch (e) {
-          console.error('Error forwarding message from WS client:', e);
+          console.error('Error handling WS message:', e);
         }
       });
-
+      
       ws.on('close', () => {
-        console.log('SigTrace: Client disconnected');
+        if (isVisualizer) {
+          visualizerSockets.delete(ws);
+          console.log('SigTrace: Sub-window visualizer disconnected');
+        }
       });
     });
+  });
 
-    wss.on('error', (err: any) => {
-      if (err.code === 'EADDRINUSE') {
-        vscode.window.showWarningMessage(
-          `SigTrace: Port ${port} is already in use. Please check if another instance of SigTrace is running.`
-        );
-      } else {
-        console.error('WS Server Error:', err);
-      }
-    });
-  } catch (err) {
-    console.error('Failed to launch WS Server:', err);
+  tempWss.on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log('SigTrace: Port 8420 in use, connecting as client to Host...');
+      tempWss.close();
+      connectToHost();
+    } else {
+      console.error('SigTrace: Server error:', err);
+    }
+  });
+}
+
+function getLocalFsPath(filePath: string): string | null {
+  let p = filePath;
+  if (p.startsWith('http://') || p.startsWith('https://')) {
+    try {
+      const url = new URL(p);
+      p = url.pathname;
+    } catch (e) {
+      return null;
+    }
   }
+
+  if (fs.existsSync(p)) {
+    return fs.realpathSync(p);
+  }
+
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (workspaceFolders) {
+    for (const folder of workspaceFolders) {
+      const fullPath = path.join(
+        folder.uri.fsPath,
+        p.startsWith('/') ? p.slice(1) : p
+      );
+      if (fs.existsSync(fullPath)) {
+        return fs.realpathSync(fullPath);
+      }
+    }
+  }
+  return null;
+}
+
+export function activate(context: vscode.ExtensionContext) {
+  console.log('SigTrace Extension is now active!');
+
+  startServer();
 
   // Register Webview Provider
   const provider = new SigTraceViewProvider(context.extensionUri);
@@ -179,8 +267,15 @@ export function deactivate() {
     wss.close();
     wss = null;
   }
+  if (clientSocket) {
+    clientSocket.close();
+    clientSocket = null;
+  }
   activeWebviews.clear();
   nodeMetrics.clear();
+  cachedSignals.clear();
+  eventBuffer = [];
+  visualizerSockets.clear();
 }
 
 class SigTraceCodeLensProvider implements vscode.CodeLensProvider {
