@@ -47,10 +47,17 @@ export interface UpdateEvent {
   duration: number;
 }
 
+export interface DestroyEvent {
+  type: 'destroy';
+  id: string;
+  component?: string | null;
+}
+
 export type TraceEvent =
   | RegisterEvent
   | ReadEvent
   | WriteEvent
   | LinkEvent
   | UnlinkEvent
-  | UpdateEvent;
+  | UpdateEvent
+  | DestroyEvent;

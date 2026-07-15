@@ -11,6 +11,15 @@ const activeOwnerDeps = new Map<string, Set<string>>(); // ownerId -> Set of dep
 const currentRunDeps = new Map<string, Set<string>>();  // ownerId -> Set of dependencyIds
 const runningOwnersStack: string[] = [];
 
+// FinalizationRegistry for dynamic garbage collection and cleanup of nodes
+const registry = new FinalizationRegistry((heldValue: { id: string, component: string }) => {
+  client.send({
+    type: 'destroy',
+    id: heldValue.id,
+    component: heldValue.component
+  });
+});
+
 function startOwnerRun(ownerId: string) {
   runningOwnersStack.push(ownerId);
   currentRunDeps.set(ownerId, new Set());
@@ -73,13 +82,7 @@ export function signal<T>(initialValue: T, options?: any) {
 
   const trackedSignal = (() => {
     recordRead(signalId);
-    const val = originalSig();
-    client.send({
-      type: 'read',
-      id: signalId,
-      value: val
-    });
-    return val;
+    return originalSig();
   }) as any;
 
   trackedSignal.set = (newVal: any) => {
@@ -104,17 +107,15 @@ export function signal<T>(initialValue: T, options?: any) {
   };
 
   trackedSignal.asReadonly = () => {
-    return (() => {
+    const readonlySig = (() => {
       recordRead(signalId);
-      const val = originalSig();
-      client.send({
-        type: 'read',
-        id: signalId,
-        value: val
-      });
-      return val;
+      return originalSig();
     }) as any;
+    registry.register(readonlySig, { id: signalId, component: options?.component || null });
+    return readonlySig;
   };
+
+  registry.register(trackedSignal, { id: signalId, component: options?.component || null });
 
   return trackedSignal;
 }
@@ -154,14 +155,10 @@ export function computed<T>(fn: () => T, options?: any) {
 
   const trackedComputed = (() => {
     recordRead(computedId);
-    const val = originalComp();
-    client.send({
-      type: 'read',
-      id: computedId,
-      value: val
-    });
-    return val;
+    return originalComp();
   }) as any;
+
+  registry.register(trackedComputed, { id: computedId, component: options?.component || null });
 
   return trackedComputed;
 }
@@ -195,5 +192,7 @@ export function effect(fn: (onCleanup: any) => void, options?: any) {
     }
   };
 
-  return originalEffect(trackedFn, options);
+  const ref = originalEffect(trackedFn, options);
+  registry.register(ref, { id: effectId, component: options?.component || null });
+  return ref;
 }

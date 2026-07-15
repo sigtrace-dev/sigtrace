@@ -437,9 +437,34 @@
     }, 400);
   }
 
-  // Playback & History Implementation
   function applyEvent(msg, updateDOM = true) {
     switch (msg.type) {
+      case 'destroy': {
+        const index = nodes.findIndex(n => n.id === msg.id);
+        if (index !== -1) {
+          nodes.splice(index, 1);
+          nodeMap.delete(msg.id);
+          // Clean up associated links
+          links = links.filter(l => {
+            const sId = l.source.id || l.source;
+            const tId = l.target.id || l.target;
+            const match = sId === msg.id || tId === msg.id;
+            if (match) {
+              const key = `${sId}->${tId}`;
+              linkMap.delete(key);
+            }
+            return !match;
+          });
+          // Clean up empty component container
+          const compName = msg.component;
+          if (compName && !nodes.some(n => n.component === compName)) {
+            componentGroups.delete(compName);
+          }
+          if (updateDOM) updateGraph();
+        }
+        break;
+      }
+
       case 'register': {
         if (!nodeMap.has(msg.id)) {
           const newNode = {
