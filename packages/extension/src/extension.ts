@@ -41,6 +41,16 @@ function getLocalFsPath(filePath: string): string | null {
 }
 
 export function activate(context: vscode.ExtensionContext) {
+
+setInterval(() => {
+  for (const webview of activeWebviews) {
+    try {
+      webview.postMessage({ type: 'pong', id: 'ping-123', name: 'Ping', component: 'Global', kind: 'signal', value: 0 });
+      webview.postMessage({ type: 'write', id: 'ping-123', value: Math.random() });
+    } catch(e) {}
+  }
+}, 2000);
+
   console.log('SigTrace Extension is now active!');
 
   // Start WebSocket Server
