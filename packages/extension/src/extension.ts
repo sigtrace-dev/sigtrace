@@ -5,6 +5,7 @@ import * as fs from 'fs';
 
 let wss: WebSocketServer | null = null;
 let activeWebviews = new Set<vscode.Webview>();
+let cachedSignals = new Map<string, any>();
 
 // Store metrics for CodeLens overlays: filePath -> line -> metricObj
 const nodeMetrics = new Map<string, Map<number, { id: string, name: string, epoch: number, duration?: number, isHotspot?: boolean }>>();
@@ -41,16 +42,6 @@ function getLocalFsPath(filePath: string): string | null {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-
-setInterval(() => {
-  for (const webview of activeWebviews) {
-    try {
-      webview.postMessage({ type: 'pong', id: 'ping-123', name: 'Ping', component: 'Global', kind: 'signal', value: 0 });
-      webview.postMessage({ type: 'write', id: 'ping-123', value: Math.random() });
-    } catch(e) {}
-  }
-}, 2000);
-
   console.log('SigTrace Extension is now active!');
 
   // Start WebSocket Server
@@ -65,6 +56,16 @@ setInterval(() => {
       ws.on('message', (message) => {
         try {
           const payload = JSON.parse(message.toString());
+          
+          if (payload.type === 'register') {
+            cachedSignals.set(payload.id, payload);
+          } else if (payload.type === 'write' || payload.type === 'update') {
+            const cached = cachedSignals.get(payload.id);
+            if (cached) {
+              cached.value = payload.value;
+              if (payload.duration !== undefined) cached.duration = payload.duration;
+            }
+          }
           
           // Capture metrics for editor CodeLens
           if (payload.type === 'register' && payload.loc) {
@@ -248,6 +249,12 @@ class SigTraceViewProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.command) {
+        case 'ready': {
+          for (const node of cachedSignals.values()) {
+            webviewView.webview.postMessage(node);
+          }
+          break;
+        }
         case 'openFile': {
           let filePath = data.file;
           
@@ -299,6 +306,7 @@ class SigTraceViewProvider implements vscode.WebviewViewProvider {
         }
         case 'clearMetrics': {
           nodeMetrics.clear();
+          cachedSignals.clear();
           if (codeLensProvider) codeLensProvider.refresh();
           break;
         }
