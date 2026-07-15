@@ -506,6 +506,15 @@
 
   // ── VS Code message handler ───────────────────────────────────────────────
   window.addEventListener('message', function(event) {
+    var dbg = document.getElementById('debug-log');
+    if (!dbg) {
+      dbg = document.createElement('div');
+      dbg.id = 'debug-log';
+      dbg.style = 'position:absolute; top:0; right:0; background:red; color:white; padding:10px; z-index:9999; font-size:10px; max-width:300px; word-wrap:break-word;';
+      document.body.appendChild(dbg);
+    }
+    dbg.innerHTML = 'MSG: ' + event.data.type + '<br>' + dbg.innerHTML;
+
     var msg = event.data;
     if (!msg) return;
 
