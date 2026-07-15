@@ -49,6 +49,13 @@ export function sigTrace(options?: SigTracePluginOptions): Plugin {
         return this.resolve('@sigtrace/core/angular', importer, { skipSelf: true });
       }
 
+      if (source === '@angular/core/rxjs-interop') {
+        if (importer && (importer.includes('@sigtrace/core') || importer.includes('packages/core'))) {
+          return null; // Use original
+        }
+        return this.resolve('@sigtrace/core/angular-rxjs-interop', importer, { skipSelf: true });
+      }
+
       return null;
     },
 

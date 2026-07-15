@@ -1,6 +1,6 @@
 {
   "name": "@sigtrace/core",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "type": "module",
   "description": "Client-side runtime tracer for SigTrace",
   "main": "dist/index.js",
@@ -17,6 +17,7 @@
     "./solid": "./dist/adapters/solid.js",
     "./vue": "./dist/adapters/vue.js",
     "./angular": "./dist/adapters/angular.js",
+    "./angular-rxjs-interop": "./dist/adapters/angular-rxjs-interop.js",
     "./register.cjs": "./register.cjs"
   },
   "scripts": {

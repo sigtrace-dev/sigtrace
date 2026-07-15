@@ -58,7 +58,7 @@ function endOwnerRun(ownerId: string) {
   currentRunDeps.delete(ownerId);
 }
 
-function recordRead(depId: string) {
+export function recordRead(depId: string) {
   if (runningOwnersStack.length > 0) {
     const currentOwnerId = runningOwnersStack[runningOwnersStack.length - 1];
     currentRunDeps.get(currentOwnerId)?.add(depId);
