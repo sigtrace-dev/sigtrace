@@ -112,10 +112,12 @@
 
   // Force Simulation Setup
   const simulation = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d => d.id).distance(80))
-    .force('charge', d3.forceManyBody().strength(-200))
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      return d.source.component === d.target.component ? 65 : 180;
+    }))
+    .force('charge', d3.forceManyBody().strength(-300).distanceMax(400))
     .force('center', d3.forceCenter(width / 2, height / 2))
-    .force('collision', d3.forceCollide().radius(30))
+    .force('collision', d3.forceCollide().radius(35))
     .force('cluster', componentClusterForce)
     .on('tick', ticked);
 
@@ -125,66 +127,71 @@
   let nodeSelection = g.append('g').selectAll('.node');
 
   function ticked() {
-    // 1. Calculate and update Bounding Boxes
-    const padding = 15;
-    const groupsData = [];
-    
-    componentGroups.forEach(compName => {
-      const compNodes = nodes.filter(n => n.component === compName);
-      if (compNodes.length > 0) {
-        let minX = Infinity, minY = Infinity;
-        let maxX = -Infinity, maxY = -Infinity;
-        compNodes.forEach(n => {
-          if (n.x < minX) minX = n.x;
-          if (n.y < minY) minY = n.y;
-          if (n.x > maxX) maxX = n.x;
-          if (n.y > maxY) maxY = n.y;
-        });
+    if (currentLayout === 'flow') {
+      groupSelection = groupSelection.data([]);
+      groupSelection.exit().remove();
+    } else {
+      // 1. Calculate and update Bounding Boxes
+      const padding = 15;
+      const groupsData = [];
+      
+      componentGroups.forEach(compName => {
+        const compNodes = nodes.filter(n => n.component === compName);
+        if (compNodes.length > 0) {
+          let minX = Infinity, minY = Infinity;
+          let maxX = -Infinity, maxY = -Infinity;
+          compNodes.forEach(n => {
+            if (n.x < minX) minX = n.x;
+            if (n.y < minY) minY = n.y;
+            if (n.x > maxX) maxX = n.x;
+            if (n.y > maxY) maxY = n.y;
+          });
 
-        groupsData.push({
-          name: compName,
-          x: minX - padding,
-          y: minY - padding,
-          width: (maxX - minX) + padding * 2,
-          height: (maxY - minY) + padding * 2
-        });
-      }
-    });
+          groupsData.push({
+            name: compName,
+            x: minX - padding,
+            y: minY - padding,
+            width: (maxX - minX) + padding * 2,
+            height: (maxY - minY) + padding * 2
+          });
+        }
+      });
 
-    groupSelection = groupSelection.data(groupsData, d => d.name);
-    groupSelection.exit().remove();
+      groupSelection = groupSelection.data(groupsData, d => d.name);
+      groupSelection.exit().remove();
 
-    const groupEnter = groupSelection.enter()
-      .insert('g', ':first-child')
-      .attr('class', 'group-card');
+      const groupEnter = groupSelection.enter()
+        .insert('g', ':first-child')
+        .attr('class', 'group-card');
 
-    groupEnter.append('rect')
-      .attr('rx', 6)
-      .attr('ry', 6)
-      .attr('fill', 'rgba(255, 255, 255, 0.02)')
-      .attr('stroke', 'rgba(255, 255, 255, 0.08)')
-      .attr('stroke-width', '1px');
+      groupEnter.append('rect')
+        .attr('rx', 6)
+        .attr('ry', 6)
+        .attr('fill', 'rgba(255, 255, 255, 0.02)')
+        .attr('stroke', 'rgba(255, 255, 255, 0.08)')
+        .attr('stroke-width', '1px');
 
-    groupEnter.append('text')
-      .attr('font-size', '8px')
-      .attr('font-weight', '600')
-      .attr('fill', 'rgba(255, 255, 255, 0.35)')
-      .attr('font-family', 'monospace')
-      .attr('dx', 8)
-      .attr('dy', 12);
+      groupEnter.append('text')
+        .attr('font-size', '8px')
+        .attr('font-weight', '600')
+        .attr('fill', 'rgba(255, 255, 255, 0.35)')
+        .attr('font-family', 'monospace')
+        .attr('dx', 8)
+        .attr('dy', 12);
 
-    groupSelection = groupEnter.merge(groupSelection);
+      groupSelection = groupEnter.merge(groupSelection);
 
-    groupSelection.select('rect')
-      .attr('x', d => d.x)
-      .attr('y', d => d.y)
-      .attr('width', d => d.width)
-      .attr('height', d => d.height);
+      groupSelection.select('rect')
+        .attr('x', d => d.x)
+        .attr('y', d => d.y)
+        .attr('width', d => d.width)
+        .attr('height', d => d.height);
 
-    groupSelection.select('text')
-      .attr('x', d => d.x)
-      .attr('y', d => d.y)
-      .text(d => d.name.toUpperCase());
+      groupSelection.select('text')
+        .attr('x', d => d.x)
+        .attr('y', d => d.y)
+        .text(d => d.name.toUpperCase());
+    }
 
     // 2. Update Link positions
     linkSelection
@@ -277,25 +284,32 @@
     applyFilters();
 
     if (currentLayout === 'flow') {
-      const signals = nodes.filter(n => n.kind === 'signal');
-      const memos = nodes.filter(n => n.kind === 'memo');
-      const effects = nodes.filter(n => n.kind === 'effect');
+      const signals = nodes.filter(n => n.kind === 'signal')
+        .sort((a, b) => (a.component || '').localeCompare(b.component || ''));
+      const memos = nodes.filter(n => n.kind === 'memo')
+        .sort((a, b) => (a.component || '').localeCompare(b.component || ''));
+      const effects = nodes.filter(n => n.kind === 'effect')
+        .sort((a, b) => (a.component || '').localeCompare(b.component || ''));
 
       const marginY = 50;
-      const startY = height / 2 - ((Math.max(signals.length, memos.length, effects.length) - 1) * marginY) / 2 || 50;
+      const startY = 60;
 
       signals.forEach((n, idx) => {
-        n.x = width * 0.2; n.y = Math.max(50, startY + idx * marginY);
+        n.x = width * 0.18; n.y = startY + idx * marginY;
         n.fx = n.x; n.fy = n.y;
       });
       memos.forEach((n, idx) => {
-        n.x = width * 0.5; n.y = Math.max(50, startY + idx * marginY);
+        n.x = width * 0.5; n.y = startY + idx * marginY;
         n.fx = n.x; n.fy = n.y;
       });
       effects.forEach((n, idx) => {
-        n.x = width * 0.8; n.y = Math.max(50, startY + idx * marginY);
+        n.x = width * 0.82; n.y = startY + idx * marginY;
         n.fx = n.x; n.fy = n.y;
       });
+
+      // Remove group cards
+      groupSelection = groupSelection.data([]);
+      groupSelection.exit().remove();
 
       nodeSelection.attr('transform', d => `translate(${d.x},${d.y})`);
       linkSelection
@@ -702,55 +716,86 @@
   }
 
   // Diagnostics & Anomaly Checks
-  function addAlert(type, title, desc, severity = 'warn') {
-    // Check if alert already exists to prevent duplicate spam
-    const exists = alerts.find(a => a.title === title && a.desc === desc);
-    if (exists) return;
+  // Diagnostics & Anomaly Checks
+  function rebuildAlertsDOM() {
+    alertsList.innerHTML = '';
+    alerts.forEach(alert => {
+      let solution = '';
+      if (alert.type === 'dead-code') {
+        solution = '<strong>Fix:</strong> Unused signals waste memory and CPU cycles. If these are obsolete, delete their declarations. Otherwise, ensure they are referenced in a template, computed memo, or effect.';
+      } else if (alert.type === 'circular') {
+        solution = '<strong>Fix:</strong> Circular invalidations occur when an effect writes to a signal that it also reads (causing it to re-trigger itself infinitely). Decouple the read/write logic, or wrap the reading code inside <code>untracked()</code> (Angular) or <code>untrack()</code> (Solid/Vue) to prevent re-evaluation loops.';
+      } else if (alert.type === 'hotspot') {
+        solution = '<strong>Fix:</strong> This computation is blocking the main thread. Optimize the formula logic, cache intermediate heavy calculations, or split it into smaller, lighter computed selectors.';
+      }
 
-    let solution = '';
-    if (type === 'dead-code') {
-      solution = '<strong>Fix:</strong> This signal is declared but never read by any template, computed value, or effect reaction. If it is unused code, delete the declaration to save memory. Otherwise, ensure it is consumed in your component.';
-    } else if (type === 'circular') {
-      solution = '<strong>Fix:</strong> Circular invalidations occur when an effect writes to a signal that it also reads (causing it to re-trigger itself infinitely). Decouple the read/write logic, or wrap the reading code inside <code>untracked()</code> (Angular) or <code>untrack()</code> (Solid/Vue) to prevent re-evaluation loops.';
-    } else if (type === 'hotspot') {
-      solution = '<strong>Fix:</strong> This computation is blocking the main thread. Optimize the formula logic, cache intermediate heavy calculations, or split it into smaller, lighter computed selectors.';
-    }
+      const item = document.createElement('div');
+      item.className = `alert-item ${alert.severity}`;
+      item.innerHTML = `
+        <div class="alert-title">
+          ${alert.severity === 'warn' ? '⚠️' : '🚨'} ${alert.title}
+        </div>
+        <div class="alert-desc">${alert.desc}</div>
+        ${solution ? `<div class="alert-solution">${solution}</div>` : ''}
+      `;
+      alertsList.appendChild(item);
+    });
 
-    const alert = { type, title, desc, severity, id: Math.random().toString(36).substring(2, 9) };
-    alerts.push(alert);
-
-    // Render alert inside DOM
-    const item = document.createElement('div');
-    item.className = `alert-item ${severity}`;
-    item.innerHTML = `
-      <div class="alert-title">
-        ${severity === 'warn' ? '⚠️' : '🚨'} ${title}
-      </div>
-      <div class="alert-desc">${desc}</div>
-      ${solution ? `<div class="alert-solution">${solution}</div>` : ''}
-    `;
-    alertsList.appendChild(item);
-
-    // Update alert Badge
-    alertBadge.style.display = 'block';
+    alertBadge.style.display = alerts.length > 0 ? 'block' : 'none';
     alertBadge.innerText = alerts.length;
   }
 
+  function addAlert(type, title, desc, severity = 'warn') {
+    const exists = alerts.find(a => a.title === title && a.desc === desc);
+    if (exists) return;
+
+    const alert = { type, title, desc, severity, id: Math.random().toString(36).substring(2, 9) };
+    alerts.push(alert);
+    rebuildAlertsDOM();
+  }
+
   function runDiagnosticsCheck() {
-    // 1. Check for Writable Signals that are completely unused (Dead Signals)
+    const deadSignals = [];
     nodes.forEach(n => {
       if (n.kind === 'signal') {
-        // find if there is any link originating from this node
         const hasOutgoingLinks = links.some(l => {
           const sId = l.source.id || l.source;
           return sId === n.id && !l.untracked;
         });
 
         if (!hasOutgoingLinks && n.epoch === 0) {
-          addAlert('dead-code', 'Dead Signal Detected', `Signal "${n.name}" is declared in ${n.component || 'Global'} but is never observed.`, 'warn');
+          deadSignals.push(n);
         }
       }
     });
+
+    const oldAlertCount = alerts.length;
+    alerts = alerts.filter(a => a.type !== 'dead-code');
+
+    if (deadSignals.length > 0) {
+      const componentsMap = {};
+      deadSignals.forEach(s => {
+        const compName = s.component || 'Global';
+        if (!componentsMap[compName]) componentsMap[compName] = [];
+        componentsMap[compName].push(`"${s.name}"`);
+      });
+
+      const groupedDescList = Object.keys(componentsMap).map(comp => {
+        return `<strong>${comp}</strong>: ${componentsMap[comp].join(', ')}`;
+      });
+
+      addAlert(
+        'dead-code',
+        `Dead Signals Detected (${deadSignals.length})`,
+        `The following signals are declared but never observed:<br/>${groupedDescList.join('<br/>')}`,
+        'warn'
+      );
+    } else {
+      if (alerts.length !== oldAlertCount) {
+        rebuildAlertsDOM();
+      }
+    }
+  }
   }
 
   // Run diagnostics check every 4 seconds
@@ -967,25 +1012,32 @@
   function applyFlowLayout() {
     simulation.stop();
 
-    const signals = nodes.filter(n => n.kind === 'signal');
-    const memos = nodes.filter(n => n.kind === 'memo');
-    const effects = nodes.filter(n => n.kind === 'effect');
+    const signals = nodes.filter(n => n.kind === 'signal')
+      .sort((a, b) => (a.component || '').localeCompare(b.component || ''));
+    const memos = nodes.filter(n => n.kind === 'memo')
+      .sort((a, b) => (a.component || '').localeCompare(b.component || ''));
+    const effects = nodes.filter(n => n.kind === 'effect')
+      .sort((a, b) => (a.component || '').localeCompare(b.component || ''));
 
     const marginY = 50;
-    const startY = height / 2 - ((Math.max(signals.length, memos.length, effects.length) - 1) * marginY) / 2 || 50;
+    const startY = 60;
 
     signals.forEach((n, idx) => {
-      n.targetX = width * 0.2;
-      n.targetY = Math.max(50, startY + idx * marginY);
+      n.targetX = width * 0.18;
+      n.targetY = startY + idx * marginY;
     });
     memos.forEach((n, idx) => {
       n.targetX = width * 0.5;
-      n.targetY = Math.max(50, startY + idx * marginY);
+      n.targetY = startY + idx * marginY;
     });
     effects.forEach((n, idx) => {
-      n.targetX = width * 0.8;
-      n.targetY = Math.max(50, startY + idx * marginY);
+      n.targetX = width * 0.82;
+      n.targetY = startY + idx * marginY;
     });
+
+    // Remove group cards
+    groupSelection = groupSelection.data([]);
+    groupSelection.exit().remove();
 
     nodeSelection.transition()
       .duration(750)
