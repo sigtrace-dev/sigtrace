@@ -1,0 +1,55 @@
+{
+  "name": "@sigtrace/core",
+  "version": "1.0.1",
+  "type": "module",
+  "description": "Client-side runtime tracer for SigTrace",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "sigtrace": "./bin/sigtrace.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sigtrace-dev/sigtrace.git"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./solid": "./dist/adapters/solid.js",
+    "./vue": "./dist/adapters/vue.js",
+    "./angular": "./dist/adapters/angular.js",
+    "./register.cjs": "./register.cjs"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "reactivity",
+    "signals",
+    "computed",
+    "effect",
+    "angular",
+    "vue",
+    "solidjs",
+    "debugger",
+    "visualizer",
+    "tracing",
+    "telemetry"
+  ],
+  "dependencies": {
+    "@babel/core": "^7.22.0",
+    "@babel/parser": "^7.22.0",
+    "@babel/traverse": "^7.22.0",
+    "@babel/generator": "^7.22.0",
+    "@babel/types": "^7.22.0"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8.0",
+    "vue": "^3.3.0",
+    "@angular/core": ">=17.0.0"
+  },
+  "devDependencies": {
+    "solid-js": "^1.8.0",
+    "vue": "^3.3.0",
+    "@angular/core": ">=17.0.0"
+  }
+}

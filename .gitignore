@@ -1,0 +1,15 @@
+# Node dependencies
+node_modules/
+
+# Compilation outputs
+dist/
+*.tsbuildinfo
+
+# Extension packages
+*.vsix
+
+# IDE & OS files
+.DS_Store
+.vscode/tasks.json
+.vscode/settings.json
+.vscode/project-state.json

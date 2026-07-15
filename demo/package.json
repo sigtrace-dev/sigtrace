@@ -1,0 +1,19 @@
+{
+  "name": "sigtrace-demo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "solid-js": "^1.8.0",
+    "@sigtrace/core": "*"
+  },
+  "devDependencies": {
+    "@sigtrace/vite": "*",
+    "vite": "^5.0.0",
+    "vite-plugin-solid": "^2.8.0"
+  }
+}

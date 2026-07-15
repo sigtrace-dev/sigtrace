@@ -1,0 +1,61 @@
+{
+  "name": "sigtrace-extension",
+  "displayName": "SigTrace",
+  "description": "Universal Reactive Graph & Signal Lifecycle Tracer",
+  "version": "1.0.1",
+  "publisher": "sigtrace",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sigtrace-dev/sigtrace.git"
+  },
+  "files": [
+    "dist/**/*.js",
+    "src/webview/**/*",
+    "package.json",
+    "LICENSE"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sigtrace-container",
+          "title": "SigTrace",
+          "icon": "$(eye)"
+        }
+      ]
+    },
+    "views": {
+      "sigtrace-container": [
+        {
+          "type": "webview",
+          "id": "sigtrace-explorer",
+          "name": "Reactivity Visualizer",
+          "icon": "$(graph)",
+          "contextualTitle": "SigTrace Explorer"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "dependencies": {
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@types/ws": "^8.5.5",
+    "typescript": "^5.0.0"
+  }
+}
