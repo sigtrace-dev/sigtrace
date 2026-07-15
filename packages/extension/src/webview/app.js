@@ -65,6 +65,7 @@
           };
           nodeMap.set(msg.id, node);
           ensureComponent(node);
+          scheduleUiRender();
         }
         break;
       }
@@ -79,7 +80,7 @@
           if (node.sparkline.length > 20) node.sparkline.shift();
           bumpComponent(node);
           startChain(node, prev);
-          scheduleTableRender();
+          scheduleUiRender();
         }
         break;
       }
@@ -94,26 +95,30 @@
           if (node.sparkline.length > 20) node.sparkline.shift();
           bumpComponent(node);
           extendChain(node);
-          scheduleTableRender();
+          scheduleUiRender();
         }
         break;
       }
       case 'destroy': {
         nodeMap.delete(msg.id);
+        scheduleUiRender();
         break;
       }
     }
   }
 
-  // debounce table re-render so rapid bursts don't freeze
-  function scheduleTableRender() {
-    if (pendingTableRender) return;
-    pendingTableRender = true;
+  // debounce UI re-render so rapid bursts don't freeze
+  var pendingUiRender = false;
+  function scheduleUiRender() {
+    if (pendingUiRender) return;
+    pendingUiRender = true;
     requestAnimationFrame(function() {
-      pendingTableRender = false;
+      pendingUiRender = false;
       var activeTab = document.querySelector('.tab-content.active');
       if (!activeTab) return;
       if (activeTab.id === 'tab-activity') renderActivityTable();
+      if (activeTab.id === 'tab-timeline') renderTimeline();
+      if (activeTab.id === 'tab-components') renderComponentCards();
     });
   }
 
@@ -140,7 +145,7 @@
     }
     var comp = componentMap.get(node.component);
     if (node.kind === 'signal') comp.signals++;
-    else if (node.kind === 'memo') comp.memos++;
+    else if (node.kind === 'memo' || node.kind === 'computed') comp.memos++;
     else if (node.kind === 'effect') comp.effects++;
   }
 

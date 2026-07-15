@@ -6,6 +6,7 @@ import * as fs from 'fs';
 let wss: WebSocketServer | null = null;
 let activeWebviews = new Set<vscode.Webview>();
 let cachedSignals = new Map<string, any>();
+let eventBuffer: any[] = [];
 
 // Store metrics for CodeLens overlays: filePath -> line -> metricObj
 const nodeMetrics = new Map<string, Map<number, { id: string, name: string, epoch: number, duration?: number, isHotspot?: boolean }>>();
@@ -64,6 +65,10 @@ export function activate(context: vscode.ExtensionContext) {
             if (cached) {
               cached.value = payload.value;
               if (payload.duration !== undefined) cached.duration = payload.duration;
+            }
+            eventBuffer.push(payload);
+            if (eventBuffer.length > 200) {
+              eventBuffer.shift();
             }
           }
           
@@ -245,13 +250,14 @@ class SigTraceViewProvider implements vscode.WebviewViewProvider {
       localResourceRoots: [this._extensionUri]
     };
 
-    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.command) {
         case 'ready': {
           for (const node of cachedSignals.values()) {
             webviewView.webview.postMessage(node);
+          }
+          for (const event of eventBuffer) {
+            webviewView.webview.postMessage(event);
           }
           break;
         }
@@ -307,11 +313,14 @@ class SigTraceViewProvider implements vscode.WebviewViewProvider {
         case 'clearMetrics': {
           nodeMetrics.clear();
           cachedSignals.clear();
+          eventBuffer = [];
           if (codeLensProvider) codeLensProvider.refresh();
           break;
         }
       }
     });
+
+    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
     webviewView.onDidDispose(() => {
       activeWebviews.delete(webviewView.webview);
