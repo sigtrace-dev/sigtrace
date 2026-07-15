@@ -182,16 +182,20 @@ function transformAngularCode(code, filename) {
   }
 }
 
-// Override fs.readFileSync
+function shouldTransform(filePath) {
+  return (
+    typeof filePath === 'string' &&
+    (filePath.endsWith('.ts') || filePath.endsWith('.tsx') || filePath.endsWith('.js') || filePath.endsWith('.jsx')) &&
+    !filePath.includes('node_modules') &&
+    !filePath.includes('dist')
+  );
+}
+
+// 1. Override fs.readFileSync
 fs.readFileSync = function (filePath, options) {
   const content = originalReadFile.apply(this, arguments);
 
-  if (
-    typeof filePath === 'string' &&
-    filePath.endsWith('.ts') &&
-    !filePath.includes('node_modules') &&
-    !filePath.includes('dist')
-  ) {
+  if (shouldTransform(filePath)) {
     try {
       if (typeof content === 'string') {
         return transformAngularCode(content, filePath);
@@ -208,4 +212,58 @@ fs.readFileSync = function (filePath, options) {
   return content;
 };
 
+// 2. Override fs.readFile
+const originalReadFileAsync = fs.readFile;
+fs.readFile = function (filePath, options, callback) {
+  let cb = callback;
+  let opts = options;
+  if (typeof options === 'function') {
+    cb = options;
+    opts = undefined;
+  }
+
+  return originalReadFileAsync.call(this, filePath, opts, (err, content) => {
+    if (err) return cb(err);
+    if (shouldTransform(filePath)) {
+      try {
+        if (typeof content === 'string') {
+          return cb(null, transformAngularCode(content, filePath));
+        } else if (content instanceof Buffer) {
+          const str = content.toString('utf8');
+          const transformed = transformAngularCode(str, filePath);
+          return cb(null, Buffer.from(transformed, 'utf8'));
+        }
+      } catch (e) {
+        console.error(`[SigTrace Hook Async Error] Failed to transform ${filePath}:`, e);
+      }
+    }
+    return cb(null, content);
+  });
+};
+
+// 3. Override fs.promises.readFile
+if (fs.promises && fs.promises.readFile) {
+  const originalReadFilePromise = fs.promises.readFile;
+  fs.promises.readFile = async function (filePath, options) {
+    const content = await originalReadFilePromise.apply(this, arguments);
+
+    if (shouldTransform(filePath)) {
+      try {
+        if (typeof content === 'string') {
+          return transformAngularCode(content, filePath);
+        } else if (content instanceof Buffer) {
+          const str = content.toString('utf8');
+          const transformed = transformAngularCode(str, filePath);
+          return Buffer.from(transformed, 'utf8');
+        }
+      } catch (e) {
+        console.error(`[SigTrace Hook Promise Error] Failed to transform ${filePath}:`, e);
+      }
+    }
+
+    return content;
+  };
+}
+
 console.log('[SigTrace] Build-time monkeypatch loaded: Auto-injecting reactivity tracing.');
+
