@@ -52,6 +52,31 @@ function transformAngularCode(code, filename) {
             path.node.source.value = '@sigtrace/core/angular';
           }
         }
+
+        if (source === '@angular/core/rxjs-interop') {
+          const specifiers = path.node.specifiers;
+          const targetPrims = ['toSignal'];
+          
+          const targetSpecifiers = specifiers.filter((s) => 
+            t.isImportSpecifier(s) && targetPrims.includes(s.imported.name)
+          );
+          const remainingSpecifiers = specifiers.filter((s) => 
+            !t.isImportSpecifier(s) || !targetPrims.includes(s.imported.name)
+          );
+          
+          if (targetSpecifiers.length > 0) {
+            hasRewrittenImport = true;
+            if (remainingSpecifiers.length > 0) {
+              const newImport = t.importDeclaration(
+                remainingSpecifiers,
+                t.stringLiteral('@angular/core/rxjs-interop')
+              );
+              path.insertAfter(newImport);
+            }
+            path.node.specifiers = targetSpecifiers;
+            path.node.source.value = '@sigtrace/core/angular-rxjs-interop';
+          }
+        }
       },
       CallExpression(path) {
         const callee = path.node.callee;
