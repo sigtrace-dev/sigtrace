@@ -10,7 +10,8 @@ const generate = generateObj.default || generateObj;
 const originalReadFile = fs.readFileSync;
 
 function transformAngularCode(code, filename) {
-  if (!code.includes('signal') && !code.includes('computed') && !code.includes('effect') && !code.includes('model')) {
+  const lower = code.toLowerCase();
+  if (!lower.includes('signal') && !lower.includes('computed') && !lower.includes('effect') && !lower.includes('model')) {
     return code;
   }
 
@@ -87,7 +88,7 @@ function transformAngularCode(code, filename) {
           funcName = callee.property.name;
         }
 
-        if (funcName === 'signal' || funcName === 'computed' || funcName === 'effect' || funcName === 'model') {
+        if (funcName === 'signal' || funcName === 'computed' || funcName === 'effect' || funcName === 'model' || funcName === 'toSignal') {
           const loc = path.node.loc;
           const line = loc ? loc.start.line : 0;
           const column = loc ? loc.start.column : 0;
@@ -161,8 +162,8 @@ function transformAngularCode(code, filename) {
             t.objectProperty(t.identifier('__source'), sourceLocNode)
           ]);
 
-          if (funcName === 'signal' || funcName === 'model') {
-            if (path.node.arguments.length === 0) {
+          if (funcName === 'signal' || funcName === 'model' || funcName === 'toSignal') {
+            if (funcName !== 'toSignal' && path.node.arguments.length === 0) {
               path.node.arguments.push(t.identifier('undefined'));
             }
             if (path.node.arguments.length === 1) {
@@ -173,6 +174,10 @@ function transformAngularCode(code, filename) {
                 const nameProp = originalOpts.properties.find(p => t.isObjectProperty(p) && t.isIdentifier(p.key) && p.key.name === 'name');
                 if (!nameProp) {
                   originalOpts.properties.push(t.objectProperty(t.identifier('name'), t.stringLiteral(varName)));
+                }
+                const compProp = originalOpts.properties.find(p => t.isObjectProperty(p) && t.isIdentifier(p.key) && p.key.name === 'component');
+                if (!compProp) {
+                  originalOpts.properties.push(t.objectProperty(t.identifier('component'), t.stringLiteral(componentName)));
                 }
                 originalOpts.properties.push(t.objectProperty(t.identifier('__source'), sourceLocNode));
               }
@@ -186,6 +191,10 @@ function transformAngularCode(code, filename) {
                 const nameProp = originalOpts.properties.find(p => t.isObjectProperty(p) && t.isIdentifier(p.key) && p.key.name === 'name');
                 if (!nameProp) {
                   originalOpts.properties.push(t.objectProperty(t.identifier('name'), t.stringLiteral(varName)));
+                }
+                const compProp = originalOpts.properties.find(p => t.isObjectProperty(p) && t.isIdentifier(p.key) && p.key.name === 'component');
+                if (!compProp) {
+                  originalOpts.properties.push(t.objectProperty(t.identifier('component'), t.stringLiteral(componentName)));
                 }
                 originalOpts.properties.push(t.objectProperty(t.identifier('__source'), sourceLocNode));
               }
