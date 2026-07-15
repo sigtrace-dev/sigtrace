@@ -306,8 +306,12 @@ class SigTraceViewProvider implements vscode.WebviewViewProvider {
     const appJsUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, 'src', 'webview', 'app.js')
     );
+    const d3JsUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'src', 'webview', 'd3.min.js')
+    );
 
     let htmlContent = fs.readFileSync(htmlPath.fsPath, 'utf8');
+    htmlContent = htmlContent.replace('d3.min.js', d3JsUri.toString());
     htmlContent = htmlContent.replace('app.js', appJsUri.toString());
 
     return htmlContent;
