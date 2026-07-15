@@ -1,6 +1,6 @@
 {
   "name": "@sigtrace/vite",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "type": "module",
   "description": "Vite compiler plugin for SigTrace AST instrumentation",
   "main": "dist/index.js",
