@@ -10,7 +10,7 @@ body:
       value: |
         Have an idea that would make SigTrace better? We'd love to hear it!
 
-        Please search [existing feature requests](https://github.com/sigtrace/sigtrace/issues?q=is%3Aissue+label%3Aenhancement) before submitting to avoid duplicates.
+        Please search [existing feature requests](https://github.com/sigtrace-dev/sigtrace/issues?q=is%3Aissue+label%3Aenhancement) before submitting to avoid duplicates.
 
   - type: textarea
     id: problem-description

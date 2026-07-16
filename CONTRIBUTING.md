@@ -350,7 +350,7 @@ Releases are managed by maintainers and follow these steps:
 ## Getting Help
 
 - 💬 **Discord**: Join our community at [discord.gg/sigtrace](https://discord.gg/sigtrace)
-- 🐛 **Bugs**: Open a [bug report](https://github.com/sigtrace/sigtrace/issues/new?template=bug_report.yml)
-- 💡 **Ideas**: Open a [feature request](https://github.com/sigtrace/sigtrace/issues/new?template=feature_request.yml)
+- 🐛 **Bugs**: Open a [bug report](https://github.com/sigtrace-dev/sigtrace/issues/new?template=bug_report.yml)
+- 💡 **Ideas**: Open a [feature request](https://github.com/sigtrace-dev/sigtrace/issues/new?template=feature_request.yml)
 - 📖 **Docs**: [sigtrace.dev/docs](https://sigtrace.dev/docs)
 - 📧 **Email**: [hello@sigtrace.dev](mailto:hello@sigtrace.dev)

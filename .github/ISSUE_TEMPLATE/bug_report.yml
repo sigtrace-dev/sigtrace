@@ -10,7 +10,7 @@ body:
       value: |
         Thanks for taking the time to fill out this bug report! Please provide as much detail as possible so we can reproduce and fix the issue quickly.
 
-        Before submitting, please search [existing issues](https://github.com/sigtrace/sigtrace/issues) to avoid duplicates.
+        Before submitting, please search [existing issues](https://github.com/sigtrace-dev/sigtrace/issues) to avoid duplicates.
 
   - type: textarea
     id: description

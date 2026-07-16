@@ -3,7 +3,7 @@
 > Vite compilation plugin and Babel AST transformer for **SigTrace**, the Universal Reactivity Graph & Signal Lifecycle Tracer.
 
 [![NPM Version](https://img.shields.io/npm/v/@sigtrace/vite.svg)](https://www.npmjs.com/package/@sigtrace/vite)
-[![License](https://img.shields.io/npm/l/@sigtrace/vite.svg)](https://github.com/sigtrace/sigtrace/blob/main/LICENSE)
+[![License](https://img.shields.io/npm/l/@sigtrace/vite.svg)](https://github.com/sigtrace-dev/sigtrace/blob/main/LICENSE)
 
 `@sigtrace/vite` is a development-time Vite plugin that parses your TypeScript, JSX, and TSX files as an AST, extracts signal variable declarations, and automatically injects variable names and source-code file location metadata into your reactive creator functions.
 

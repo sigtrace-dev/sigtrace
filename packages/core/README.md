@@ -3,7 +3,7 @@
 > Lightweight runtime telemetry client and framework-agnostic adapters for **SigTrace**, the Universal Reactivity Graph & Signal Lifecycle Tracer.
 
 [![NPM Version](https://img.shields.io/npm/v/@sigtrace/core.svg)](https://www.npmjs.com/package/@sigtrace/core)
-[![License](https://img.shields.io/npm/l/@sigtrace/core.svg)](https://github.com/sigtrace/sigtrace/blob/main/LICENSE)
+[![License](https://img.shields.io/npm/l/@sigtrace/core.svg)](https://github.com/sigtrace-dev/sigtrace/blob/main/LICENSE)
 
 `@sigtrace/core` connects fine-grained reactive runtimes directly to your VS Code editor. It maps the dependencies, writes, reads, and execution timings of signals, computed memos, and side-effect reactions, streaming live telemetry to the SigTrace VS Code sidebar panel.
 

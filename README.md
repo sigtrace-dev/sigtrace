@@ -9,9 +9,9 @@
 
 <p>
   <a href="https://www.npmjs.com/package/@sigtrace/core"><img src="https://img.shields.io/npm/v/@sigtrace/core?color=6C63FF&style=flat-square&label=npm%20%40sigtrace%2Fcore" alt="npm version" /></a>
-  <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-devtools"><img src="https://img.shields.io/visual-studio-marketplace/i/sigtrace.sigtrace-devtools?color=007ACC&style=flat-square&label=VS%20Code%20installs" alt="VS Code installs" /></a>
-  <a href="https://github.com/sigtrace/sigtrace/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square" alt="License MIT" /></a>
-  <a href="https://github.com/sigtrace/sigtrace/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sigtrace/sigtrace/ci.yml?branch=main&style=flat-square&label=CI&color=6C63FF" alt="CI status" /></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension"><img src="https://img.shields.io/visual-studio-marketplace/d/sigtrace.sigtrace-extension?color=007ACC&style=flat-square&label=VS%20Code%20installs" alt="VS Code installs" /></a>
+  <a href="https://github.com/sigtrace-dev/sigtrace/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square" alt="License MIT" /></a>
+  <a href="https://github.com/sigtrace-dev/sigtrace/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sigtrace-dev/sigtrace/ci.yml?branch=main&style=flat-square&label=CI&color=6C63FF" alt="CI status" /></a>
 </p>
 
 <p>
@@ -108,7 +108,7 @@ npm run start
 
 ```bash
 # Coming in v1.2.0 — track progress:
-# https://github.com/sigtrace/sigtrace/issues?q=label%3Avue3
+# https://github.com/sigtrace-dev/sigtrace/issues?q=label%3Avue3
 ```
 
 ---
@@ -119,7 +119,7 @@ npm run start
 
 ```bash
 # Coming in v1.2.0 — track progress:
-# https://github.com/sigtrace/sigtrace/issues?q=label%3Asolidjs
+# https://github.com/sigtrace-dev/sigtrace/issues?q=label%3Asolidjs
 ```
 
 ---
@@ -204,8 +204,8 @@ We welcome contributions! Whether it's a bug fix, a new framework adapter, or a 
 Please read our [**Contributing Guide**](./CONTRIBUTING.md) to get started, and review our [**Code of Conduct**](./CODE_OF_CONDUCT.md).
 
 **Quick links:**
-- 🐛 [Report a bug](https://github.com/sigtrace/sigtrace/issues/new?template=bug_report.yml)
-- 💡 [Request a feature](https://github.com/sigtrace/sigtrace/issues/new?template=feature_request.yml)
+- 🐛 [Report a bug](https://github.com/sigtrace-dev/sigtrace/issues/new?template=bug_report.yml)
+- 💡 [Request a feature](https://github.com/sigtrace-dev/sigtrace/issues/new?template=feature_request.yml)
 - 💬 [Join our Discord](https://discord.gg/sigtrace)
 
 ---

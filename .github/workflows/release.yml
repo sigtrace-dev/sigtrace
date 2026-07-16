@@ -76,7 +76,7 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: "SigTrace ${{ github.ref_name }}"
           body: |
-            See [CHANGELOG.md](https://github.com/sigtrace/sigtrace/blob/main/CHANGELOG.md) for full release notes.
+            See [CHANGELOG.md](https://github.com/sigtrace-dev/sigtrace/blob/main/CHANGELOG.md) for full release notes.
           files: packages/extension/sigtrace-devtools-*.vsix
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}
