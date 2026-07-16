@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>SigTrace Documentation — Coming Soon</title>
+  <meta name="description" content="SigTrace developer documentation and API reference guides are coming soon." />
+  <meta name="robots" content="noindex, follow" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-base: #080c14;
+      --bg-surface: #0d1422;
+      --bg-card: #111827;
+      --border: rgba(255,255,255,0.07);
+      --border-active: rgba(99,102,241,0.5);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --font-sans: 'Inter', sans-serif;
+      --radius-lg: 16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 24px; width: 100%; }
+    
+    /* Nav */
+    nav {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      background: rgba(8,12,20,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .nav-logo span { color: var(--accent-light); }
+    .nav-links { display: flex; gap: 16px; list-style: none; }
+    .nav-links a { font-size: 14px; color: var(--text-secondary); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text-primary); }
+
+    /* Main Box */
+    main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 0; }
+    .status-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px 32px;
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .status-icon { font-size: 48px; margin-bottom: 24px; display: block; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; }
+    p { color: var(--text-secondary); font-size: 15px; margin-bottom: 32px; line-height: 1.7; }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      background: var(--accent);
+      color: white;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #4f46e5; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 32px 0; font-size: 12px; color: var(--text-muted); text-align: center; }
+  </style>
+</head>
+<body>
+
+<nav role="navigation">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px; vertical-align:middle;">
+        <path d="m19 8-6 2-6-2M12 2v8M12 22v-6M19 16l-7-3-7 3"/>
+      </svg>
+      Sig<span>Trace</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/#features">Features</a></li>
+      <li><a href="/#quickstart">Quickstart</a></li>
+      <li><a href="/docs">Docs</a></li>
+      <li><a href="/blog">Blog</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="status-card">
+    <span class="status-icon" aria-hidden="true">📖</span>
+    <h1>Documentation Coming Soon</h1>
+    <p>We are currently migrating our extensive API reference manuals and framework setup guides to this site. In the meantime, please refer to our main GitHub README for the complete getting-started guide.</p>
+    <a href="https://github.com/sigtrace-dev/sigtrace#readme" class="btn" target="_blank" rel="noopener">
+      Read GitHub README
+    </a>
+  </div>
+</main>
+
+<footer role="contentinfo">
+  <div class="container">
+    <p>© 2025 SigTrace Contributors. Released under the MIT License.</p>
+  </div>
+</footer>
+
+</body>
+</html>
