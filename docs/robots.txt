@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://sigtrace.dev/sitemap.xml
+Host: https://sigtrace.dev

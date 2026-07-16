@@ -1,0 +1,120 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for SigTrace
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea that would make SigTrace better? We'd love to hear it!
+
+        Please search [existing feature requests](https://github.com/sigtrace/sigtrace/issues?q=is%3Aissue+label%3Aenhancement) before submitting to avoid duplicates.
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: "🤔 Problem Description"
+      description: |
+        Is your feature request related to a problem? Please describe it clearly.
+        A good description helps us understand *why* this matters.
+      placeholder: |
+        I'm always frustrated when I try to debug derived signal chains and I can't tell 
+        which computed value triggered a re-render because the Timeline doesn't show...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: "💡 Proposed Solution"
+      description: "Describe the solution or feature you'd like to see. Be as specific as possible."
+      placeholder: |
+        I would like a "Re-render cause" column in the Activity Table that shows 
+        which upstream signal write ultimately caused a given computed read. This 
+        could be derived from the causal chain already present in the Timeline...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "🔄 Alternatives Considered"
+      description: "Have you considered any alternative solutions or workarounds? What were the tradeoffs?"
+      placeholder: |
+        I tried filtering the Timeline by the signal name, but this doesn't give 
+        me the full causal picture across multiple derived values...
+    validations:
+      required: false
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: "📖 Use Case"
+      description: |
+        Describe the concrete use case or scenario where this feature would help.
+        The more specific and real-world your example, the easier it is for maintainers to prioritize.
+      placeholder: |
+        Our app has a shopping cart with ~30 computed signals derived from a single 
+        `cartItems` signal. When a user updates quantity, we see a cascade of re-renders 
+        but can't pinpoint which component is being recalculated unnecessarily...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: framework
+    attributes:
+      label: "🧩 Framework"
+      description: "Which framework(s) would this feature apply to?"
+      multiple: true
+      options:
+        - Angular (17+)
+        - Vue 3 (Composition API)
+        - SolidJS (1.8+)
+        - All frameworks
+        - Framework-agnostic / Extension UI
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: "📦 SigTrace Component"
+      description: "Which part of SigTrace does this feature affect?"
+      multiple: true
+      options:
+        - "@sigtrace/core (WebSocket server)"
+        - "@sigtrace/vite-plugin (build-time instrumentation)"
+        - "VS Code Extension – Dashboard UI"
+        - "VS Code Extension – Graph view"
+        - "VS Code Extension – CodeLens"
+        - "VS Code Extension – Timeline"
+        - "VS Code Extension – Component Cards"
+        - "Documentation / DX"
+        - "Not sure"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "⚡ Priority (your assessment)"
+      description: "How important is this feature to you?"
+      options:
+        - Critical – blocking my adoption of SigTrace
+        - High – significantly impacts my daily workflow
+        - Medium – nice to have, noticeable improvement
+        - Low – minor convenience
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "✔️ Checklist"
+      options:
+        - label: "I have searched existing issues and this is not a duplicate"
+          required: true
+        - label: "I have described a concrete use case, not just an abstract idea"
+          required: true

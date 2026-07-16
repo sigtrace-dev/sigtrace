@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- PRIMARY SEO META                                            -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <title>SigTrace — Real-Time Reactive Signal Debugger for Angular, Vue & SolidJS</title>
+  <meta name="description" content="SigTrace is a zero-config developer tool that visualizes and debugs reactive signals, computed values, and effects in Angular, Vue 3, and SolidJS — directly inside VS Code with live causal chain tracing." />
+  <meta name="keywords" content="Angular signals debugger, Angular reactive signals, Vue ref debugger, SolidJS signals tracer, reactive state visualizer, VS Code extension signals, computed effects debugger, signal lifecycle tracer, sigtrace, angular devtools alternative, toSignal tracker, ngrx signal store debugger" />
+  <meta name="author" content="SigTrace Contributors" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow" />
+  <link rel="canonical" href="https://sigtrace.dev/" />
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- GEO META (Geotargeting)                                     -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <meta name="geo.region" content="IN" />
+  <meta name="geo.placename" content="India" />
+  <link rel="alternate" hreflang="en" href="https://sigtrace.dev/" />
+  <link rel="alternate" hreflang="x-default" href="https://sigtrace.dev/" />
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- OPEN GRAPH (Social Sharing)                                 -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sigtrace.dev/" />
+  <meta property="og:site_name" content="SigTrace" />
+  <meta property="og:title" content="SigTrace — Real-Time Reactive Signal Debugger" />
+  <meta property="og:description" content="Zero-config signal lifecycle tracer for Angular, Vue 3, and SolidJS. See every signal write, computed re-evaluation, and effect chain — live — inside VS Code." />
+  <meta property="og:image" content="https://sigtrace.dev/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="SigTrace dashboard showing reactive signal activity in real-time inside VS Code" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- TWITTER / X CARDS                                           -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@sigtrace_dev" />
+  <meta name="twitter:creator" content="@sigtrace_dev" />
+  <meta name="twitter:title" content="SigTrace — Real-Time Reactive Signal Debugger" />
+  <meta name="twitter:description" content="Zero-config signal lifecycle tracer for Angular, Vue 3, and SolidJS inside VS Code." />
+  <meta name="twitter:image" content="https://sigtrace.dev/og-image.png" />
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- AEO — STRUCTURED DATA (JSON-LD)                             -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://sigtrace.dev/#software",
+        "name": "SigTrace",
+        "alternateName": "SigTrace Reactivity Visualizer",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "url": "https://sigtrace.dev",
+        "description": "SigTrace is an open-source developer tool that provides real-time reactive signal lifecycle tracing for Angular Signals, Vue 3 Refs, and SolidJS Signals — directly inside Visual Studio Code.",
+        "softwareVersion": "1.1.3",
+        "datePublished": "2025-01-01",
+        "dateModified": "2026-07-16",
+        "license": "https://opensource.org/licenses/MIT",
+        "author": {
+          "@type": "Organization",
+          "name": "SigTrace Contributors",
+          "url": "https://sigtrace.dev"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "downloadUrl": "https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension",
+        "installUrl": "https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension",
+        "softwareHelp": {
+          "@type": "CreativeWork",
+          "url": "https://sigtrace.dev/docs"
+        },
+        "featureList": [
+          "Real-time signal activity table",
+          "Causal chain timeline visualization",
+          "Component-level signal grouping",
+          "Click-to-navigate source code",
+          "Full JSON value inspection",
+          "Zero-config setup via CLI loader",
+          "Angular toSignal RxJS interop tracking",
+          "Multi-window VS Code syncing"
+        ]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://sigtrace.dev/#org",
+        "name": "SigTrace",
+        "url": "https://sigtrace.dev",
+        "logo": "https://sigtrace.dev/logo.svg",
+        "sameAs": [
+          "https://github.com/sigtrace-dev/sigtrace",
+          "https://www.npmjs.com/package/@sigtrace/core",
+          "https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension",
+          "https://twitter.com/sigtrace_dev"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://sigtrace.dev/#website",
+        "url": "https://sigtrace.dev",
+        "name": "SigTrace",
+        "description": "Real-Time Reactive Signal Debugger for Angular, Vue 3 and SolidJS",
+        "publisher": { "@id": "https://sigtrace.dev/#org" },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://sigtrace.dev/docs?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://sigtrace.dev/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is SigTrace?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "SigTrace is an open-source developer tool that provides real-time reactive signal lifecycle tracing for Angular Signals, Vue 3 Refs, and SolidJS Signals inside Visual Studio Code. It shows every signal write, computed re-evaluation, and effect chain as it happens — with no code refactoring required."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I install SigTrace?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Install the VS Code extension from the marketplace: search for 'SigTrace' in VS Code extensions. Then install the npm package: npm install --save-dev @sigtrace/core @sigtrace/vite. For Angular, add the Vite plugin to your build config and run your dev server using: npx sigtrace run ng serve."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does SigTrace support Angular toSignal from RxJS interop?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. SigTrace 1.1.3+ fully supports Angular's toSignal() from @angular/core/rxjs-interop. It automatically intercepts Observable emissions and registers each value update in the visualizer, showing the signal name, component, source location, and full value history."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does SigTrace support Vue 3 and SolidJS?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. SigTrace has dedicated adapters for Vue 3 (ref, computed, watchEffect) and SolidJS (createSignal, createMemo, createEffect) in addition to Angular Signals."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does SigTrace require code changes?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. SigTrace uses a zero-refactoring approach. Run your dev server with 'npx sigtrace run' prefix and SigTrace automatically instruments your code at build time using AST transformation — no imports to change, no decorators to add."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is SigTrace free and open source?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. SigTrace is completely free and open source under the MIT license. The VS Code extension, npm packages, and CLI are all free to use, modify, and distribute."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "@id": "https://sigtrace.dev/#howto",
+        "name": "How to set up SigTrace for Angular",
+        "description": "Set up SigTrace reactive signal debugging in your Angular project in under 2 minutes",
+        "totalTime": "PT2M",
+        "step": [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "Install the VS Code Extension",
+            "text": "Search for 'SigTrace' in the VS Code Extensions marketplace and click Install."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 2,
+            "name": "Install the npm packages",
+            "text": "Run: npm install --save-dev @sigtrace/core @sigtrace/vite"
+          },
+          {
+            "@type": "HowToStep",
+            "position": 3,
+            "name": "Start the dev server with SigTrace",
+            "text": "Run: npx sigtrace run ng serve — SigTrace automatically instruments your signals at compile time."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 4,
+            "name": "Open the SigTrace visualizer",
+            "text": "In VS Code, open the SigTrace panel from the Explorer sidebar. Interact with your app and watch signals update in real-time."
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- FONTS                                                        -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ══════════════════════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════════════════════ */
+    :root {
+      --bg-base: #080c14;
+      --bg-surface: #0d1422;
+      --bg-card: #111827;
+      --bg-card-hover: #161e2e;
+      --border: rgba(255,255,255,0.07);
+      --border-active: rgba(99,102,241,0.5);
+
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #475569;
+
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-glow: rgba(99,102,241,0.15);
+      --accent-glow-strong: rgba(99,102,241,0.3);
+
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+      --violet: #8b5cf6;
+
+      --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.25) 0%, transparent 60%);
+      --gradient-card: linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(139,92,246,0.04) 100%);
+
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
+      --shadow-glow: 0 0 60px rgba(99,102,241,0.15);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img, video { max-width: 100%; display: block; }
+    button { cursor: pointer; font-family: inherit; border: none; outline: none; }
+
+    /* ══════════════════════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════════════════════ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section { position: relative; }
+
+    /* ══════════════════════════════════════════════════════════
+       TYPOGRAPHY
+    ══════════════════════════════════════════════════════════ */
+    .label-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-active);
+      background: var(--accent-glow);
+      color: var(--accent-light);
+    }
+
+    .section-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      margin-bottom: 12px;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       NAVIGATION
+    ══════════════════════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      background: rgba(8,12,20,0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s ease;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo svg {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .nav-logo span { color: var(--accent-light); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-ghost {
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 0 20px rgba(99,102,241,0.3);
+    }
+
+    .btn-primary:hover {
+      background: #4f46e5;
+      box-shadow: 0 0 32px rgba(99,102,241,0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-lg {
+      padding: 14px 28px;
+      font-size: 16px;
+      border-radius: var(--radius-md);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+      overflow: hidden;
+      background: var(--gradient-hero);
+    }
+
+    .hero-bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-badge {
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+
+    h1 .highlight {
+      background: linear-gradient(135deg, var(--accent-light) 0%, var(--violet) 50%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-description {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .hero-stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stat {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero-stat svg { width: 14px; height: 14px; color: var(--green); }
+
+    /* Dashboard Preview */
+    .dashboard-preview {
+      margin-top: 72px;
+      position: relative;
+    }
+
+    .dashboard-glow {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(99,102,241,0.2), transparent 70%);
+      pointer-events: none;
+    }
+
+    .dashboard-frame {
+      position: relative;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-active);
+      background: var(--bg-surface);
+      overflow: hidden;
+      box-shadow: var(--shadow-glow), var(--shadow-card);
+    }
+
+    .dashboard-topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .topbar-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .topbar-dot.red { background: #ef4444; }
+    .topbar-dot.amber { background: #f59e0b; }
+    .topbar-dot.green { background: #22c55e; }
+
+    .topbar-title {
+      margin-left: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .topbar-badge {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      color: var(--green);
+      font-weight: 600;
+      background: rgba(34,197,94,0.1);
+      padding: 2px 8px;
+      border-radius: 100px;
+      border: 1px solid rgba(34,197,94,0.2);
+    }
+
+    .topbar-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Signal Table (visual mockup) */
+    .signal-table-mock {
+      padding: 0;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .table-header-row {
+      display: grid;
+      grid-template-columns: 2.5fr 1.5fr 2fr 80px 80px;
+      padding: 8px 16px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .signal-row {
+      display: grid;
+      grid-template-columns: 2.5fr 1.5fr 2fr 80px 80px;
+      padding: 9px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      align-items: center;
+      transition: background 0.15s;
+      animation: slideIn 0.4s ease both;
+    }
+
+    .signal-row:hover { background: rgba(255,255,255,0.02); }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .sig-name {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .sig-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .kind-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .kind-dot.signal { background: var(--accent-light); }
+    .kind-dot.computed { background: var(--cyan); border-radius: 1px; transform: rotate(45deg); width: 6px; height: 6px; }
+    .kind-dot.effect { background: var(--amber); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); border-radius: 0; }
+
+    .sig-label { color: var(--text-primary); font-weight: 500; }
+
+    .sig-loc {
+      font-size: 9px;
+      color: var(--accent);
+      opacity: 0.7;
+      background: rgba(99,102,241,0.1);
+      padding: 1px 5px;
+      border-radius: 3px;
+      width: fit-content;
+    }
+
+    .sig-component { color: var(--text-muted); font-size: 11px; }
+
+    .sig-value {
+      color: var(--green);
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .sig-updates {
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .hot { color: var(--red); }
+    .warm { color: var(--amber); }
+    .cool { color: var(--text-secondary); }
+
+    .spark-bar-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .spark-bar {
+      height: 4px;
+      border-radius: 2px;
+    }
+
+    .live-dot {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: pulse 1.5s infinite;
+    }
+
+    /* Tabs */
+    .dash-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,0.2);
+    }
+
+    .dash-tab {
+      padding: 9px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      font-family: var(--font-sans);
+      transition: color 0.2s;
+    }
+
+    .dash-tab.active {
+      color: var(--text-primary);
+    }
+
+    .dash-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       FEATURES
+    ══════════════════════════════════════════════════════════ */
+    #features {
+      padding: 100px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 60px;
+    }
+
+    h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      font-size: 17px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: all 0.3s ease;
+      background: var(--gradient-card);
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-active);
+      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 22px;
+    }
+
+    .feature-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       FRAMEWORKS
+    ══════════════════════════════════════════════════════════ */
+    #frameworks {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .frameworks-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 40px;
+    }
+
+    .fw-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: all 0.25s ease;
+    }
+
+    .fw-card:hover {
+      border-color: var(--border-active);
+      background: var(--bg-card-hover);
+    }
+
+    .fw-logo {
+      width: 28px;
+      height: 28px;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fw-name {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .fw-version {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .coming-soon-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 100px;
+      background: rgba(245,158,11,0.1);
+      color: var(--amber);
+      border: 1px solid rgba(245,158,11,0.2);
+      font-weight: 600;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       QUICKSTART / INSTALL
+    ══════════════════════════════════════════════════════════ */
+    #quickstart {
+      padding: 100px 0;
+    }
+
+    .quickstart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 48px;
+      align-items: start;
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      padding: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: border-color 0.2s;
+    }
+
+    .step:hover { border-color: var(--border-active); }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .step-content p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .code-block {
+      background: #0a0f1a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      font-family: var(--font-mono);
+    }
+
+    .code-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .code-tabs {
+      display: flex;
+      gap: 0;
+    }
+
+    .code-tab {
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      transition: all 0.15s;
+      font-family: var(--font-sans);
+      background: transparent;
+    }
+
+    .code-tab.active {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .code-body {
+      padding: 20px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #cbd5e1;
+    }
+
+    .code-copy {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      transition: all 0.15s;
+    }
+
+    .code-copy:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+
+    .t-comment { color: #475569; }
+    .t-keyword { color: #818cf8; }
+    .t-string { color: #86efac; }
+    .t-fn { color: #67e8f9; }
+    .t-var { color: #fde68a; }
+    .t-op { color: #94a3b8; }
+    .t-type { color: #f0abfc; }
+
+    /* ══════════════════════════════════════════════════════════
+       STATS / SOCIAL PROOF
+    ══════════════════════════════════════════════════════════ */
+    #stats {
+      padding: 80px 0;
+      background: linear-gradient(180deg, transparent, rgba(99,102,241,0.04), transparent);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .stat-cell {
+      background: var(--bg-surface);
+      padding: 36px 24px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, white 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       FAQ
+    ══════════════════════════════════════════════════════════ */
+    #faq {
+      padding: 100px 0;
+    }
+
+    .faq-grid {
+      max-width: 800px;
+      margin: 48px auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .faq-item:hover { border-color: var(--border-active); }
+
+    .faq-q {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-align: left;
+      background: transparent;
+      transition: background 0.15s;
+      font-family: var(--font-sans);
+    }
+
+    .faq-q:hover { background: rgba(255,255,255,0.02); }
+
+    .faq-chevron {
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: transform 0.25s ease;
+    }
+
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.25s ease;
+    }
+
+    .faq-item.open .faq-a { max-height: 300px; }
+
+    .faq-a-inner {
+      padding: 0 20px 18px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       CTA SECTION
+    ══════════════════════════════════════════════════════════ */
+    #cta {
+      padding: 100px 0;
+      text-align: center;
+    }
+
+    .cta-box {
+      max-width: 700px;
+      margin: 0 auto;
+      background: var(--gradient-card);
+      border: 1px solid var(--border-active);
+      border-radius: var(--radius-xl);
+      padding: 60px 40px;
+      box-shadow: var(--shadow-glow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+      top: -100px;
+      right: -80px;
+      pointer-events: none;
+    }
+
+    .cta-box h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: 16px; }
+    .cta-box p { font-size: 17px; color: var(--text-secondary); margin-bottom: 36px; }
+
+    .cta-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+    /* ══════════════════════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      padding: 4px 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text-secondary); }
+
+    .footer-legal {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .quickstart-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .table-header-row, .signal-row { grid-template-columns: 1.5fr 1fr 2fr; }
+      .signal-row > *:nth-child(4), .signal-row > *:nth-child(5),
+      .table-header-row > *:nth-child(4), .table-header-row > *:nth-child(5) { display: none; }
+      .cta-box { padding: 40px 24px; }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up { animation: fadeUp 0.6s ease both; }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+    /* Live update flash */
+    @keyframes flash {
+      0% { background: rgba(99,102,241,0.2); }
+      100% { background: transparent; }
+    }
+
+    .signal-row.updated { animation: flash 0.8s ease; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- NAVIGATION                                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<nav role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="SigTrace Home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="m19 8-6 2-6-2M12 2v8M12 22v-6M19 16l-7-3-7 3"/>
+      </svg>
+      Sig<span>Trace</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#frameworks">Frameworks</a></li>
+      <li><a href="#quickstart">Quickstart</a></li>
+      <li><a href="/docs">Docs</a></li>
+      <li><a href="/blog">Blog</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="https://github.com/sigtrace-dev/sigtrace" class="btn btn-ghost" target="_blank" rel="noopener" aria-label="View SigTrace on GitHub">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension" class="btn btn-primary" target="_blank" rel="noopener" id="nav-install-btn">
+        Install Free
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- HERO                                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<main>
+<section id="hero" aria-labelledby="hero-heading">
+  <div class="hero-bg-grid" aria-hidden="true"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge fade-up">
+        <span class="label-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Open Source · v1.1.3 · MIT License
+        </span>
+      </div>
+
+      <h1 id="hero-heading" class="fade-up delay-1">
+        The Missing Debugger<br />for <span class="highlight">Reactive Signals</span>
+      </h1>
+
+      <p class="hero-description fade-up delay-2">
+        Trace every signal write, computed re-evaluation, and effect chain — live — inside VS Code. 
+        Zero configuration required. Works with Angular, Vue 3, and SolidJS.
+      </p>
+
+      <div class="hero-actions fade-up delay-3">
+        <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension"
+           class="btn btn-primary btn-lg" target="_blank" rel="noopener" id="hero-vscode-btn"
+           aria-label="Install SigTrace VS Code Extension for free">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Install VS Code Extension
+        </a>
+        <a href="#quickstart" class="btn btn-outline btn-lg" id="hero-docs-btn">
+          View Quickstart →
+        </a>
+      </div>
+
+      <div class="hero-stat-row fade-up delay-4" aria-label="Key facts about SigTrace">
+        <div class="hero-stat">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
+          Zero config setup
+        </div>
+        <div class="hero-stat">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
+          No code refactoring
+        </div>
+        <div class="hero-stat">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>
+          Free & open source
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Visual Mockup -->
+    <div class="dashboard-preview fade-up delay-4" role="img" aria-label="SigTrace visualizer dashboard showing live signal activity">
+      <div class="dashboard-glow" aria-hidden="true"></div>
+      <div class="dashboard-frame">
+        <!-- Window chrome -->
+        <div class="dashboard-topbar">
+          <span class="topbar-dot red" aria-hidden="true"></span>
+          <span class="topbar-dot amber" aria-hidden="true"></span>
+          <span class="topbar-dot green" aria-hidden="true"></span>
+          <span class="topbar-title">SIGTRACE: REACTIVITY VISUALIZER</span>
+          <span class="topbar-badge" role="status" aria-live="polite">Connected</span>
+        </div>
+        <!-- Tabs -->
+        <div class="dash-tabs" role="tablist">
+          <button class="dash-tab active" role="tab" aria-selected="true">Activity</button>
+          <button class="dash-tab" role="tab" aria-selected="false">Timeline</button>
+          <button class="dash-tab" role="tab" aria-selected="false">Components</button>
+        </div>
+        <!-- Table -->
+        <div class="signal-table-mock" role="table" aria-label="Signal activity table">
+          <div class="table-header-row" role="row">
+            <span role="columnheader">Signal / Computed / Effect</span>
+            <span role="columnheader">Component</span>
+            <span role="columnheader">Value</span>
+            <span role="columnheader">Updates</span>
+            <span role="columnheader">Activity</span>
+          </div>
+          <div class="signal-row" style="animation-delay:0.0s" role="row">
+            <div class="sig-name">
+              <div class="sig-name-row">
+                <span class="kind-dot signal" aria-label="signal"></span>
+                <span class="sig-label">activeChartType</span>
+              </div>
+              <span class="sig-loc">chart-selector.ts:42</span>
+            </div>
+            <span class="sig-component">EditReportTile</span>
+            <span class="sig-value">"line"</span>
+            <span class="sig-updates warm">4</span>
+            <div class="spark-bar-wrap"><div class="spark-bar" style="width:48px;background:hsl(60,75%,52%)" aria-hidden="true"></div></div>
+          </div>
+          <div class="signal-row" style="animation-delay:0.08s" role="row">
+            <div class="sig-name">
+              <div class="sig-name-row">
+                <span class="kind-dot computed" aria-label="computed"></span>
+                <span class="sig-label">deptPaths</span>
+              </div>
+              <span class="sig-loc">edit-report-tile.ts:205</span>
+            </div>
+            <span class="sig-component">EditReportTile</span>
+            <span class="sig-value">[ "dept/finance", "dept/ops" ]</span>
+            <span class="sig-updates cool">2</span>
+            <div class="spark-bar-wrap"><div class="spark-bar" style="width:20px;background:hsl(90,75%,52%)" aria-hidden="true"></div></div>
+          </div>
+          <div class="signal-row" style="animation-delay:0.16s" role="row">
+            <div class="sig-name">
+              <div class="sig-name-row">
+                <span class="kind-dot computed" aria-label="computed"></span>
+                <span class="sig-label">chartConfig</span>
+              </div>
+              <span class="sig-loc">edit-report-tile.ts:329</span>
+            </div>
+            <span class="sig-component">EditReportTile</span>
+            <span class="sig-value">{"chart_type":"line","colors":["#17...</span>
+            <span class="sig-updates warm">3</span>
+            <div class="spark-bar-wrap"><div class="spark-bar" style="width:36px;background:hsl(75,75%,52%)" aria-hidden="true"></div></div>
+          </div>
+          <div class="signal-row" style="animation-delay:0.24s" role="row">
+            <div class="sig-name">
+              <div class="sig-name-row">
+                <span class="kind-dot effect" aria-label="effect"></span>
+                <span class="sig-label">effect_line83</span>
+              </div>
+              <span class="sig-loc">chart-type-selector.ts:83</span>
+            </div>
+            <span class="sig-component">ChartTypeSelector</span>
+            <span class="sig-value">undefined</span>
+            <span class="sig-updates hot">12</span>
+            <div class="spark-bar-wrap"><div class="spark-bar" style="width:64px;background:hsl(0,75%,52%)" aria-hidden="true"></div></div>
+          </div>
+          <div class="signal-row" style="animation-delay:0.32s" role="row">
+            <div class="sig-name">
+              <div class="sig-name-row">
+                <span class="kind-dot signal" aria-label="signal"></span>
+                <span class="sig-label">reportConfig</span>
+              </div>
+              <span class="sig-loc">edit-report-tile.ts:131</span>
+            </div>
+            <span class="sig-component">EditReportTile</span>
+            <span class="sig-value">{"title":"Harvard University Report"...</span>
+            <span class="sig-updates warm">5</span>
+            <div class="spark-bar-wrap"><div class="spark-bar" style="width:52px;background:hsl(45,75%,52%)" aria-hidden="true"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- STATS                                                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="stats" aria-labelledby="stats-heading">
+  <div class="container">
+    <h2 id="stats-heading" class="sr-only">SigTrace by the numbers</h2>
+    <div class="stats-grid" role="list">
+      <div class="stat-cell" role="listitem">
+        <div class="stat-value">3</div>
+        <div class="stat-label">Frameworks Supported</div>
+      </div>
+      <div class="stat-cell" role="listitem">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Lines of Code Required</div>
+      </div>
+      <div class="stat-cell" role="listitem">
+        <div class="stat-value">~2ms</div>
+        <div class="stat-label">Avg. Instrumentation Overhead</div>
+      </div>
+      <div class="stat-cell" role="listitem">
+        <div class="stat-value">MIT</div>
+        <div class="stat-label">Open Source License</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FEATURES                                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="features" aria-labelledby="features-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Features</span>
+      <h2 id="features-heading">Everything you need to understand<br />your reactive state</h2>
+      <p class="section-desc">SigTrace gives you full visibility into your signal graph — from individual reads and writes to full causal chains spanning multiple components.</p>
+    </div>
+
+    <div class="features-grid" role="list">
+      <article class="feature-card" role="listitem">
+        <div class="feature-icon" style="background:rgba(99,102,241,0.12)" aria-hidden="true">📊</div>
+        <h3 class="feature-title">Live Activity Table</h3>
+        <p class="feature-desc">See every signal, computed, and effect update in real-time. Sort by most recent, most active, or alphabetically. Filter by component or search by name.</p>
+      </article>
+
+      <article class="feature-card" role="listitem">
+        <div class="feature-icon" style="background:rgba(6,182,212,0.12)" aria-hidden="true">⛓️</div>
+        <h3 class="feature-title">Causal Chain Timeline</h3>
+        <p class="feature-desc">Every signal write triggers a chain view showing exactly which computed values re-evaluated and which effects ran — with precise millisecond timing and hotspot detection.</p>
+      </article>
+
+      <article class="feature-card" role="listitem">
+        <div class="feature-icon" style="background:rgba(34,197,94,0.12)" aria-hidden="true">🧩</div>
+        <h3 class="feature-title">Component Panel</h3>
+        <p class="feature-desc">Group signals by component. Identify unused signals, locate the slowest computed nodes, and understand which components drive the most reactive work.</p>
+      </article>
+
+      <article class="feature-card" role="listitem">
+        <div class="feature-icon" style="background:rgba(245,158,11,0.12)" aria-hidden="true">🔗</div>
+        <h3 class="feature-title">Click-to-Navigate</h3>
+        <p class="feature-desc">Every signal row shows its source file and line number. Click once to jump directly to the declaration in your editor. Double-click any row to navigate instantly.</p>
+      </article>
+
+      <article class="feature-card" role="listitem">
+        <div class="feature-icon" style="background:rgba(139,92,246,0.12)" aria-hidden="true">🔍</div>
+        <h3 class="feature-title">Full Value Inspector</h3>
+        <p class="feature-desc">Click to expand any signal and see its complete, pretty-printed JSON value with no truncation. Hover over values in the timeline for full content tooltips.</p>
+      </article>
+
+      <article class="feature-card" role="listitem">
+        <div class="feature-icon" style="background:rgba(239,68,68,0.12)" aria-hidden="true">⚡</div>
+        <h3 class="feature-title">Zero Configuration</h3>
+        <p class="feature-desc">No decorators. No imports to change. No config files. Just prefix your dev server command with <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run</code> and start debugging instantly.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FRAMEWORKS                                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="frameworks" aria-labelledby="frameworks-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Compatibility</span>
+      <h2 id="frameworks-heading">Works with your stack</h2>
+      <p class="section-desc">SigTrace ships with dedicated adapters for every major reactive framework. One extension, one dashboard, all your signals.</p>
+    </div>
+
+    <div class="frameworks-row" role="list">
+      <div class="fw-card" role="listitem">
+        <div class="fw-logo" aria-label="Angular">🅰️</div>
+        <div>
+          <div class="fw-name">Angular</div>
+          <div class="fw-version">v17+ · Signals, computed, effect, toSignal</div>
+        </div>
+      </div>
+      <div class="fw-card" role="listitem">
+        <div class="fw-logo" aria-label="Vue">💚</div>
+        <div>
+          <div class="fw-name">Vue 3</div>
+          <div class="fw-version">v3.3+ · ref, computed, watchEffect</div>
+        </div>
+      </div>
+      <div class="fw-card" role="listitem">
+        <div class="fw-logo" aria-label="SolidJS">🔷</div>
+        <div>
+          <div class="fw-name">SolidJS</div>
+          <div class="fw-version">v1.8+ · createSignal, createMemo, createEffect</div>
+        </div>
+      </div>
+      <div class="fw-card" role="listitem" style="opacity:0.7">
+        <div class="fw-logo" aria-label="React">⚛️</div>
+        <div>
+          <div class="fw-name">React</div>
+          <div class="fw-version">Coming soon <span class="coming-soon-badge">Planned</span></div>
+        </div>
+      </div>
+      <div class="fw-card" role="listitem" style="opacity:0.7">
+        <div class="fw-logo" aria-label="Svelte">🧡</div>
+        <div>
+          <div class="fw-name">Svelte 5</div>
+          <div class="fw-version">Coming soon <span class="coming-soon-badge">Planned</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- QUICKSTART                                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="quickstart" aria-labelledby="quickstart-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Get Started</span>
+      <h2 id="quickstart-heading">Up and running in under 2 minutes</h2>
+      <p class="section-desc">SigTrace requires no code changes to your application. The AST compiler instruments your signals automatically at build time.</p>
+    </div>
+
+    <div class="quickstart-grid">
+      <div class="step-list" role="list">
+        <div class="step" role="listitem">
+          <div class="step-num" aria-hidden="true">1</div>
+          <div class="step-content">
+            <h4>Install the VS Code Extension</h4>
+            <p>Search <strong>"SigTrace"</strong> in the VS Code marketplace and click Install. Open the SigTrace panel from the Explorer sidebar.</p>
+          </div>
+        </div>
+        <div class="step" role="listitem">
+          <div class="step-num" aria-hidden="true">2</div>
+          <div class="step-content">
+            <h4>Install the npm packages</h4>
+            <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/core</code> and <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/vite</code> as dev dependencies.</p>
+          </div>
+        </div>
+        <div class="step" role="listitem">
+          <div class="step-num" aria-hidden="true">3</div>
+          <div class="step-content">
+            <h4>Start your dev server with SigTrace</h4>
+            <p>Prefix your Angular/Vue/Solid serve command with <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run</code>. No config files needed.</p>
+          </div>
+        </div>
+        <div class="step" role="listitem">
+          <div class="step-num" aria-hidden="true">4</div>
+          <div class="step-content">
+            <h4>Open your app and watch signals flow</h4>
+            <p>Interact with your application. Every signal write, computed re-eval, and effect chain appears live in the VS Code dashboard.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" role="region" aria-label="Installation code examples">
+        <div class="code-topbar">
+          <div class="code-tabs">
+            <button class="code-tab active" onclick="switchTab(this, 'angular')" id="tab-angular">Angular</button>
+            <button class="code-tab" onclick="switchTab(this, 'vue')" id="tab-vue">Vue 3</button>
+            <button class="code-tab" onclick="switchTab(this, 'solid')" id="tab-solid">SolidJS</button>
+          </div>
+          <button class="code-copy" onclick="copyCode()" id="copy-btn" aria-label="Copy code to clipboard">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="code-body" id="code-body" aria-live="polite">
+          <div id="code-angular">
+            <span class="t-comment"># Step 1: Install packages</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
+            <span class="t-comment"># Step 2: Start your dev server with sigtrace</span><br/>
+            <span class="t-fn">npx</span> <span class="t-keyword">sigtrace run</span> <span class="t-string">ng serve</span><br/><br/>
+            <span class="t-comment"># That's it. No code changes needed.</span><br/>
+            <span class="t-comment"># toSignal, signal(), computed() are all tracked automatically.</span><br/><br/>
+            <span class="t-comment"># Your signals in Angular:</span><br/>
+            <span class="t-type">deptPaths</span> <span class="t-op">=</span> <span class="t-fn">toSignal</span><span class="t-op">(</span><br/>
+            &nbsp;&nbsp;<span class="t-keyword">this</span>.<span class="t-var">store</span>.<span class="t-fn">select</span>(<span class="t-var">selectDeptPaths</span>),<br/>
+            &nbsp;&nbsp;<span class="t-op">{</span> <span class="t-var">initialValue</span>: <span class="t-op">[]</span> <span class="t-op">}</span><br/>
+            <span class="t-op">);</span> <span class="t-comment">// ← tracked automatically ✓</span>
+          </div>
+          <div id="code-vue" style="display:none">
+            <span class="t-comment"># Step 1: Install packages</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
+            <span class="t-comment"># Step 2: Add to vite.config.ts</span><br/>
+            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigtrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
+            <span class="t-keyword">export default</span> <span class="t-fn">defineConfig</span><span class="t-op">({</span><br/>
+            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">vue</span>(), <span class="t-fn">sigtrace</span>()<span class="t-op">]</span><br/>
+            <span class="t-op">})</span><br/><br/>
+            <span class="t-comment"># Step 3: Start your dev server</span><br/>
+            <span class="t-fn">npx</span> <span class="t-keyword">sigtrace run</span> <span class="t-string">npm run dev</span>
+          </div>
+          <div id="code-solid" style="display:none">
+            <span class="t-comment"># Step 1: Install packages</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
+            <span class="t-comment"># Step 2: Start with sigtrace</span><br/>
+            <span class="t-fn">npx</span> <span class="t-keyword">sigtrace run</span> <span class="t-string">npm run dev</span><br/><br/>
+            <span class="t-comment"># SolidJS signals tracked automatically:</span><br/>
+            <span class="t-keyword">const</span> <span class="t-op">[</span><span class="t-var">count</span>, <span class="t-var">setCount</span><span class="t-op">]</span> <span class="t-op">=</span> <span class="t-fn">createSignal</span><span class="t-op">(</span><span class="t-string">0</span><span class="t-op">);</span><br/>
+            <span class="t-keyword">const</span> <span class="t-var">doubled</span> <span class="t-op">=</span> <span class="t-fn">createMemo</span><span class="t-op">(() =&gt;</span> <span class="t-var">count</span>() * <span class="t-string">2</span><span class="t-op">);</span><br/>
+            <span class="t-fn">createEffect</span><span class="t-op">(() =&gt;</span> <span class="t-fn">console</span>.<span class="t-fn">log</span>(<span class="t-var">doubled</span>())<span class="t-op">);</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FAQ                                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="faq" aria-labelledby="faq-heading">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">FAQ</span>
+      <h2 id="faq-heading">Frequently asked questions</h2>
+    </div>
+
+    <div class="faq-grid" role="list">
+      <div class="faq-item" role="listitem">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          What is SigTrace and how is it different from Angular DevTools?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a" role="region">
+          <div class="faq-a-inner">SigTrace is a real-time signal lifecycle tracer that works inside VS Code — not in the browser. Unlike Angular DevTools (which shows component trees), SigTrace focuses on the reactive signal graph: every signal write, computed dependency evaluation, and effect execution is shown as a live causal chain. It also supports Vue 3 and SolidJS, not just Angular.</div>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          Do I need to change any code in my application?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a" role="region">
+          <div class="faq-a-inner">No. SigTrace uses a zero-refactoring approach. An AST compiler plugin automatically instruments your signal calls at build time. Simply prefix your serve command with <code style="font-family:monospace;color:#67e8f9">npx sigtrace run</code> and all signals are tracked without any imports, decorators, or code changes.</div>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          Does SigTrace support Angular's toSignal() from RxJS interop?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a" role="region">
+          <div class="faq-a-inner">Yes, fully supported as of v1.1.3. SigTrace intercepts the Observable stream, registers each emission as a signal write event, and displays the signal name, component, source file location, and full value history in the dashboard. This works with NgRx Store selectors and any other RxJS observables wrapped with toSignal.</div>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          What is the performance overhead in development?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a" role="region">
+          <div class="faq-a-inner">SigTrace is designed for development only and adds approximately 1–3ms of overhead per signal write due to WebSocket event transmission. The instrumentation is stripped in production builds automatically. The dashboard updates are batched and rendered asynchronously so your app UI is never blocked.</div>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          Is SigTrace free? Will it always be free?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a" role="region">
+          <div class="faq-a-inner">SigTrace is 100% free and open source under the MIT license. All packages — @sigtrace/core, @sigtrace/vite, and the VS Code extension — are free forever. The source code is available on GitHub and contributions are welcome.</div>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          Does SigTrace work with multiple VS Code windows open?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a" role="region">
+          <div class="faq-a-inner">Yes. SigTrace uses a self-healing extension host clustering protocol. The first VS Code window acts as the WebSocket host. Additional windows connect automatically as clients and receive all signal events in real-time. If the host window closes, a client window automatically promotes itself to the new host.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CTA                                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section id="cta" aria-labelledby="cta-heading">
+  <div class="container">
+    <div class="cta-box">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <span class="label-pill" style="margin-bottom:24px">Free & Open Source</span>
+      <h2 id="cta-heading">Debug your reactive state<br />in minutes, not hours</h2>
+      <p>Install SigTrace and get full visibility into your signal graph — for free, forever.</p>
+      <div class="cta-actions">
+        <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension"
+           class="btn btn-primary btn-lg" target="_blank" rel="noopener" id="cta-install-btn">
+          Install VS Code Extension
+        </a>
+        <a href="https://github.com/sigtrace-dev/sigtrace" class="btn btn-outline btn-lg"
+           target="_blank" rel="noopener" id="cta-github-btn">
+          ⭐ Star on GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<footer role="contentinfo">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo" aria-label="SigTrace">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="m19 8-6 2-6-2M12 2v8M12 22v-6M19 16l-7-3-7 3"/>
+        </svg>
+        SigTrace
+      </div>
+
+      <ul class="footer-links" role="list">
+        <li><a href="/docs">Docs</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="https://github.com/sigtrace-dev/sigtrace" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://www.npmjs.com/package/@sigtrace/core" target="_blank" rel="noopener">npm</a></li>
+        <li><a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension" target="_blank" rel="noopener">VS Code</a></li>
+        <li><a href="https://github.com/sigtrace-dev/sigtrace/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a></li>
+      </ul>
+
+      <div class="footer-legal">
+        <p>© 2025 SigTrace Contributors</p>
+        <p>Released under the <a href="https://github.com/sigtrace-dev/sigtrace/blob/main/LICENSE" target="_blank" rel="noopener" style="color:var(--accent-light)">MIT License</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- JAVASCRIPT                                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+  /* ── Code tab switcher ── */
+  function switchTab(btn, lang) {
+    document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    ['angular','vue','solid'].forEach(l => {
+      document.getElementById('code-' + l).style.display = l === lang ? '' : 'none';
+    });
+  }
+
+  /* ── Copy code ── */
+  function copyCode() {
+    const activeCode = document.querySelector('#code-body [id^="code-"]:not([style*="none"])');
+    const text = activeCode ? activeCode.innerText : '';
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy'; }, 2000);
+    });
+  }
+
+  /* ── FAQ accordion ── */
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  }
+
+  /* ── Animate live signal updates in demo table ── */
+  let rowIndex = 0;
+  const rows = document.querySelectorAll('.signal-row');
+  setInterval(() => {
+    if (rows.length === 0) return;
+    const row = rows[rowIndex % rows.length];
+    row.classList.remove('updated');
+    void row.offsetWidth; // reflow
+    row.classList.add('updated');
+    rowIndex++;
+  }, 1800);
+
+  /* ── Scroll-triggered fade-up for sections ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .step, .fw-card, .stat-cell, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>

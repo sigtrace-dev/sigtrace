@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: 💬 SigTrace Discord Community
+    url: https://discord.gg/sigtrace
+    about: Ask questions, share ideas, and connect with other SigTrace users and contributors in real time.
+
+  - name: 📖 SigTrace Documentation
+    url: https://sigtrace.dev/docs
+    about: Browse the full documentation — setup guides, API reference, framework adapters, and troubleshooting tips.
+
+  - name: 🔒 Security Vulnerability
+    url: mailto:security@sigtrace.dev
+    about: Please report security vulnerabilities privately via email rather than opening a public issue.

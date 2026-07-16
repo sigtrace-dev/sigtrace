@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Type-Check
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile all packages
+        run: npm run compile
+
+      - name: Verify dist artifacts exist
+        run: |
+          echo "Checking compiled output..."
+          test -d packages/core/dist       && echo "✅ core/dist OK"      || (echo "❌ core/dist missing" && exit 1)
+          test -d packages/vite-plugin/dist && echo "✅ vite-plugin/dist OK" || (echo "❌ vite-plugin/dist missing" && exit 1)
+          test -d packages/extension/dist  && echo "✅ extension/dist OK"  || (echo "❌ extension/dist missing" && exit 1)
