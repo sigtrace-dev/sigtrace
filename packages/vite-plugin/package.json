@@ -12,6 +12,12 @@
     "type": "git",
     "url": "git+https://github.com/sigtrace-dev/sigtrace.git"
   },
+  "bugs": {
+    "url": "https://github.com/sigtrace-dev/sigtrace/issues"
+  },
+  "homepage": "https://sigtrace.dev",
+  "author": "SigTrace Contributors",
+  "license": "MIT",
   "keywords": [
     "reactivity",
     "signals",
@@ -22,7 +28,10 @@
     "babel",
     "compiler",
     "ast",
-    "instrumentation"
+    "instrumentation",
+    "angular",
+    "vue",
+    "solidjs"
   ],
   "dependencies": {
     "@babel/core": "^7.22.0",

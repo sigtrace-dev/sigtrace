@@ -4,6 +4,12 @@
   "description": "Universal Reactive Graph & Signal Lifecycle Tracer",
   "version": "1.1.3",
   "publisher": "sigtrace",
+  "author": "SigTrace Contributors",
+  "license": "MIT",
+  "homepage": "https://sigtrace.dev",
+  "bugs": {
+    "url": "https://github.com/sigtrace-dev/sigtrace/issues"
+  },
   "icon": "icon.jpg",
   "engines": {
     "vscode": "^1.80.0"
@@ -20,7 +26,20 @@
     "icon.jpg"
   ],
   "categories": [
+    "Debuggers",
+    "Visualization",
     "Other"
+  ],
+  "keywords": [
+    "angular",
+    "signals",
+    "reactivity",
+    "debugging",
+    "vue",
+    "solidjs",
+    "devtools",
+    "visualizer",
+    "causal chain"
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",

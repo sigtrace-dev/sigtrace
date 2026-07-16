@@ -12,6 +12,12 @@
     "type": "git",
     "url": "git+https://github.com/sigtrace-dev/sigtrace.git"
   },
+  "bugs": {
+    "url": "https://github.com/sigtrace-dev/sigtrace/issues"
+  },
+  "homepage": "https://sigtrace.dev",
+  "author": "SigTrace Contributors",
+  "license": "MIT",
   "exports": {
     ".": "./dist/index.js",
     "./solid": "./dist/adapters/solid.js",
