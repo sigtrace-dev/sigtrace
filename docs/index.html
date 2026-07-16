@@ -1380,12 +1380,12 @@
             <div class="sig-name">
               <div class="sig-name-row">
                 <span class="kind-dot signal" aria-label="signal"></span>
-                <span class="sig-label">activeChartType</span>
+                <span class="sig-label">searchQuery</span>
               </div>
-              <span class="sig-loc">chart-selector.ts:42</span>
+              <span class="sig-loc">search-bar.ts:42</span>
             </div>
-            <span class="sig-component">EditReportTile</span>
-            <span class="sig-value">"line"</span>
+            <span class="sig-component">SearchInput</span>
+            <span class="sig-value">"reactive"</span>
             <span class="sig-updates warm">4</span>
             <div class="spark-bar-wrap"><div class="spark-bar" style="width:48px;background:hsl(60,75%,52%)" aria-hidden="true"></div></div>
           </div>
@@ -1393,12 +1393,12 @@
             <div class="sig-name">
               <div class="sig-name-row">
                 <span class="kind-dot computed" aria-label="computed"></span>
-                <span class="sig-label">deptPaths</span>
+                <span class="sig-label">selectedTags</span>
               </div>
-              <span class="sig-loc">edit-report-tile.ts:205</span>
+              <span class="sig-loc">tag-selector.ts:108</span>
             </div>
-            <span class="sig-component">EditReportTile</span>
-            <span class="sig-value">[ "dept/finance", "dept/ops" ]</span>
+            <span class="sig-component">FilterPanel</span>
+            <span class="sig-value">[ "angular", "signals" ]</span>
             <span class="sig-updates cool">2</span>
             <div class="spark-bar-wrap"><div class="spark-bar" style="width:20px;background:hsl(90,75%,52%)" aria-hidden="true"></div></div>
           </div>
@@ -1406,12 +1406,12 @@
             <div class="sig-name">
               <div class="sig-name-row">
                 <span class="kind-dot computed" aria-label="computed"></span>
-                <span class="sig-label">chartConfig</span>
+                <span class="sig-label">filteredItems</span>
               </div>
-              <span class="sig-loc">edit-report-tile.ts:329</span>
+              <span class="sig-loc">item-list.ts:241</span>
             </div>
-            <span class="sig-component">EditReportTile</span>
-            <span class="sig-value">{"chart_type":"line","colors":["#17...</span>
+            <span class="sig-component">DashboardGrid</span>
+            <span class="sig-value">[ { "id": 1, "title": "First Item" } ]</span>
             <span class="sig-updates warm">3</span>
             <div class="spark-bar-wrap"><div class="spark-bar" style="width:36px;background:hsl(75,75%,52%)" aria-hidden="true"></div></div>
           </div>
@@ -1419,11 +1419,11 @@
             <div class="sig-name">
               <div class="sig-name-row">
                 <span class="kind-dot effect" aria-label="effect"></span>
-                <span class="sig-label">effect_line83</span>
+                <span class="sig-label">autoSyncEffect</span>
               </div>
-              <span class="sig-loc">chart-type-selector.ts:83</span>
+              <span class="sig-loc">sync-engine.ts:83</span>
             </div>
-            <span class="sig-component">ChartTypeSelector</span>
+            <span class="sig-component">SettingsModal</span>
             <span class="sig-value">undefined</span>
             <span class="sig-updates hot">12</span>
             <div class="spark-bar-wrap"><div class="spark-bar" style="width:64px;background:hsl(0,75%,52%)" aria-hidden="true"></div></div>
@@ -1432,12 +1432,12 @@
             <div class="sig-name">
               <div class="sig-name-row">
                 <span class="kind-dot signal" aria-label="signal"></span>
-                <span class="sig-label">reportConfig</span>
+                <span class="sig-label">userSettings</span>
               </div>
-              <span class="sig-loc">edit-report-tile.ts:131</span>
+              <span class="sig-loc">user-context.ts:15</span>
             </div>
-            <span class="sig-component">EditReportTile</span>
-            <span class="sig-value">{"title":"Harvard University Report"...</span>
+            <span class="sig-component">NavbarHeader</span>
+            <span class="sig-value">{"theme":"dark","notifications":true}</span>
             <span class="sig-updates warm">5</span>
             <div class="spark-bar-wrap"><div class="spark-bar" style="width:52px;background:hsl(45,75%,52%)" aria-hidden="true"></div></div>
           </div>
@@ -1640,9 +1640,9 @@
             <span class="t-comment"># That's it. No code changes needed.</span><br/>
             <span class="t-comment"># toSignal, signal(), computed() are all tracked automatically.</span><br/><br/>
             <span class="t-comment"># Your signals in Angular:</span><br/>
-            <span class="t-type">deptPaths</span> <span class="t-op">=</span> <span class="t-fn">toSignal</span><span class="t-op">(</span><br/>
-            &nbsp;&nbsp;<span class="t-keyword">this</span>.<span class="t-var">store</span>.<span class="t-fn">select</span>(<span class="t-var">selectDeptPaths</span>),<br/>
-            &nbsp;&nbsp;<span class="t-op">{</span> <span class="t-var">initialValue</span>: <span class="t-op">[]</span> <span class="t-op">}</span><br/>
+            <span class="t-type">userProfile</span> <span class="t-op">=</span> <span class="t-fn">toSignal</span><span class="t-op">(</span><br/>
+            &nbsp;&nbsp;<span class="t-keyword">this</span>.<span class="t-var">store</span>.<span class="t-fn">select</span>(<span class="t-var">selectUserProfile</span>),<br/>
+            &nbsp;&nbsp;<span class="t-op">{</span> <span class="t-var">initialValue</span>: <span class="t-var">null</span> <span class="t-op">}</span><br/>
             <span class="t-op">);</span> <span class="t-comment">// ← tracked automatically ✓</span>
           </div>
           <div id="code-vue" style="display:none">
