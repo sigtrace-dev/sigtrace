@@ -1,0 +1,39 @@
+<idea-plugin>
+    <id>dev.sigtrace.plugin</id>
+    <name>SigTrace</name>
+    <vendor email="support@sigtrace.dev" url="https://sigtrace.dev">SigTrace Contributors</vendor>
+
+    <description><![CDATA[
+    Universal Reactive Graph & Signal Lifecycle Tracer for Angular, Vue, and SolidJS.
+    Visualize signal writes, computed derivations, and effect executions in real time.
+    ]]></description>
+
+    <!-- Product compatibility -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.javascript</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Tool Window for the webview visualizer -->
+        <toolWindow id="SigTrace"
+                    anchor="right"
+                    secondary="false"
+                    icon="AllIcons.General.Modified"
+                    factoryClass="dev.sigtrace.plugin.SigTraceToolWindowFactory"/>
+
+        <!-- Inlay Hints (CodeLens equivalent) for signal update counts -->
+        <codeInsight.declarativeInlayProvider
+                language="TypeScript"
+                implementationClass="dev.sigtrace.plugin.SigTraceInlayProvider"
+                isEnabledByDefault="true"
+                groupId="sigtrace"
+                id="sigtrace.updates"/>
+    </extensions>
+
+    <actions>
+        <!-- Command to focus a node in visualizer -->
+        <action id="SigTrace.FocusNode"
+                class="dev.sigtrace.plugin.FocusNodeAction"
+                text="Focus Signal in Visualizer"
+                description="Highlight this signal node inside the active SigTrace dashboard panel"/>
+    </actions>
+</idea-plugin>
