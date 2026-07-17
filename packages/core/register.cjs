@@ -7,7 +7,25 @@ const t = require('@babel/types');
 const traverse = traverseObj.default || traverseObj;
 const generate = generateObj.default || generateObj;
 
+// ─── Production Build Guard ─────────────────────────────────────────────────
+// SigTrace is a dev-only tool. If NODE_ENV is production (e.g. someone
+// accidentally added it to a CI build script), skip ALL instrumentation and
+// emit a clear warning so the issue is immediately visible in build logs.
+if (process.env.NODE_ENV === 'production') {
+  console.warn(
+    '[SigTrace] ⚠️  register.cjs was loaded in a PRODUCTION environment.\n' +
+    '  Signal instrumentation is DISABLED. No code will be transformed.\n' +
+    '  Move @sigtrace/core to devDependencies and remove sigtrace from\n' +
+    '  your production build pipeline.\n' +
+    '  See: https://sigtrace.dev/docs#production'
+  );
+  // Do not install the readFileSync hook in production
+  module.exports = {};
+  return;
+}
+
 const originalReadFile = fs.readFileSync;
+
 
 function transformAngularCode(code, filename) {
   const lower = code.toLowerCase();

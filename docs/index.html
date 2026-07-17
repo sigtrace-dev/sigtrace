@@ -1243,6 +1243,205 @@
     }
 
     /* ══════════════════════════════════════════════════════════
+       SECURITY TRUST STRIP
+    ══════════════════════════════════════════════════════════ */
+    .trust-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+      padding: 14px 24px;
+      border-radius: var(--radius-lg);
+      background: rgba(34,197,94,0.05);
+      border: 1px solid rgba(34,197,94,0.15);
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .trust-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .trust-item .ti-green { color: #22c55e; }
+    .trust-item .ti-blue { color: #38bdf8; }
+    .trust-item .ti-purple { color: var(--accent-light); }
+
+    .trust-item strong { color: var(--text-primary); }
+
+    .trust-item a {
+      color: var(--accent-light);
+      text-decoration: underline;
+      text-decoration-color: rgba(99,102,241,0.4);
+      text-underline-offset: 3px;
+    }
+
+    .trust-item a:hover { text-decoration-color: var(--accent-light); }
+
+    /* ══════════════════════════════════════════════════════════
+       REAL SCREENSHOT PREVIEW
+    ══════════════════════════════════════════════════════════ */
+    .screenshot-wrap {
+      margin-top: 56px;
+      position: relative;
+    }
+
+    .screenshot-glow {
+      position: absolute;
+      inset: -60px;
+      background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(99,102,241,0.18), transparent 70%);
+      pointer-events: none;
+    }
+
+    .screenshot-frame {
+      position: relative;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-active);
+      overflow: hidden;
+      box-shadow: var(--shadow-glow), var(--shadow-card);
+    }
+
+    .screenshot-topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,17,23,0.95);
+    }
+
+    .screenshot-topbar .topbar-dot.red { background: #ef4444; }
+    .screenshot-topbar .topbar-dot.amber { background: #f59e0b; }
+    .screenshot-topbar .topbar-dot.green { background: #22c55e; }
+
+    .screenshot-topbar .title {
+      margin-left: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      flex: 1;
+    }
+
+    .screenshot-topbar .connected-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 600;
+      background: rgba(34,197,94,0.1);
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid rgba(34,197,94,0.25);
+    }
+
+    .screenshot-topbar .connected-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 2s infinite;
+    }
+
+    .screenshot-frame img {
+      width: 100%;
+      display: block;
+      max-height: 440px;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    .screenshot-caption {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       WAITLIST MICRO-FORM (React / Svelte)
+    ══════════════════════════════════════════════════════════ */
+    .fw-waitlist {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+    }
+
+    .fw-waitlist input {
+      flex: 1;
+      min-width: 0;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-active);
+      border-right: none;
+      border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 12px;
+      padding: 7px 10px;
+      outline: none;
+      font-family: var(--font-sans);
+      transition: border-color 0.2s;
+    }
+
+    .fw-waitlist input::placeholder { color: var(--text-muted); }
+    .fw-waitlist input:focus { border-color: var(--accent); }
+
+    .fw-waitlist button {
+      background: var(--accent);
+      color: white;
+      border: 1px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .fw-waitlist button:hover { background: #4f46e5; }
+
+    .fw-card.coming {
+      opacity: 0.85;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .fw-card.coming .fw-top { display: flex; align-items: center; gap: 14px; }
+
+    <!-- 🔒 Security Trust Strip — visible before the fold -->
+    <div class="trust-strip fade-up delay-4" role="list" aria-label="Privacy and security guarantees">
+      <div class="trust-item" role="listitem">
+        <svg class="ti-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><strong>100% local</strong> — WebSocket binds to <code style="font-family:var(--font-mono);font-size:11px;color:#67e8f9">localhost:8420</code> only</span>
+      </div>
+      <div class="trust-item" role="listitem">
+        <svg class="ti-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><strong>Zero telemetry</strong> — no analytics, no crash reports, no phone-home</span>
+      </div>
+      <div class="trust-item" role="listitem">
+        <svg class="ti-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+        <span><strong>Open source &amp; auditable</strong> — <a href="https://github.com/sigtrace-dev/sigtrace" target="_blank" rel="noopener">read every line on GitHub</a></span>
+      </div>
+    </div>
+
+    /* ══════════════════════════════════════════════════════════
+       FRAMEWORK-TAB STEP SYNC
+    ══════════════════════════════════════════════════════════ */
+    .step-set { display: none; }
+    .step-set.active { display: block; }
+
+    /* ══════════════════════════════════════════════════════════
        ANIMATIONS
     ══════════════════════════════════════════════════════════ */
     @keyframes fadeUp {
@@ -1349,8 +1548,31 @@
       </div>
     </div>
 
-    <!-- Dashboard Visual Mockup -->
-    <div class="dashboard-preview fade-up delay-4" role="img" aria-label="SigTrace visualizer dashboard showing live signal activity">
+    <!-- Real VS Code Preview Screenshot -->
+    <div class="screenshot-wrap fade-up delay-4">
+      <div class="screenshot-glow" aria-hidden="true"></div>
+      <div class="screenshot-frame" role="img" aria-label="SigTrace running in VS Code showing live reactive signal activity table">
+        <div class="screenshot-topbar">
+          <span class="topbar-dot red" aria-hidden="true"></span>
+          <span class="topbar-dot amber" aria-hidden="true"></span>
+          <span class="topbar-dot green" aria-hidden="true"></span>
+          <span class="title">SIGTRACE: REACTIVITY VISUALIZER</span>
+          <span class="connected-badge" role="status">Connected</span>
+        </div>
+        <img
+          src="/sigtrace-preview.jpg"
+          alt="SigTrace VS Code extension panel showing a live signal activity table with signals like searchQuery, filteredResults, autoSyncEffect, selectedTab and userPreferences, each with component names, current values, update counts, and coloured activity bars"
+          width="1280"
+          height="440"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+      <p class="screenshot-caption">▲ Real SigTrace panel — live signal activity inside VS Code</p>
+    </div>
+
+    <!-- Animated HTML Mockup (fallback / supplemental) -->
+    <div class="dashboard-preview" role="img" aria-label="SigTrace visualizer dashboard showing live signal activity" style="margin-top:48px">
       <div class="dashboard-glow" aria-hidden="true"></div>
       <div class="dashboard-frame">
         <!-- Window chrome -->
@@ -1517,9 +1739,9 @@
       </article>
 
       <article class="feature-card" role="listitem">
-        <div class="feature-icon" style="background:rgba(239,68,68,0.12)" aria-hidden="true">⚡</div>
-        <h3 class="feature-title">Zero Configuration</h3>
-        <p class="feature-desc">No decorators. No imports to change. No config files. Just prefix your dev server command with <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run</code> and start debugging instantly.</p>
+        <div class="feature-icon" style="background:rgba(139,92,246,0.14)" aria-hidden="true">🪟</div>
+        <h3 class="feature-title">Self-Healing Multi-Window Mesh</h3>
+        <p class="feature-desc">Work across multiple VS Code windows at once. The first window becomes the WebSocket host. Every new window auto-joins as a client and receives all signal events live. If the host window closes, any client <strong>instantly self-promotes</strong> — zero reconnection steps, zero signal loss.</p>
       </article>
     </div>
   </div>
@@ -1558,19 +1780,31 @@
           <div class="fw-version">v1.8+ · createSignal, createMemo, createEffect</div>
         </div>
       </div>
-      <div class="fw-card" role="listitem" style="opacity:0.7">
-        <div class="fw-logo" aria-label="React">⚛️</div>
-        <div>
-          <div class="fw-name">React</div>
-          <div class="fw-version">Coming soon <span class="coming-soon-badge">Planned</span></div>
+      <div class="fw-card coming" role="listitem">
+        <div class="fw-top">
+          <div class="fw-logo" aria-label="React">⚛️</div>
+          <div>
+            <div class="fw-name">React</div>
+            <div class="fw-version">useSignal / useSyncExternalStore <span class="coming-soon-badge">In Progress</span></div>
+          </div>
         </div>
+        <form class="fw-waitlist" onsubmit="joinWaitlist(event,'react')" aria-label="Get notified when React support launches">
+          <input type="email" placeholder="your@email.com" autocomplete="email" required aria-label="Email address" />
+          <button type="submit">Notify me →</button>
+        </form>
       </div>
-      <div class="fw-card" role="listitem" style="opacity:0.7">
-        <div class="fw-logo" aria-label="Svelte">🧡</div>
-        <div>
-          <div class="fw-name">Svelte 5</div>
-          <div class="fw-version">Coming soon <span class="coming-soon-badge">Planned</span></div>
+      <div class="fw-card coming" role="listitem">
+        <div class="fw-top">
+          <div class="fw-logo" aria-label="Svelte">🧡</div>
+          <div>
+            <div class="fw-name">Svelte 5</div>
+            <div class="fw-version">Runes ($state, $derived, $effect) <span class="coming-soon-badge">Planned</span></div>
+          </div>
         </div>
+        <form class="fw-waitlist" onsubmit="joinWaitlist(event,'svelte')" aria-label="Get notified when Svelte 5 support launches">
+          <input type="email" placeholder="your@email.com" autocomplete="email" required aria-label="Email address" />
+          <button type="submit">Notify me →</button>
+        </form>
       </div>
     </div>
   </div>
@@ -1582,39 +1816,104 @@
 <section id="quickstart" aria-labelledby="quickstart-heading">
   <div class="container">
     <div class="section-header">
-      <span class="section-label">Get Started</span>
+      <span class="section-label">Get Started — Zero code changes</span>
       <h2 id="quickstart-heading">Up and running in under 2 minutes</h2>
-      <p class="section-desc">SigTrace requires no code changes to your application. The AST compiler instruments your signals automatically at build time.</p>
+      <p class="section-desc">SigTrace instruments your signals at build time via AST compilation. Select your framework below — steps differ slightly depending on whether your project uses Angular CLI or Vite.</p>
     </div>
 
     <div class="quickstart-grid">
-      <div class="step-list" role="list">
-        <div class="step" role="listitem">
-          <div class="step-num" aria-hidden="true">1</div>
-          <div class="step-content">
-            <h4>Install the VS Code Extension</h4>
-            <p>Search <strong>"SigTrace"</strong> in the VS Code marketplace and click Install. Open the SigTrace panel from the Explorer sidebar.</p>
+      <div class="step-list" role="list" aria-live="polite">
+        <!-- Angular steps -->
+        <div class="step-set active" id="steps-angular">
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">1</div>
+            <div class="step-content">
+              <h4>Install the VS Code Extension</h4>
+              <p>Search <strong>"SigTrace"</strong> in the VS Code marketplace and click Install.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">2</div>
+            <div class="step-content">
+              <h4>Install <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/core</code> only</h4>
+              <p>Angular CLI uses Webpack — the <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/vite</code> plugin is <strong>not needed</strong>. The <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run</code> CLI handles instrumentation automatically.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">3</div>
+            <div class="step-content">
+              <h4>Prefix your dev server command</h4>
+              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run ng serve</code>. That's it — no decorators, no imports, no config files.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">4</div>
+            <div class="step-content">
+              <h4>Open your app and watch signals flow</h4>
+              <p>Every <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">signal()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">computed()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">effect()</code>, and <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">toSignal()</code> update appears live in the VS Code dashboard.</p>
+            </div>
           </div>
         </div>
-        <div class="step" role="listitem">
-          <div class="step-num" aria-hidden="true">2</div>
-          <div class="step-content">
-            <h4>Install the npm packages</h4>
-            <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/core</code> and <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/vite</code> as dev dependencies.</p>
+        <!-- Vue steps -->
+        <div class="step-set" id="steps-vue">
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">1</div>
+            <div class="step-content">
+              <h4>Install the VS Code Extension</h4>
+              <p>Search <strong>"SigTrace"</strong> in the VS Code marketplace and click Install.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">2</div>
+            <div class="step-content">
+              <h4>Install both packages</h4>
+              <p>Vue uses Vite, so you need both <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/core</code> and the <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/vite</code> plugin.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">3</div>
+            <div class="step-content">
+              <h4>Register the Vite plugin</h4>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code> plugins array. See the code panel →</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">4</div>
+            <div class="step-content">
+              <h4>Start with sigtrace</h4>
+              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run npm run dev</code>. Every <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">ref()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">computed()</code>, and <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">watchEffect()</code> appears live.</p>
+            </div>
           </div>
         </div>
-        <div class="step" role="listitem">
-          <div class="step-num" aria-hidden="true">3</div>
-          <div class="step-content">
-            <h4>Start your dev server with SigTrace</h4>
-            <p>Prefix your Angular/Vue/Solid serve command with <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run</code>. No config files needed.</p>
+        <!-- SolidJS steps -->
+        <div class="step-set" id="steps-solid">
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">1</div>
+            <div class="step-content">
+              <h4>Install the VS Code Extension</h4>
+              <p>Search <strong>"SigTrace"</strong> in the VS Code marketplace and click Install.</p>
+            </div>
           </div>
-        </div>
-        <div class="step" role="listitem">
-          <div class="step-num" aria-hidden="true">4</div>
-          <div class="step-content">
-            <h4>Open your app and watch signals flow</h4>
-            <p>Interact with your application. Every signal write, computed re-eval, and effect chain appears live in the VS Code dashboard.</p>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">2</div>
+            <div class="step-content">
+              <h4>Install both packages</h4>
+              <p>SolidJS uses Vite, so you need both <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/core</code> and the <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/vite</code> plugin.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">3</div>
+            <div class="step-content">
+              <h4>Register the Vite plugin</h4>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code> plugins array. See the code panel →</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">4</div>
+            <div class="step-content">
+              <h4>Start with sigtrace</h4>
+              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run npm run dev</code>. Every <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">createSignal()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">createMemo()</code>, and <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">createEffect()</code> appears live.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -1633,17 +1932,17 @@
         </div>
         <div class="code-body" id="code-body" aria-live="polite">
           <div id="code-angular">
-            <span class="t-comment"># Step 1: Install packages</span><br/>
-            <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
+            <span class="t-comment"># Angular CLI (Webpack) — @sigtrace/vite NOT required</span><br/><br/>
+            <span class="t-comment"># Step 1: Install ONLY the core tracer</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core</span><br/><br/>
             <span class="t-comment"># Step 2: Start your dev server with sigtrace</span><br/>
             <span class="t-fn">npx</span> <span class="t-keyword">sigtrace run</span> <span class="t-string">ng serve</span><br/><br/>
-            <span class="t-comment"># That's it. No code changes needed.</span><br/>
-            <span class="t-comment"># toSignal, signal(), computed() are all tracked automatically.</span><br/><br/>
-            <span class="t-comment"># Your signals in Angular:</span><br/>
-            <span class="t-type">userProfile</span> <span class="t-op">=</span> <span class="t-fn">toSignal</span><span class="t-op">(</span><br/>
-            &nbsp;&nbsp;<span class="t-keyword">this</span>.<span class="t-var">store</span>.<span class="t-fn">select</span>(<span class="t-var">selectUserProfile</span>),<br/>
-            &nbsp;&nbsp;<span class="t-op">{</span> <span class="t-var">initialValue</span>: <span class="t-var">null</span> <span class="t-op">}</span><br/>
-            <span class="t-op">);</span> <span class="t-comment">// ← tracked automatically ✓</span>
+            <span class="t-comment"># That's it. The npx CLI handles AST instrumentation.</span><br/>
+            <span class="t-comment"># No imports, no decorators, no config files.</span><br/><br/>
+            <span class="t-comment"># All Angular signal APIs tracked automatically:</span><br/>
+            <span class="t-type">count</span> <span class="t-op">=</span> <span class="t-fn">signal</span><span class="t-op">(</span><span class="t-string">0</span><span class="t-op">);</span>         <span class="t-comment">// ← ✓ tracked</span><br/>
+            <span class="t-type">doubled</span> <span class="t-op">=</span> <span class="t-fn">computed</span><span class="t-op">(() =&gt;</span> <span class="t-var">this</span>.<span class="t-var">count</span>() * <span class="t-string">2</span><span class="t-op">);</span>  <span class="t-comment">// ← ✓ tracked</span><br/>
+            <span class="t-type">profile</span> <span class="t-op">=</span> <span class="t-fn">toSignal</span><span class="t-op">(</span><span class="t-var">this</span>.<span class="t-var">profile$</span><span class="t-op">);</span>  <span class="t-comment">// ← ✓ tracked</span>
           </div>
           <div id="code-vue" style="display:none">
             <span class="t-comment"># Step 1: Install packages</span><br/>
@@ -1683,6 +1982,17 @@
     </div>
 
     <div class="faq-grid" role="list">
+      <!-- 🔒 Security FAQ — must be first -->
+      <div class="faq-item" role="listitem">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          Does SigTrace send my source code or signal data to any external server?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a" role="region">
+          <div class="faq-a-inner"><strong>No — not a single byte leaves your machine.</strong> SigTrace runs a WebSocket server bound exclusively to <code style="font-family:monospace;color:#67e8f9">127.0.0.1:8420</code> (localhost). The VS Code extension connects to this local server and receives signal events. There is no cloud backend, no telemetry, no analytics, no crash reporting. You can verify this by reading the source: <a href="https://github.com/sigtrace-dev/sigtrace/blob/main/packages/core/src/index.ts" target="_blank" rel="noopener" style="color:var(--accent-light)">packages/core/src/index.ts</a> shows the WebSocket connect line.</div>
+        </div>
+      </div>
+
       <div class="faq-item" role="listitem">
         <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
           What is SigTrace and how is it different from Angular DevTools?
@@ -1715,11 +2025,21 @@
 
       <div class="faq-item" role="listitem">
         <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
+          Will SigTrace accidentally end up in my production build?
+          <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a" role="region">
+          <div class="faq-a-inner">SigTrace has an explicit <code style="font-family:monospace;color:#67e8f9">NODE_ENV=production</code> guard. If it is somehow bundled into a production build, it emits a clear console warning and degrades to a complete no-op — no WebSocket connection, no instrumentation, no performance impact. To prevent this: install <code style="font-family:monospace;color:#67e8f9">@sigtrace/core</code> as a <code style="font-family:monospace;color:#67e8f9">devDependency</code> and use <code style="font-family:monospace;color:#67e8f9">npx sigtrace run</code> only in local dev scripts, not in CI/CD pipelines.</div>
+        </div>
+      </div>
+
+      <div class="faq-item" role="listitem">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
           What is the performance overhead in development?
           <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">SigTrace is designed for development only and adds approximately 1–3ms of overhead per signal write due to WebSocket event transmission. The instrumentation is stripped in production builds automatically. The dashboard updates are batched and rendered asynchronously so your app UI is never blocked.</div>
+          <div class="faq-a-inner">SigTrace adds approximately 1–3ms of overhead per signal write. For high-frequency signals (e.g. RxJS streams bound to mouse movements or WebSocket feeds), SigTrace auto-detects bursts of &gt;10 events in 200ms and applies a 50ms debounce — keeping the dashboard responsive without freezing your UI. All dashboard updates are frame-batched (one WebSocket write per 16ms frame) and rendered asynchronously.</div>
         </div>
       </div>
 
@@ -1805,13 +2125,38 @@
 <!-- JAVASCRIPT                                                    -->
 <!-- ═══════════════════════════════════════════════════════════ -->
 <script>
-  /* ── Code tab switcher ── */
+  /* ── Code tab switcher (also syncs framework-specific step panels) ── */
   function switchTab(btn, lang) {
     document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
     ['angular','vue','solid'].forEach(l => {
       document.getElementById('code-' + l).style.display = l === lang ? '' : 'none';
     });
+    // Sync the matching step-set panel on the left
+    document.querySelectorAll('.step-set').forEach(s => s.classList.remove('active'));
+    const stepsEl = document.getElementById('steps-' + lang);
+    if (stepsEl) stepsEl.classList.add('active');
+  }
+
+  /* ── Waitlist — open GitHub issue tracker for the relevant framework ── */
+  function joinWaitlist(evt, framework) {
+    evt.preventDefault();
+    const email = evt.target.querySelector('input[type="email"]').value;
+    const urls = {
+      react:  'https://github.com/sigtrace-dev/sigtrace/issues?q=label%3Areact',
+      svelte: 'https://github.com/sigtrace-dev/sigtrace/issues?q=label%3Asvelte5'
+    };
+    // Store email in localStorage as lightweight capture (no server needed)
+    try {
+      const key = 'sigtrace_waitlist_' + framework;
+      const list = JSON.parse(localStorage.getItem(key) || '[]');
+      if (!list.includes(email)) list.push(email);
+      localStorage.setItem(key, JSON.stringify(list));
+    } catch(e) {}
+    // Open GitHub issue tracker so they can subscribe/watch
+    window.open(urls[framework] || 'https://github.com/sigtrace-dev/sigtrace/issues', '_blank', 'noopener');
+    const btn = evt.target.querySelector('button');
+    if (btn) { btn.textContent = '✓ You\'re on the list!'; btn.disabled = true; }
   }
 
   /* ── Copy code ── */
