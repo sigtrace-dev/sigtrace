@@ -56,6 +56,20 @@ export function sigTrace(options?: SigTracePluginOptions): Plugin {
         return this.resolve('@sigtrace/core/angular-rxjs-interop', importer, { skipSelf: true });
       }
 
+      if (source === '@preact/signals-react') {
+        if (importer && (importer.includes('@sigtrace/core') || importer.includes('packages/core'))) {
+          return null; // Use original
+        }
+        return this.resolve('@sigtrace/core/react', importer, { skipSelf: true });
+      }
+
+      if (source === 'svelte') {
+        if (importer && (importer.includes('@sigtrace/core') || importer.includes('packages/core'))) {
+          return null; // Use original
+        }
+        return this.resolve('@sigtrace/core/svelte', importer, { skipSelf: true });
+      }
+
       return null;
     },
 

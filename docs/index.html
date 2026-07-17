@@ -292,7 +292,7 @@
        LAYOUT
     ══════════════════════════════════════════════════════════ */
     .container {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 0 24px;
     }
@@ -347,7 +347,7 @@
     }
 
     .nav-inner {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 0 24px;
       width: 100%;
@@ -1324,6 +1324,10 @@
     .screenshot-wrap {
       margin-top: 56px;
       position: relative;
+      width: 100%;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .screenshot-glow {
@@ -1838,29 +1842,29 @@
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">1</div>
             <div class="step-content">
-              <h4>Install the VS Code Extension</h4>
-              <p>Search <strong>"SigTrace"</strong> in the VS Code marketplace and click Install.</p>
+              <h4>Install the Extension</h4>
+              <p>Search <strong>"SigTrace"</strong> in the VS Code Marketplace or JetBrains Plugins and click Install.</p>
             </div>
           </div>
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">2</div>
             <div class="step-content">
               <h4>Install <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/core</code> only</h4>
-              <p>Angular CLI uses Webpack — the <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/vite</code> plugin is <strong>not needed</strong>. The <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run</code> CLI handles instrumentation automatically.</p>
+              <p>Angular CLI projects do <strong>not</strong> use Vite. You only need to install our core CLI & tracer package.</p>
             </div>
           </div>
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">3</div>
             <div class="step-content">
               <h4>Prefix your dev server command</h4>
-              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run ng serve</code>. That's it — no decorators, no imports, no config files.</p>
+              <p>Serve with <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run ng serve</code>. AST code instrumentation is done on the fly — no config changes needed!</p>
             </div>
           </div>
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">4</div>
             <div class="step-content">
               <h4>Open your app and watch signals flow</h4>
-              <p>Every <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">signal()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">computed()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">effect()</code>, and <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">toSignal()</code> update appears live in the VS Code dashboard.</p>
+              <p>Every <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">signal()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">computed()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">effect()</code>, and <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">toSignal()</code> update appears live.</p>
             </div>
           </div>
         </div>
@@ -1869,29 +1873,29 @@
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">1</div>
             <div class="step-content">
-              <h4>Install the VS Code Extension</h4>
-              <p>Search <strong>"SigTrace"</strong> in the VS Code marketplace and click Install.</p>
+              <h4>Install the Extension</h4>
+              <p>Search <strong>"SigTrace"</strong> in the VS Code Marketplace or JetBrains Plugins and click Install.</p>
             </div>
           </div>
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">2</div>
             <div class="step-content">
-              <h4>Install both packages</h4>
-              <p>Vue uses Vite, so you need both <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/core</code> and the <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/vite</code> plugin.</p>
+              <h4>Install core and vite packages</h4>
+              <p>Install both the core tracer and the Vite plugin: <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npm i -D @sigtrace/core @sigtrace/vite</code>.</p>
             </div>
           </div>
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">3</div>
             <div class="step-content">
               <h4>Register the Vite plugin</h4>
-              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code> plugins array. See the code panel →</p>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
             </div>
           </div>
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">4</div>
             <div class="step-content">
-              <h4>Start with sigtrace</h4>
-              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run npm run dev</code>. Every <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">ref()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">computed()</code>, and <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">watchEffect()</code> appears live.</p>
+              <h4>Run dev server normally</h4>
+              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npm run dev</code> (no prefix needed!). The plugin handles code transformations in the background.</p>
             </div>
           </div>
         </div>
@@ -1900,29 +1904,91 @@
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">1</div>
             <div class="step-content">
-              <h4>Install the VS Code Extension</h4>
-              <p>Search <strong>"SigTrace"</strong> in the VS Code marketplace and click Install.</p>
+              <h4>Install the Extension</h4>
+              <p>Search <strong>"SigTrace"</strong> in the VS Code Marketplace or JetBrains Plugins and click Install.</p>
             </div>
           </div>
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">2</div>
             <div class="step-content">
-              <h4>Install both packages</h4>
-              <p>SolidJS uses Vite, so you need both <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/core</code> and the <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">@sigtrace/vite</code> plugin.</p>
+              <h4>Install core and vite packages</h4>
+              <p>Install both the core tracer and the Vite plugin: <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npm i -D @sigtrace/core @sigtrace/vite</code>.</p>
             </div>
           </div>
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">3</div>
             <div class="step-content">
               <h4>Register the Vite plugin</h4>
-              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code> plugins array. See the code panel →</p>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
             </div>
           </div>
           <div class="step" role="listitem">
             <div class="step-num" aria-hidden="true">4</div>
             <div class="step-content">
-              <h4>Start with sigtrace</h4>
-              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npx sigtrace run npm run dev</code>. Every <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">createSignal()</code>, <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">createMemo()</code>, and <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">createEffect()</code> appears live.</p>
+              <h4>Run dev server normally</h4>
+              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npm run dev</code> (no prefix needed!). The plugin handles code transformations in the background.</p>
+            </div>
+          </div>
+        </div>
+        <!-- React steps -->
+        <div class="step-set" id="steps-react">
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">1</div>
+            <div class="step-content">
+              <h4>Install the Extension</h4>
+              <p>Search <strong>"SigTrace"</strong> in the VS Code Marketplace or JetBrains Plugins and click Install.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">2</div>
+            <div class="step-content">
+              <h4>Install core and vite packages</h4>
+              <p>Install both the core tracer and the Vite plugin: <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npm i -D @sigtrace/core @sigtrace/vite</code>.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">3</div>
+            <div class="step-content">
+              <h4>Register the Vite plugin</h4>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">4</div>
+            <div class="step-content">
+              <h4>Run dev server normally</h4>
+              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npm run dev</code> (no prefix needed!). The plugin handles code transformations in the background.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Svelte steps -->
+        <div class="step-set" id="steps-svelte">
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">1</div>
+            <div class="step-content">
+              <h4>Install the Extension</h4>
+              <p>Search <strong>"SigTrace"</strong> in the VS Code Marketplace or JetBrains Plugins and click Install.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">2</div>
+            <div class="step-content">
+              <h4>Install core and vite packages</h4>
+              <p>Install both the core tracer and the Vite plugin: <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npm i -D @sigtrace/core @sigtrace/vite</code>.</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">3</div>
+            <div class="step-content">
+              <h4>Register the Vite plugin</h4>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
+            </div>
+          </div>
+          <div class="step" role="listitem">
+            <div class="step-num" aria-hidden="true">4</div>
+            <div class="step-content">
+              <h4>Run dev server normally</h4>
+              <p>Run <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">npm run dev</code> (no prefix needed!). The plugin handles code transformations in the background.</p>
             </div>
           </div>
         </div>
@@ -1934,6 +2000,8 @@
             <button class="code-tab active" onclick="switchTab(this, 'angular')" id="tab-angular">Angular</button>
             <button class="code-tab" onclick="switchTab(this, 'vue')" id="tab-vue">Vue 3</button>
             <button class="code-tab" onclick="switchTab(this, 'solid')" id="tab-solid">SolidJS</button>
+            <button class="code-tab" onclick="switchTab(this, 'react')" id="tab-react">React</button>
+            <button class="code-tab" onclick="switchTab(this, 'svelte')" id="tab-svelte">Svelte 5</button>
           </div>
           <button class="code-copy" onclick="copyCode()" id="copy-btn" aria-label="Copy code to clipboard">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
@@ -1955,6 +2023,7 @@
             <span class="t-type">profile</span> <span class="t-op">=</span> <span class="t-fn">toSignal</span><span class="t-op">(</span><span class="t-var">this</span>.<span class="t-var">profile$</span><span class="t-op">);</span>  <span class="t-comment">// ← ✓ tracked</span>
           </div>
           <div id="code-vue" style="display:none">
+            <span class="t-comment"># Vue 3 (Vite) — both core and Vite plugin required</span><br/><br/>
             <span class="t-comment"># Step 1: Install packages</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
             <span class="t-comment"># Step 2: Add to vite.config.ts</span><br/>
@@ -1962,18 +2031,44 @@
             <span class="t-keyword">export default</span> <span class="t-fn">defineConfig</span><span class="t-op">({</span><br/>
             &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">vue</span>(), <span class="t-fn">sigtrace</span>()<span class="t-op">]</span><br/>
             <span class="t-op">})</span><br/><br/>
-            <span class="t-comment"># Step 3: Start your dev server</span><br/>
-            <span class="t-fn">npx</span> <span class="t-keyword">sigtrace run</span> <span class="t-string">npm run dev</span>
+            <span class="t-comment"># Step 3: Run your dev server normally</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">run</span> <span class="t-string">dev</span>
           </div>
           <div id="code-solid" style="display:none">
+            <span class="t-comment"># SolidJS (Vite) — both core and Vite plugin required</span><br/><br/>
             <span class="t-comment"># Step 1: Install packages</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
-            <span class="t-comment"># Step 2: Start with sigtrace</span><br/>
-            <span class="t-fn">npx</span> <span class="t-keyword">sigtrace run</span> <span class="t-string">npm run dev</span><br/><br/>
-            <span class="t-comment"># SolidJS signals tracked automatically:</span><br/>
-            <span class="t-keyword">const</span> <span class="t-op">[</span><span class="t-var">count</span>, <span class="t-var">setCount</span><span class="t-op">]</span> <span class="t-op">=</span> <span class="t-fn">createSignal</span><span class="t-op">(</span><span class="t-string">0</span><span class="t-op">);</span><br/>
-            <span class="t-keyword">const</span> <span class="t-var">doubled</span> <span class="t-op">=</span> <span class="t-fn">createMemo</span><span class="t-op">(() =&gt;</span> <span class="t-var">count</span>() * <span class="t-string">2</span><span class="t-op">);</span><br/>
-            <span class="t-fn">createEffect</span><span class="t-op">(() =&gt;</span> <span class="t-fn">console</span>.<span class="t-fn">log</span>(<span class="t-var">doubled</span>())<span class="t-op">);</span>
+            <span class="t-comment"># Step 2: Add to vite.config.ts</span><br/>
+            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigtrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
+            <span class="t-keyword">export default</span> <span class="t-fn">defineConfig</span><span class="t-op">({</span><br/>
+            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">solid</span>(), <span class="t-fn">sigtrace</span>()<span class="t-op">]</span><br/>
+            <span class="t-op">})</span><br/><br/>
+            <span class="t-comment"># Step 3: Run your dev server normally</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">run</span> <span class="t-string">dev</span>
+          </div>
+          <div id="code-react" style="display:none">
+            <span class="t-comment"># React (Vite) — both core and Vite plugin required</span><br/><br/>
+            <span class="t-comment"># Step 1: Install packages</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
+            <span class="t-comment"># Step 2: Add to vite.config.ts</span><br/>
+            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigtrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
+            <span class="t-keyword">export default</span> <span class="t-fn">defineConfig</span><span class="t-op">({</span><br/>
+            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">react</span>(), <span class="t-fn">sigtrace</span>()<span class="t-op">]</span><br/>
+            <span class="t-op">})</span><br/><br/>
+            <span class="t-comment"># Step 3: Run your dev server normally</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">run</span> <span class="t-string">dev</span>
+          </div>
+          <div id="code-svelte" style="display:none">
+            <span class="t-comment"># Svelte 5 (Vite) — both core and Vite plugin required</span><br/><br/>
+            <span class="t-comment"># Step 1: Install packages</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
+            <span class="t-comment"># Step 2: Add to vite.config.ts</span><br/>
+            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigtrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
+            <span class="t-keyword">export default</span> <span class="t-fn">defineConfig</span><span class="t-op">({</span><br/>
+            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">svelte</span>(), <span class="t-fn">sigtrace</span>()<span class="t-op">]</span><br/>
+            <span class="t-op">})</span><br/><br/>
+            <span class="t-comment"># Step 3: Run your dev server normally</span><br/>
+            <span class="t-fn">npm</span> <span class="t-keyword">run</span> <span class="t-string">dev</span>
           </div>
         </div>
       </div>
