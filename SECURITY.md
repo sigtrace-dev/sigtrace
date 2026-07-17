@@ -26,9 +26,11 @@ We take security vulnerabilities in SigTrace seriously. If you discover a securi
 
 ### ✅ How to Report
 
-**Email us privately at: [security@sigtrace.dev](mailto:security@sigtrace.dev)**
+Please report security vulnerabilities privately using GitHub's secure reporting tool:
 
-Please include the following information in your report:
+👉 **[Report Vulnerability Privately on GitHub](https://github.com/sigtrace-dev/sigtrace/security/advisories/new)**
+
+Include the following information in your report:
 
 1. **Description** – A clear and concise description of the vulnerability
 2. **Affected component** – Which package is affected (`@sigtrace/core`, `@sigtrace/vite-plugin`, the VS Code extension, or the WebSocket server)
@@ -36,10 +38,6 @@ Please include the following information in your report:
 4. **Steps to reproduce** – A minimal, reproducible example or proof-of-concept (PoC)
 5. **Potential impact** – Your assessment of the severity and potential attack scenarios
 6. **Suggested fix** – (Optional) If you have a proposed fix or patch, please include it
-
-You may use the following PGP key to encrypt your report if you wish to transmit it securely:
-
-> PGP key fingerprint will be published at https://sigtrace.dev/security
 
 ---
 
@@ -92,8 +90,8 @@ SigTrace does not currently operate a formal bug bounty program. However, we dee
 
 ## Contact
 
-| Purpose              | Contact                                      |
-|----------------------|----------------------------------------------|
-| Security reports     | [security@sigtrace.dev](mailto:security@sigtrace.dev) |
-| Code of conduct      | [conduct@sigtrace.dev](mailto:conduct@sigtrace.dev)   |
-| General inquiries    | [hello@sigtrace.dev](mailto:hello@sigtrace.dev)       |
+| Purpose              | Contact Channel                                               |
+|----------------------|---------------------------------------------------------------|
+| Security reports     | [GitHub Private Security Reports](https://github.com/sigtrace-dev/sigtrace/security/advisories/new) |
+| Code of conduct      | [GitHub Private Security Reports](https://github.com/sigtrace-dev/sigtrace/security/advisories/new) |
+| General inquiries    | [GitHub Discussions](https://github.com/sigtrace-dev/sigtrace/discussions) |

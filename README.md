@@ -12,6 +12,7 @@
   <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension"><img src="https://img.shields.io/visual-studio-marketplace/d/sigtrace.sigtrace-extension?color=007ACC&style=flat-square&label=VS%20Code%20installs" alt="VS Code installs" /></a>
   <a href="https://github.com/sigtrace-dev/sigtrace/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square" alt="License MIT" /></a>
   <a href="https://github.com/sigtrace-dev/sigtrace/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sigtrace-dev/sigtrace/ci.yml?branch=main&style=flat-square&label=CI&color=6C63FF" alt="CI status" /></a>
+  <a href="https://buymeacoffee.com/sigtrace"><img src="https://img.shields.io/badge/Sponsor-%E2%98%95-FFDD00?style=flat-square&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee" /></a>
 </p>
 
 <p>
@@ -206,13 +207,13 @@ Please read our [**Contributing Guide**](./CONTRIBUTING.md) to get started, and 
 **Quick links:**
 - 🐛 [Report a bug](https://github.com/sigtrace-dev/sigtrace/issues/new?template=bug_report.yml)
 - 💡 [Request a feature](https://github.com/sigtrace-dev/sigtrace/issues/new?template=feature_request.yml)
-- 💬 [Join our Discord](https://discord.gg/sigtrace)
+- 💬 [Join our Discord](https://discord.gg/DH9YHmbkB)
 
 ---
 
 ## 🔒 Security
 
-To report a security vulnerability, please email **[security@sigtrace.dev](mailto:security@sigtrace.dev)** rather than opening a public issue.
+To report a security vulnerability, please open a **[GitHub Private Security Report](https://github.com/sigtrace-dev/sigtrace/security/advisories/new)** rather than opening a public issue.
 
 See our full [**Security Policy**](./SECURITY.md) for disclosure timelines and supported versions.
 
