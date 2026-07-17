@@ -32,6 +32,8 @@ export function transformCode(code: string, filename: string): string {
       plugins: ['typescript', 'jsx', 'decorators-legacy']
     });
 
+    let hasRewrittenImport = false;
+
     traverse(ast, {
       ImportDeclaration(path: any) {
         const source = path.node.source.value;
@@ -95,6 +97,24 @@ export function transformCode(code: string, filename: string): string {
             path.node.specifiers = targetSpecifiers;
             path.node.source.value = '@sigtrace/core/angular';
           }
+        } else if (source === '@preact/signals-react') {
+          const specifiers = path.node.specifiers;
+          const targetSpecifiers = specifiers.filter((s: any) => 
+            t.isImportSpecifier(s) && ['signal', 'computed', 'effect'].includes((s.imported as any).name)
+          );
+          if (targetSpecifiers.length > 0) {
+            hasRewrittenImport = true;
+            path.node.source.value = '@sigtrace/core/react';
+          }
+        } else if (source === 'svelte') {
+          const specifiers = path.node.specifiers;
+          const targetSpecifiers = specifiers.filter((s: any) => 
+            t.isImportSpecifier(s) && ['state', 'derived', 'effect'].includes((s.imported as any).name)
+          );
+          if (targetSpecifiers.length > 0) {
+            hasRewrittenImport = true;
+            path.node.source.value = '@sigtrace/core/svelte';
+          }
         }
       },
       CallExpression(path: any) {
@@ -106,7 +126,7 @@ export function transformCode(code: string, filename: string): string {
           funcName = callee.property.name;
         }
 
-        const validFuncs = ['createSignal', 'createMemo', 'createEffect', 'ref', 'computed', 'watchEffect', 'signal', 'effect'];
+        const validFuncs = ['createSignal', 'createMemo', 'createEffect', 'ref', 'computed', 'watchEffect', 'signal', 'effect', 'state', 'derived'];
         if (!validFuncs.includes(funcName)) return;
 
         // Get location
@@ -188,7 +208,7 @@ export function transformCode(code: string, filename: string): string {
           t.objectProperty(t.identifier('__source'), sourceLocNode)
         ]);
 
-        if (funcName === 'createSignal' || funcName === 'ref' || funcName === 'signal') {
+        if (funcName === 'createSignal' || funcName === 'ref' || funcName === 'signal' || funcName === 'state') {
           // Injection for 2nd arg: createSignal(value, options) / ref(value, options) / signal(value, options)
           if (path.node.arguments.length === 0) {
             path.node.arguments.push(t.identifier('undefined'));
@@ -223,7 +243,7 @@ export function transformCode(code: string, filename: string): string {
               originalOpts.properties.push(t.objectProperty(t.identifier('__source'), sourceLocNode));
             }
           }
-        } else if (funcName === 'computed' || funcName === 'watchEffect' || funcName === 'effect') {
+        } else if (funcName === 'computed' || funcName === 'watchEffect' || funcName === 'effect' || funcName === 'derived') {
           // Injection for 2nd arg: computed(fn, options) / watchEffect(fn, options) / effect(fn, options)
           if (path.node.arguments.length === 1) {
             path.node.arguments.push(debugObj);
