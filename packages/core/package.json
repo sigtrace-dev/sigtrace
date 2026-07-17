@@ -22,6 +22,8 @@
     ".": "./dist/index.js",
     "./solid": "./dist/adapters/solid.js",
     "./vue": "./dist/adapters/vue.js",
+    "./react": "./dist/adapters/react.js",
+    "./svelte": "./dist/adapters/svelte.js",
     "./angular": "./dist/adapters/angular.js",
     "./angular-rxjs-interop": "./dist/adapters/angular-rxjs-interop.js",
     "./register.cjs": "./register.cjs"
@@ -52,11 +54,15 @@
   "peerDependencies": {
     "solid-js": "^1.8.0",
     "vue": "^3.3.0",
-    "@angular/core": ">=17.0.0"
+    "@angular/core": ">=17.0.0",
+    "@preact/signals-react": "^2.0.0",
+    "svelte": "^5.0.0"
   },
   "devDependencies": {
     "solid-js": "^1.8.0",
     "vue": "^3.3.0",
-    "@angular/core": ">=17.0.0"
+    "@angular/core": ">=17.0.0",
+    "@preact/signals-react": "^2.0.0",
+    "svelte": "^5.0.0"
   }
 }

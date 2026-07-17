@@ -96,6 +96,30 @@ function transformAngularCode(code, filename) {
             path.node.source.value = '@sigtrace/core/angular-rxjs-interop';
           }
         }
+
+        if (source === '@preact/signals-react') {
+          const specifiers = path.node.specifiers;
+          const targetPrims = ['signal', 'computed', 'effect'];
+          const targetSpecifiers = specifiers.filter((s) => 
+            t.isImportSpecifier(s) && targetPrims.includes(s.imported.name)
+          );
+          if (targetSpecifiers.length > 0) {
+            hasRewrittenImport = true;
+            path.node.source.value = '@sigtrace/core/react';
+          }
+        }
+
+        if (source === 'svelte') {
+          const specifiers = path.node.specifiers;
+          const targetPrims = ['state', 'derived', 'effect'];
+          const targetSpecifiers = specifiers.filter((s) => 
+            t.isImportSpecifier(s) && targetPrims.includes(s.imported.name)
+          );
+          if (targetSpecifiers.length > 0) {
+            hasRewrittenImport = true;
+            path.node.source.value = '@sigtrace/core/svelte';
+          }
+        }
       },
       CallExpression(path) {
         const callee = path.node.callee;
@@ -106,7 +130,7 @@ function transformAngularCode(code, filename) {
           funcName = callee.property.name;
         }
 
-        if (funcName === 'signal' || funcName === 'computed' || funcName === 'effect' || funcName === 'model' || funcName === 'toSignal') {
+        if (funcName === 'signal' || funcName === 'computed' || funcName === 'effect' || funcName === 'model' || funcName === 'toSignal' || funcName === 'state' || funcName === 'derived') {
           const loc = path.node.loc;
           const line = loc ? loc.start.line : 0;
           const column = loc ? loc.start.column : 0;
@@ -180,7 +204,7 @@ function transformAngularCode(code, filename) {
             t.objectProperty(t.identifier('__source'), sourceLocNode)
           ]);
 
-          if (funcName === 'signal' || funcName === 'model' || funcName === 'toSignal') {
+          if (funcName === 'signal' || funcName === 'model' || funcName === 'toSignal' || funcName === 'state') {
             if (funcName !== 'toSignal' && path.node.arguments.length === 0) {
               path.node.arguments.push(t.identifier('undefined'));
             }
@@ -200,7 +224,7 @@ function transformAngularCode(code, filename) {
                 originalOpts.properties.push(t.objectProperty(t.identifier('__source'), sourceLocNode));
               }
             }
-          } else if (funcName === 'computed' || funcName === 'effect') {
+          } else if (funcName === 'computed' || funcName === 'effect' || funcName === 'derived') {
             if (path.node.arguments.length === 1) {
               path.node.arguments.push(debugObj);
             } else if (path.node.arguments.length >= 2) {

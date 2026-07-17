@@ -107,7 +107,8 @@ class SigTraceClient {
 
   /** Detect high-frequency signals and apply debounce if needed. */
   private isThrottled(event: TraceEvent): boolean {
-    const key = `${event.name}::${event.file ?? ''}`;
+    if (event.type !== 'write' && event.type !== 'update') return false;
+    const key = event.id;
     const now = Date.now();
     let tracker = this.freqTrackers.get(key);
 
