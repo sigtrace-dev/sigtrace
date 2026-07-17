@@ -1366,6 +1366,49 @@
       color: var(--text-muted);
     }
 
+    /* Interactive Screenshot Tabs */
+    .screenshot-tabs {
+      display: flex;
+      gap: 6px;
+      margin-right: auto;
+      margin-left: 24px;
+    }
+
+    .screenshot-tab {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .screenshot-tab:hover {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .screenshot-tab.active {
+      color: var(--text-primary);
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+    }
+
+    .screenshot-tab span {
+      background: rgba(239,68,68,0.2);
+      color: #f87171;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-left: 6px;
+      font-weight: 700;
+    }
+
     /* ══════════════════════════════════════════════════════════
        WAITLIST MICRO-FORM (React / Svelte)
     ══════════════════════════════════════════════════════════ */
@@ -1556,19 +1599,27 @@
           <span class="topbar-dot red" aria-hidden="true"></span>
           <span class="topbar-dot amber" aria-hidden="true"></span>
           <span class="topbar-dot green" aria-hidden="true"></span>
-          <span class="title">SIGTRACE: REACTIVITY VISUALIZER</span>
+          <span class="title" style="flex:none">SIGTRACE</span>
+          
+          <div class="screenshot-tabs" role="tablist" aria-label="Visualizer views">
+            <button class="screenshot-tab active" onclick="switchScreenshot(this, 'activity')" role="tab" aria-selected="true" id="stab-activity">Activity</button>
+            <button class="screenshot-tab" onclick="switchScreenshot(this, 'timeline')" role="tab" aria-selected="false" id="stab-timeline">Timeline</button>
+            <button class="screenshot-tab" onclick="switchScreenshot(this, 'components')" role="tab" aria-selected="false" id="stab-components">Components <span>2</span></button>
+          </div>
+
           <span class="connected-badge" role="status">Connected</span>
         </div>
         <img
-          src="/sigtrace-preview.jpg"
-          alt="SigTrace VS Code extension panel showing a live signal activity table with signals like searchQuery, filteredResults, autoSyncEffect, selectedTab and userPreferences, each with component names, current values, update counts, and coloured activity bars"
+          id="screenshot-img"
+          src="/sigtrace-activity.jpg"
+          alt="SigTrace VS Code extension panel showing a live signal activity table with signals like searchQuery, filteredResults, autoSyncEffect, selectedTab and userPreferences"
           width="1280"
           height="440"
           loading="eager"
           decoding="async"
         />
       </div>
-      <p class="screenshot-caption">▲ Real SigTrace panel — live signal activity inside VS Code</p>
+      <p class="screenshot-caption" id="screenshot-caption">▲ Real SigTrace panel — live signal activity inside VS Code</p>
     </div>
 
     <!-- Animated HTML Mockup (fallback / supplemental) -->
@@ -1766,19 +1817,31 @@
           <div class="fw-version">v17+ · Signals, computed, effect, toSignal</div>
         </div>
       </div>
-      <div class="fw-card" role="listitem">
-        <div class="fw-logo" aria-label="Vue">💚</div>
-        <div>
-          <div class="fw-name">Vue 3</div>
-          <div class="fw-version">v3.3+ · ref, computed, watchEffect</div>
+      <div class="fw-card coming" role="listitem">
+        <div class="fw-top">
+          <div class="fw-logo" aria-label="Vue">💚</div>
+          <div>
+            <div class="fw-name">Vue 3</div>
+            <div class="fw-version">v3.3+ · ref, computed, watchEffect <span class="coming-soon-badge">Coming in v1.2</span></div>
+          </div>
         </div>
+        <form class="fw-waitlist" onsubmit="joinWaitlist(event,'vue')" aria-label="Get notified when Vue 3 support launches">
+          <input type="email" placeholder="your@email.com" autocomplete="email" required aria-label="Email address" />
+          <button type="submit">Notify me →</button>
+        </form>
       </div>
-      <div class="fw-card" role="listitem">
-        <div class="fw-logo" aria-label="SolidJS">🔷</div>
-        <div>
-          <div class="fw-name">SolidJS</div>
-          <div class="fw-version">v1.8+ · createSignal, createMemo, createEffect</div>
+      <div class="fw-card coming" role="listitem">
+        <div class="fw-top">
+          <div class="fw-logo" aria-label="SolidJS">🔷</div>
+          <div>
+            <div class="fw-name">SolidJS</div>
+            <div class="fw-version">v1.8+ · createSignal, createMemo, createEffect <span class="coming-soon-badge">Coming in v1.2</span></div>
+          </div>
         </div>
+        <form class="fw-waitlist" onsubmit="joinWaitlist(event,'solid')" aria-label="Get notified when SolidJS support launches">
+          <input type="email" placeholder="your@email.com" autocomplete="email" required aria-label="Email address" />
+          <button type="submit">Notify me →</button>
+        </form>
       </div>
       <div class="fw-card coming" role="listitem">
         <div class="fw-top">
@@ -2149,7 +2212,9 @@
     const email = evt.target.querySelector('input[type="email"]').value;
     const urls = {
       react:  'https://github.com/sigtrace-dev/sigtrace/issues?q=label%3Areact',
-      svelte: 'https://github.com/sigtrace-dev/sigtrace/issues?q=label%3Asvelte5'
+      svelte: 'https://github.com/sigtrace-dev/sigtrace/issues?q=label%3Asvelte5',
+      vue:    'https://github.com/sigtrace-dev/sigtrace/issues?q=label%3Avue',
+      solid:  'https://github.com/sigtrace-dev/sigtrace/issues?q=label%3Asolid'
     };
     // Store email in localStorage as lightweight capture (no server needed)
     try {
@@ -2162,6 +2227,43 @@
     window.open(urls[framework] || 'https://github.com/sigtrace-dev/sigtrace/issues', '_blank', 'noopener');
     const btn = evt.target.querySelector('button');
     if (btn) { btn.textContent = '✓ You\'re on the list!'; btn.disabled = true; }
+  }
+
+  /* ── Switch Real Screenshots ── */
+  function switchScreenshot(btn, type) {
+    document.querySelectorAll('.screenshot-tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+
+    const img = document.getElementById('screenshot-img');
+    const caption = document.getElementById('screenshot-caption');
+    
+    const sources = {
+      activity: {
+        src: '/sigtrace-activity.jpg',
+        alt: 'SigTrace VS Code extension panel showing live signal activity table',
+        cap: '▲ Real SigTrace panel — live signal activity inside VS Code'
+      },
+      timeline: {
+        src: '/sigtrace-timeline.jpg',
+        alt: 'SigTrace VS Code extension panel showing live signal timeline causal chains',
+        cap: '▲ Real SigTrace panel — causal propagation timeline of signal events'
+      },
+      components: {
+        src: '/sigtrace-components.jpg',
+        alt: 'SigTrace VS Code extension panel showing registered component performance analysis and warnings',
+        cap: '▲ Real SigTrace panel — component signal usage analysis and performance alerts'
+      }
+    };
+
+    if (sources[type]) {
+      img.src = sources[type].src;
+      img.alt = sources[type].alt;
+      caption.textContent = sources[type].cap;
+    }
   }
 
   /* ── Copy code ── */
