@@ -845,23 +845,34 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .frameworks-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
+    .frameworks-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
       margin-top: 40px;
+    }
+
+    @media (max-width: 992px) {
+      .frameworks-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .frameworks-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .fw-card {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 24px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 24px;
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       transition: all 0.25s ease;
     }
 
@@ -877,6 +888,30 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .fw-status-ready {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: auto;
+      padding: 8px 12px;
+      background: rgba(34, 197, 94, 0.08);
+      border: 1px solid rgba(34, 197, 94, 0.15);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: #86efac;
+    }
+
+    .btn-ready-link {
+      color: #4ade80;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .btn-ready-link:hover {
+      text-decoration: underline;
     }
 
     .fw-name {
@@ -1622,101 +1657,7 @@
       <p class="screenshot-caption" id="screenshot-caption">▲ Real SigTrace panel — live signal activity inside VS Code</p>
     </div>
 
-    <!-- Animated HTML Mockup (fallback / supplemental) -->
-    <div class="dashboard-preview" role="img" aria-label="SigTrace visualizer dashboard showing live signal activity" style="margin-top:48px">
-      <div class="dashboard-glow" aria-hidden="true"></div>
-      <div class="dashboard-frame">
-        <!-- Window chrome -->
-        <div class="dashboard-topbar">
-          <span class="topbar-dot red" aria-hidden="true"></span>
-          <span class="topbar-dot amber" aria-hidden="true"></span>
-          <span class="topbar-dot green" aria-hidden="true"></span>
-          <span class="topbar-title">SIGTRACE: REACTIVITY VISUALIZER</span>
-          <span class="topbar-badge" role="status" aria-live="polite">Connected</span>
-        </div>
-        <!-- Tabs -->
-        <div class="dash-tabs" role="tablist">
-          <button class="dash-tab active" role="tab" aria-selected="true">Activity</button>
-          <button class="dash-tab" role="tab" aria-selected="false">Timeline</button>
-          <button class="dash-tab" role="tab" aria-selected="false">Components</button>
-        </div>
-        <!-- Table -->
-        <div class="signal-table-mock" role="table" aria-label="Signal activity table">
-          <div class="table-header-row" role="row">
-            <span role="columnheader">Signal / Computed / Effect</span>
-            <span role="columnheader">Component</span>
-            <span role="columnheader">Value</span>
-            <span role="columnheader">Updates</span>
-            <span role="columnheader">Activity</span>
-          </div>
-          <div class="signal-row" style="animation-delay:0.0s" role="row">
-            <div class="sig-name">
-              <div class="sig-name-row">
-                <span class="kind-dot signal" aria-label="signal"></span>
-                <span class="sig-label">searchQuery</span>
-              </div>
-              <span class="sig-loc">search-bar.ts:42</span>
-            </div>
-            <span class="sig-component">SearchInput</span>
-            <span class="sig-value">"reactive"</span>
-            <span class="sig-updates warm">4</span>
-            <div class="spark-bar-wrap"><div class="spark-bar" style="width:48px;background:hsl(60,75%,52%)" aria-hidden="true"></div></div>
-          </div>
-          <div class="signal-row" style="animation-delay:0.08s" role="row">
-            <div class="sig-name">
-              <div class="sig-name-row">
-                <span class="kind-dot computed" aria-label="computed"></span>
-                <span class="sig-label">selectedTags</span>
-              </div>
-              <span class="sig-loc">tag-selector.ts:108</span>
-            </div>
-            <span class="sig-component">FilterPanel</span>
-            <span class="sig-value">[ "angular", "signals" ]</span>
-            <span class="sig-updates cool">2</span>
-            <div class="spark-bar-wrap"><div class="spark-bar" style="width:20px;background:hsl(90,75%,52%)" aria-hidden="true"></div></div>
-          </div>
-          <div class="signal-row" style="animation-delay:0.16s" role="row">
-            <div class="sig-name">
-              <div class="sig-name-row">
-                <span class="kind-dot computed" aria-label="computed"></span>
-                <span class="sig-label">filteredItems</span>
-              </div>
-              <span class="sig-loc">item-list.ts:241</span>
-            </div>
-            <span class="sig-component">DashboardGrid</span>
-            <span class="sig-value">[ { "id": 1, "title": "First Item" } ]</span>
-            <span class="sig-updates warm">3</span>
-            <div class="spark-bar-wrap"><div class="spark-bar" style="width:36px;background:hsl(75,75%,52%)" aria-hidden="true"></div></div>
-          </div>
-          <div class="signal-row" style="animation-delay:0.24s" role="row">
-            <div class="sig-name">
-              <div class="sig-name-row">
-                <span class="kind-dot effect" aria-label="effect"></span>
-                <span class="sig-label">autoSyncEffect</span>
-              </div>
-              <span class="sig-loc">sync-engine.ts:83</span>
-            </div>
-            <span class="sig-component">SettingsModal</span>
-            <span class="sig-value">undefined</span>
-            <span class="sig-updates hot">12</span>
-            <div class="spark-bar-wrap"><div class="spark-bar" style="width:64px;background:hsl(0,75%,52%)" aria-hidden="true"></div></div>
-          </div>
-          <div class="signal-row" style="animation-delay:0.32s" role="row">
-            <div class="sig-name">
-              <div class="sig-name-row">
-                <span class="kind-dot signal" aria-label="signal"></span>
-                <span class="sig-label">userSettings</span>
-              </div>
-              <span class="sig-loc">user-context.ts:15</span>
-            </div>
-            <span class="sig-component">NavbarHeader</span>
-            <span class="sig-value">{"theme":"dark","notifications":true}</span>
-            <span class="sig-updates warm">5</span>
-            <div class="spark-bar-wrap"><div class="spark-bar" style="width:52px;background:hsl(45,75%,52%)" aria-hidden="true"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
+
   </div>
 </section>
 
@@ -1809,12 +1750,18 @@
       <p class="section-desc">SigTrace ships with dedicated adapters for every major reactive framework. One extension, one dashboard, all your signals.</p>
     </div>
 
-    <div class="frameworks-row" role="list">
+    <div class="frameworks-grid" role="list">
       <div class="fw-card" role="listitem">
-        <div class="fw-logo" aria-label="Angular">🅰️</div>
-        <div>
-          <div class="fw-name">Angular</div>
-          <div class="fw-version">v17+ · Signals, computed, effect, toSignal</div>
+        <div class="fw-top">
+          <div class="fw-logo" aria-label="Angular">🅰️</div>
+          <div>
+            <div class="fw-name">Angular</div>
+            <div class="fw-version">v17+ · Signals, computed, effect, toSignal</div>
+          </div>
+        </div>
+        <div class="fw-status-ready">
+          <span>✓ Ready to install</span>
+          <a href="#quickstart" class="btn-ready-link">Setup Now →</a>
         </div>
       </div>
       <div class="fw-card coming" role="listitem">
