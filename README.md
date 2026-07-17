@@ -12,7 +12,7 @@
   <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension"><img src="https://img.shields.io/visual-studio-marketplace/d/sigtrace.sigtrace-extension?color=007ACC&style=flat-square&label=VS%20Code%20installs" alt="VS Code installs" /></a>
   <a href="https://github.com/sigtrace-dev/sigtrace/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square" alt="License MIT" /></a>
   <a href="https://github.com/sigtrace-dev/sigtrace/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sigtrace-dev/sigtrace/ci.yml?branch=main&style=flat-square&label=CI&color=6C63FF" alt="CI status" /></a>
-  <a href="https://buymeacoffee.com/sigtrace"><img src="https://img.shields.io/badge/Sponsor-%E2%98%95-FFDD00?style=flat-square&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee" /></a>
+  <a href="https://github.com/sponsors/sigtrace-dev"><img src="https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?style=flat-square&logo=github-sponsors" alt="Sponsor on GitHub" /></a>
 </p>
 
 <p>
