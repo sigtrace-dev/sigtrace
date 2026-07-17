@@ -237,6 +237,6 @@ Copyright © 2025 SigTrace Contributors.
 
 Made with ❤️ by the SigTrace community
 
-[sigtrace.dev](https://sigtrace.dev) · [Discord](https://discord.gg/sigtrace) · [npm](https://www.npmjs.com/org/sigtrace) · [VS Code Marketplace](https://marketplace.visualstudio.com/publishers/sigtrace)
+[sigtrace.dev](https://sigtrace.dev) · [Discord](https://discord.gg/DH9YHmbkB) · [npm](https://www.npmjs.com/org/sigtrace) · [VS Code Marketplace](https://marketplace.visualstudio.com/publishers/sigtrace)
 
 </div>
