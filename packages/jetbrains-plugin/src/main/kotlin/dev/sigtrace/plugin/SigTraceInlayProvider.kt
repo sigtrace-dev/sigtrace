@@ -39,16 +39,14 @@ class SigTraceInlayProvider : InlayHintsProvider {
                             label += " 🚨 HOTSPOT"
                         }
 
-                        // Add block/above-line inlay hint
-                        sink.addBlockPlaceholder(
-                            element.startOffset,
-                            relativity = BlockInlayRelativity.ABOVE,
-                            showAbove = true,
-                            priority = 0,
-                            presentation = {
-                                text(label)
-                            }
-                        )
+                        // Add inline inlay hint using declarative presentation API
+                        sink.addPresentation(
+                            InlineInlayPosition(element.startOffset, relatedToPrevious = true),
+                            hasBackground = true,
+                            tooltip = null
+                        ) {
+                            text(label)
+                        }
                     }
                 }
             }

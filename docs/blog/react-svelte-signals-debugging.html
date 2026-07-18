@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- PRIMARY SEO META                                            -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <title>Reactivity is Magic (Until You Have to Debug It): Visualizing React & Svelte 5 Signals</title>
+  <meta name="description" content="Learn how SigTrace helps developers debug Preact Signals in React and Svelte 5 Runes by visualizing the dependency graph and causal chains inside VS Code." />
+  <meta name="keywords" content="debug svelte 5 runes, svelte 5 state derived effect, preact signals react debugger, reactive graph visualization, vscode extension signals, sigtrace" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://sigtrace.dev/blog/react-svelte-signals-debugging.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://sigtrace.dev/blog/react-svelte-signals-debugging.html" />
+  <meta property="og:title" content="Reactivity is Magic (Until You Have to Debug It): Visualizing React & Svelte 5 Signals" />
+  <meta property="og:description" content="Fine-grained reactivity is incredibly fast but notoriously hard to debug. Meet SigTrace for React and Svelte 5: zero-config causal chain visualization." />
+  <meta property="og:image" content="https://sigtrace.dev/og-image.png" />
+  <meta property="article:published_time" content="2026-07-18" />
+  <meta property="article:author" content="SigTrace Contributors" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Reactivity is Magic (Until You Have to Debug It): Visualizing React & Svelte 5 Signals" />
+  <meta name="twitter:description" content="Debug React signals and Svelte 5 runes with real-time causal chain timelines in VS Code." />
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": "https://sigtrace.dev/blog/react-svelte-signals-debugging.html#article",
+    "headline": "Reactivity is Magic (Until You Have to Debug It): Visualizing React & Svelte 5 Signals",
+    "url": "https://sigtrace.dev/blog/react-svelte-signals-debugging.html",
+    "datePublished": "2026-07-18",
+    "dateModified": "2026-07-18",
+    "description": "An deep dive into debugging fine-grained reactivity using SigTrace for Svelte 5 Runes and Preact Signals in React.",
+    "author": {
+      "@type": "Person",
+      "name": "SigTrace Contributors"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "SigTrace",
+      "logo": "https://sigtrace.dev/logo.svg"
+    },
+    "mainEntityOfPage": "https://sigtrace.dev/blog/react-svelte-signals-debugging.html"
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-base: #080c14;
+      --bg-surface: #0d1422;
+      --bg-card: #111827;
+      --border: rgba(255,255,255,0.07);
+      --border-active: rgba(99,102,241,0.5);
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --font-sans: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-md: 10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+    
+    /* Nav */
+    nav {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      background: rgba(8,12,20,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .nav-logo span { color: var(--accent-light); }
+    .nav-links { display: flex; gap: 16px; list-style: none; }
+    .nav-links a { font-size: 14px; color: var(--text-muted); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text-primary); }
+
+    /* Article Header */
+    header { padding: 60px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+    .post-meta { font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+    h1 { font-size: clamp(28px, 5vw, 36px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.25; margin-bottom: 16px; color: #fff; }
+    .post-author { font-size: 14px; color: var(--text-muted); }
+
+    /* Article Content */
+    article p { margin-bottom: 24px; color: var(--text-secondary); }
+    article h2 { font-size: 24px; font-weight: 700; margin: 40px 0 16px; color: #fff; letter-spacing: -0.02em; }
+    article h3 { font-size: 18px; font-weight: 700; margin: 28px 0 12px; color: #fff; }
+    article ul { margin: 0 0 24px 20px; list-style-type: disc; color: var(--text-secondary); }
+    article li { margin-bottom: 8px; }
+    article code { font-family: var(--font-mono); font-size: 14px; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--accent-light); }
+    
+    .callout {
+      background: var(--bg-surface);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin: 32px 0;
+    }
+    .callout p { margin: 0; color: #cbd5e1; }
+
+    /* Code block */
+    pre {
+      background: #06090f;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      overflow-x: auto;
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    pre code { background: transparent; padding: 0; color: #cbd5e1; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); margin-top: 120px; padding: 40px 0; font-size: 13px; color: var(--text-muted); text-align: center; }
+  </style>
+</head>
+<body>
+
+<nav role="navigation">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px; vertical-align:middle;">
+        <path d="m19 8-6 2-6-2M12 2v8M12 22v-6M19 16l-7-3-7 3"/>
+      </svg>
+      Sig<span>Trace</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/#features">Features</a></li>
+      <li><a href="/#quickstart">Quickstart</a></li>
+      <li><a href="/docs">Docs</a></li>
+      <li><a href="/blog">Blog</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <header>
+    <div class="post-meta">July 18, 2026 · Releases</div>
+    <h1>Reactivity is Magic (Until You Have to Debug It): Visualizing React & Svelte 5 Signals</h1>
+    <div class="post-author">By the SigTrace Contributors</div>
+  </header>
+
+  <main role="main">
+    <article>
+      <p>Fine-grained reactivity is taking over front-end development. Svelte 5 has retired its compiler-based dirty-checking in favor of <strong>Runes</strong>, and React developers are increasingly turning to <strong>Preact Signals</strong> to bypass re-renders entirely. The speed is undeniable: your UI updates only when and where the underlying state changes.</p>
+      
+      <p>But when state updates cascade into infinite loops or triggers refuse to fire, reactivity quickly turns from magic to a debugging nightmare. Standard debugger stacks are filled with framework internal engine frames, masking the code that actually scheduled the update. That's why we are excited to announce official <strong>React</strong> and <strong>Svelte 5</strong> support for SigTrace.</p>
+
+      <h2>The Problem: The Reactive Black Box</h2>
+      <p>Consider a typical reactive graph. A user action triggers a state change (a signal write). That write updates two derived values, which in turn trigger three separate rendering effects. If one of those effects inadvertently updates another signal, you get an infinite cycle.</p>
+      
+      <p>In standard browser devtools, you see the crash or the frozen page, but you cannot easily trace the causal chain back to the root trigger. You are left placing dozens of <code>console.log()</code> statements or stepping blindly through minified library code.</p>
+
+      <div class="callout">
+        <p><strong>The SigTrace Approach:</strong> Rather than viewing state as a static snapshot, SigTrace instruments your signal creators at build time. It logs the exact trigger path and matches every reactive transaction back to the line of code that caused it.</p>
+      </div>
+
+      <h2>How It Works in React (Preact Signals)</h2>
+      <p>Preact Signals allow React developers to write highly performant applications by updating DOM nodes directly, bypassing React's virtual DOM diffing. When you register the SigTrace Vite plugin, your Preact signals are monitored in real-time:</p>
+      
+      <pre><code>// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { sigtrace } from '@sigtrace/vite';
+
+export default defineConfig({
+  plugins: [react(), sigtrace()]
+});</code></pre>
+
+      <p>Once registered, any <code>signal()</code>, <code>computed()</code>, or <code>effect()</code> declared in your component files is automatically instrumented. You can see the name of the signal, its component context, and the full causal chain of updates directly in your VS Code sidebar.</p>
+
+      <h2>How It Works in Svelte 5 (Runes)</h2>
+      <p>Svelte 5's Runes syntax compiles directly into native signal structures. By adding SigTrace to your Vite config, Svelte's <code>$state</code>, <code>$derived</code>, and <code>$effect</code> are automatically mapped to the SigTrace visualization panel:</p>
+      
+      <pre><code>// Svelte component declaration
+let count = $state(0);
+let doubled = $derived(count * 2);
+
+$effect(() => {
+  console.log(`Doubled count is: ${doubled}`);
+});</code></pre>
+
+      <p>SigTrace captures the transition of the Svelte signal graph. When Svelte schedules an effect re-evaluation, SigTrace shows the exact sequence: <code>count (write) ➔ doubled (re-evaluate) ➔ effect (run)</code>. Clicking on any step in the VS Code panel jumps your editor cursor directly to the corresponding rune declaration.</p>
+
+      <h2>Getting Started in 2 Minutes</h2>
+      <p>To try the new React and Svelte 5 integrations, simply add the dev dependencies and wrap your vite config:</p>
+      
+      <pre><code># Install core tracer & plugin
+npm install --save-dev @sigtrace/core @sigtrace/vite
+
+# Start your server normally
+npm run dev</code></pre>
+
+      <p>Make sure you have the <strong>SigTrace VS Code Extension</strong> installed from the Marketplace. As soon as your browser loads the app, the VS Code sidebar will light up with the live reactivity log.</p>
+      
+      <p>Reactivity doesn't have to be a black box. Give SigTrace a try, and see what your signals are doing under the hood.</p>
+
+      <p>Check out the <a href="https://github.com/sigtrace-dev/sigtrace" style="color:var(--accent-light)">GitHub Repository</a> to learn more and contribute!</p>
+    </article>
+  </main>
+</div>
+
+<footer>
+  <div class="container">
+    <p>© 2025 SigTrace Contributors. Released under the MIT License.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1505,22 +1505,6 @@
 
     .fw-card.coming .fw-top { display: flex; align-items: center; gap: 14px; }
 
-    <!-- 🔒 Security Trust Strip — visible before the fold -->
-    <div class="trust-strip fade-up delay-4" role="list" aria-label="Privacy and security guarantees">
-      <div class="trust-item" role="listitem">
-        <svg class="ti-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span><strong>100% local</strong> — WebSocket binds to <code style="font-family:var(--font-mono);font-size:11px;color:#67e8f9">localhost:8420</code> only</span>
-      </div>
-      <div class="trust-item" role="listitem">
-        <svg class="ti-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span><strong>Zero telemetry</strong> — no analytics, no crash reports, no phone-home</span>
-      </div>
-      <div class="trust-item" role="listitem">
-        <svg class="ti-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
-        <span><strong>Open source &amp; auditable</strong> — <a href="https://github.com/sigtrace-dev/sigtrace" target="_blank" rel="noopener">read every line on GitHub</a></span>
-      </div>
-    </div>
-
     /* ══════════════════════════════════════════════════════════
        FRAMEWORK-TAB STEP SYNC
     ══════════════════════════════════════════════════════════ */
@@ -1665,6 +1649,21 @@
       <p class="screenshot-caption" id="screenshot-caption">▲ Real SigTrace panel — live signal activity inside VS Code</p>
     </div>
 
+    <!-- 🔒 Security Trust Strip — visible before the fold -->
+    <div class="trust-strip fade-up delay-4" role="list" aria-label="Privacy and security guarantees">
+      <div class="trust-item" role="listitem">
+        <svg class="ti-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><strong>100% local</strong> — WebSocket binds to <code style="font-family:var(--font-mono);font-size:11px;color:#67e8f9">localhost:8420</code> only</span>
+      </div>
+      <div class="trust-item" role="listitem">
+        <svg class="ti-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><strong>Zero telemetry</strong> — no analytics, no crash reports, no phone-home</span>
+      </div>
+      <div class="trust-item" role="listitem">
+        <svg class="ti-purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+        <span><strong>Open source &amp; auditable</strong> — <a href="https://github.com/sigtrace-dev/sigtrace" target="_blank" rel="noopener">read every line on GitHub</a></span>
+      </div>
+    </div>
 
   </div>
 </section>
@@ -2243,13 +2242,22 @@
   function switchTab(btn, lang) {
     document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    ['angular','vue','solid'].forEach(l => {
-      document.getElementById('code-' + l).style.display = l === lang ? '' : 'none';
+    ['angular','vue','solid','react','svelte'].forEach(l => {
+      const el = document.getElementById('code-' + l);
+      if (el) el.style.display = l === lang ? '' : 'none';
     });
     // Sync the matching step-set panel on the left
     document.querySelectorAll('.step-set').forEach(s => s.classList.remove('active'));
     const stepsEl = document.getElementById('steps-' + lang);
     if (stepsEl) stepsEl.classList.add('active');
+  }
+
+  /* ── Framework grid Setup link helper ── */
+  function switchQuickstartTab(lang) {
+    const btn = document.getElementById('tab-' + lang);
+    if (btn) {
+      switchTab(btn, lang);
+    }
   }
 
   /* ── Waitlist — open GitHub issue tracker for the relevant framework ── */

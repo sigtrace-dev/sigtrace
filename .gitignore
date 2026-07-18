@@ -4,6 +4,7 @@ node_modules/
 # Compilation outputs
 dist/
 *.tsbuildinfo
+*.tgz
 
 # Extension packages
 *.vsix
@@ -13,3 +14,13 @@ dist/
 .vscode/tasks.json
 .vscode/settings.json
 .vscode/project-state.json
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Gradle files
+.gradle/
+build/
+

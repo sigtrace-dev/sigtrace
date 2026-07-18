@@ -24,9 +24,14 @@ intellij {
     version.set("2023.2.5")
     type.set("IU") // IntelliJ IDEA Ultimate (supports JS/TS features needed for WebStorm/IDEA)
     plugins.set(listOf("JavaScript", "com.intellij.css"))
+    instrumentCode.set(false)
 }
 
 tasks {
+    buildSearchableOptions {
+        enabled = false
+    }
+
     patchPluginXml {
         sinceBuild.set("232")
         untilBuild.set("241.*")

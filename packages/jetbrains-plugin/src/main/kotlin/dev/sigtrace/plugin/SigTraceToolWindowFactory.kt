@@ -14,9 +14,11 @@ import com.intellij.ui.jcef.JBCefClient
 import org.cef.browser.CefBrowser
 import org.cef.browser.CefFrame
 import org.cef.callback.CefQueryCallback
+import org.cef.handler.CefLoadHandler
 import org.cef.handler.CefLoadHandlerAdapter
 import org.cef.handler.CefMessageRouterHandlerAdapter
 import org.cef.handler.CefMessageRouterHandler
+import org.cef.network.CefRequest
 import org.cef.browser.CefMessageRouter
 import java.io.File
 import java.nio.file.Files
@@ -31,7 +33,7 @@ class SigTraceToolWindowFactory : ToolWindowFactory {
         SigTraceWebSocketServer.start()
 
         val browser = JBCefBrowser()
-        val client = browser.jcComponent.browser.client
+        val client = browser.jbCefClient.cefClient
 
         // Inject VS Code API mock in JS so app.js runs unmodified
         val mockCode = """
@@ -50,7 +52,7 @@ class SigTraceToolWindowFactory : ToolWindowFactory {
 
         // Handle load events to inject mock script and send cached events
         browser.jbCefClient.addLoadHandler(object : CefLoadHandlerAdapter() {
-            override fun onLoadStart(browser: CefBrowser?, frame: CefFrame?, transitionType: CefLoadHandler.TransitionType?) {
+            override fun onLoadStart(browser: CefBrowser?, frame: CefFrame?, transitionType: CefRequest.TransitionType?) {
                 frame?.executeJavaScript(mockCode, frame.url, 0)
             }
 
