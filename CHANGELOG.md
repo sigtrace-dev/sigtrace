@@ -17,6 +17,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.6] – 2026-07-21
+
+### Changed
+- Bumped monorepo and package manifests to `1.1.6` for deployment consistency.
+- Updated website release/version references to `1.1.6`.
+
+---
+
+## [1.1.4] – 2026-07-21
+
+### Changed
+- Website copy, SEO metadata, and setup guidance were refined for clearer user value and broader framework/editor discoverability.
+- Extension and JetBrains webview UX were enhanced with value inspection, pinning, timeline filtering controls, and softer diagnostics wording.
+
+---
+
 ## [1.1.3] – 2025-07-10
 
 ### Added
@@ -106,7 +122,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/sigtrace-dev/sigtrace/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/sigtrace-dev/sigtrace/compare/v1.1.6...HEAD
+[1.1.6]: https://github.com/sigtrace-dev/sigtrace/compare/v1.1.4...v1.1.6
+[1.1.4]: https://github.com/sigtrace-dev/sigtrace/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/sigtrace-dev/sigtrace/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/sigtrace-dev/sigtrace/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/sigtrace-dev/sigtrace/compare/v1.1.0...v1.1.1

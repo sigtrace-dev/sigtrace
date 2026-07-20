@@ -3,6 +3,8 @@
 
   // ── State ────────────────────────────────────────────────────────────────
   const nodeMap = new Map();       // id -> node
+  const nodeAliasMap = new Map();  // raw event id -> canonical node id
+  const nodeSignatureMap = new Map(); // stable signature -> canonical node id
   const componentMap = new Map();  // componentName -> comp stats
   let chainLog = [];               // finalized causal chains (newest first)
   let alerts = [];
@@ -13,11 +15,25 @@
   let showInactive = false;
   let sortBy = 'updates';
   let focusedSignalId = null;
+  let selectedSignalId = null;
+  const pinnedSignalIds = new Set();
+  const pinnedChainKeys = new Set();
+  const hiddenChainIds = new Set();
+  const expandedPinnedKeys = new Set();
+  let timelineQuery = '';
+  let timelinePinnedOnly = false;
+  let timelineShowHidden = false;
+  let expandAllPinned = false;
   let pendingTableRender = false;
 
   // ── DOM refs ─────────────────────────────────────────────────────────────
   const activityTableBody = document.getElementById('activity-table-body');
   const timelineChainList = document.getElementById('timeline-chain-list');
+  const timelineSearch    = document.getElementById('timeline-search');
+  const timelinePinnedOnlyToggle = document.getElementById('timeline-pinned-only');
+  const timelineShowHiddenToggle = document.getElementById('timeline-show-hidden');
+  const timelineExpandPinnedBtn = document.getElementById('timeline-expand-pinned');
+  const valuePanel        = document.getElementById('value-panel');
   const componentsPanel   = document.getElementById('components-panel');
   const alertsSection     = document.getElementById('alerts-section');
   const alertsPanel       = document.getElementById('alerts-panel');
@@ -38,6 +54,7 @@
     if (pane) pane.classList.add('active');
     if (tabId === 'tab-activity') renderActivityTable();
     if (tabId === 'tab-timeline') renderTimeline();
+    if (tabId === 'tab-value') renderValueInspector();
     if (tabId === 'tab-components') renderComponentCards();
   }
 
@@ -51,9 +68,13 @@
 
     switch (msg.type) {
       case 'register': {
-        if (!nodeMap.has(msg.id)) {
+        var signature = nodeSignature(msg);
+        var canonicalId = nodeSignatureMap.get(signature) || msg.id;
+        nodeAliasMap.set(msg.id, canonicalId);
+
+        if (!nodeMap.has(canonicalId)) {
           var node = {
-            id: msg.id,
+            id: canonicalId,
             name: cleanName(msg.name || msg.id),
             component: msg.component || 'Global',
             kind: msg.kind || 'signal',
@@ -64,14 +85,19 @@
             sparkline: [],
             loc: msg.loc || null
           };
-          nodeMap.set(msg.id, node);
+          nodeMap.set(canonicalId, node);
+          nodeSignatureMap.set(signature, canonicalId);
           ensureComponent(node);
+        } else {
+          var existingNode = nodeMap.get(canonicalId);
+          if (msg.value !== undefined) existingNode.value = msg.value;
+          if (msg.loc) existingNode.loc = msg.loc;
           scheduleUiRender();
         }
         break;
       }
       case 'write': {
-        var node = nodeMap.get(msg.id);
+        var node = resolveNode(msg.id);
         if (node) {
           var prev = node.value;
           node.value = msg.value;
@@ -86,7 +112,7 @@
         break;
       }
       case 'update': {
-        var node = nodeMap.get(msg.id);
+        var node = resolveNode(msg.id);
         if (node) {
           if (msg.value !== undefined) node.value = msg.value;
           node.epoch++;
@@ -101,7 +127,18 @@
         break;
       }
       case 'destroy': {
-        nodeMap.delete(msg.id);
+        var resolved = resolveNodeId(msg.id);
+        nodeAliasMap.delete(msg.id);
+        var stillReferenced = false;
+        nodeAliasMap.forEach(function(value) {
+          if (value === resolved) stillReferenced = true;
+        });
+        if (!stillReferenced) {
+          nodeMap.delete(resolved);
+          nodeSignatureMap.forEach(function(value, key) {
+            if (value === resolved) nodeSignatureMap.delete(key);
+          });
+        }
         scheduleUiRender();
         break;
       }
@@ -119,6 +156,7 @@
       if (!activeTab) return;
       if (activeTab.id === 'tab-activity') renderActivityTable();
       if (activeTab.id === 'tab-timeline') renderTimeline();
+      if (activeTab.id === 'tab-value') renderValueInspector();
       if (activeTab.id === 'tab-components') renderComponentCards();
     });
   }
@@ -131,6 +169,38 @@
 
   function shortComponentName(name) {
     return name.replace('Component', '').replace('Service', 'Svc');
+  }
+
+  function toLocKey(loc) {
+    if (!loc || !loc.file) return 'unknown';
+    return loc.file + ':' + (loc.line || 0) + ':' + (loc.column || 0);
+  }
+
+  function nodeSignature(payload) {
+    return [
+      payload.kind || 'signal',
+      payload.component || 'Global',
+      cleanName(payload.name || payload.id || 'unknown'),
+      toLocKey(payload.loc)
+    ].join('|');
+  }
+
+  function resolveNodeId(rawId) {
+    return nodeAliasMap.get(rawId) || rawId;
+  }
+
+  function resolveNode(rawId) {
+    return nodeMap.get(resolveNodeId(rawId));
+  }
+
+  function chainGroupKey(chain) {
+    if (!chain || !chain.trigger) return 'unknown';
+    return [
+      chain.trigger.id || 'id',
+      chain.trigger.name || 'name',
+      chain.trigger.component || 'Global',
+      toLocKey(chain.trigger.loc)
+    ].join('|');
   }
 
   // ── Component tracking ────────────────────────────────────────────────────
@@ -232,6 +302,11 @@
     else if (sortBy === 'component') rows.sort(function(a, b) { return a.component.localeCompare(b.component); });
     else if (sortBy === 'recent') rows.sort(function(a, b) { return (b.lastUpdated || 0) - (a.lastUpdated || 0); });
 
+    rows.sort(function(a, b) {
+      var pinDelta = Number(pinnedSignalIds.has(b.id)) - Number(pinnedSignalIds.has(a.id));
+      return pinDelta;
+    });
+
     if (rows.length === 0) {
       var msg = !showInactive
         ? 'No active signals yet.<br>Interact with your app or enable <strong>Show inactive</strong> to see all registered signals.'
@@ -251,6 +326,7 @@
       var kindClass = 'kind-' + node.kind;
       var isHot = node.epoch > 30;
       var isFocused = node.id === focusedSignalId;
+      var isPinned = pinnedSignalIds.has(node.id);
       var actBar = renderSparkBar(node.sparkline, node.epoch);
       var compShort = shortComponentName(node.component);
 
@@ -261,7 +337,7 @@
       }
 
       html += '<tr class="signal-row' + (isHot ? ' row-hot' : '') + (isFocused ? ' row-focused' : '') + '" data-id="' + node.id + '">' +
-        '<td class="col-name"><div class="col-name-wrap"><span class="kind-icon ' + kindClass + '">' + kindIcon + '</span><span class="signal-name" title="' + node.name + '">' + node.name + '</span></div>' + (locHtml ? '<div class="loc-wrap">' + locHtml + '</div>' : '') + '</td>' +
+        '<td class="col-name"><div class="col-name-wrap"><span class="kind-icon ' + kindClass + '">' + kindIcon + '</span><span class="signal-name" title="' + node.name + '">' + node.name + '</span><button class="pin-btn' + (isPinned ? ' active' : '') + '" data-action="toggle-pin" data-id="' + node.id + '" title="' + (isPinned ? 'Unpin signal' : 'Pin signal') + '">&#128204;</button></div>' + (locHtml ? '<div class="loc-wrap">' + locHtml + '</div>' : '') + '</td>' +
         '<td class="col-component" title="' + node.component + '">' + compShort + '</td>' +
         '<td class="col-value" title="' + escapeHtml(valueFull) + '">' + escapeHtml(valueStr) + '</td>' +
         '<td class="col-updates' + (isHot ? ' hot-count' : '') + '">' + node.epoch + '</td>' +
@@ -281,7 +357,7 @@
                 '<div>' + locDetail + '</div>' +
               '</div>' +
               '<div class="details-value-wrap">' +
-                '<span class="detail-label">Full Value:</span>' +
+                '<div class="details-actions"><span class="detail-label">Full Value:</span><button class="small-btn" data-action="copy-value" data-id="' + node.id + '">Copy value</button><button class="small-btn" data-action="open-value-tab" data-id="' + node.id + '">Open in Value tab</button></div>' +
                 '<pre class="details-value"><code>' + escapeHtml(valueFull) + '</code></pre>' +
               '</div>' +
             '</div>' +
@@ -342,14 +418,61 @@
 
   // ── Timeline ──────────────────────────────────────────────────────────────
   function renderTimeline() {
-    if (chainLog.length === 0) {
-      timelineChainList.innerHTML = '<div class="empty-state">No activity yet.<br>Interact with your app to see causal chains appear here.</div>';
+    var grouped = new Map();
+    for (var idx = 0; idx < chainLog.length; idx++) {
+      var chain = chainLog[idx];
+      var key = chainGroupKey(chain);
+      if (!grouped.has(key)) grouped.set(key, []);
+      grouped.get(key).push(chain);
+    }
+
+    var groupedEntries = Array.from(grouped.entries()).map(function(entry) {
+      var key = entry[0];
+      var chains = entry[1];
+      var visibleChains = chains.filter(function(chain) {
+        return timelineShowHidden || !hiddenChainIds.has(chain.id);
+      });
+      return {
+        key: key,
+        chains: chains,
+        visibleChains: visibleChains,
+        latest: visibleChains[0] || chains[0],
+        pinned: pinnedChainKeys.has(key),
+        hasHidden: chains.length !== visibleChains.length
+      };
+    }).filter(function(group) {
+      if (timelinePinnedOnly && !group.pinned) return false;
+      if (!group.latest) return false;
+      if (!timelineQuery) return true;
+      var q = timelineQuery;
+      var latest = group.latest;
+      if (latest.trigger.name.toLowerCase().indexOf(q) !== -1) return true;
+      if ((latest.trigger.component || '').toLowerCase().indexOf(q) !== -1) return true;
+      return latest.updates.some(function(u) {
+        return u.name.toLowerCase().indexOf(q) !== -1 ||
+          (u.component || '').toLowerCase().indexOf(q) !== -1 ||
+          (u.kind || '').toLowerCase().indexOf(q) !== -1;
+      });
+    });
+
+    groupedEntries.sort(function(a, b) {
+      var pinDelta = Number(b.pinned) - Number(a.pinned);
+      if (pinDelta !== 0) return pinDelta;
+      return (b.latest.timestamp || 0) - (a.latest.timestamp || 0);
+    });
+
+    if (groupedEntries.length === 0) {
+      var emptyMsg = chainLog.length === 0
+        ? 'No activity yet.<br>Interact with your app to see causal chains appear here.'
+        : 'No timeline entries match the current filter.';
+      timelineChainList.innerHTML = '<div class="empty-state">' + emptyMsg + '</div>';
       return;
     }
 
     var html = '';
-    for (var i = 0; i < chainLog.length; i++) {
-      var chain = chainLog[i];
+    for (var i = 0; i < groupedEntries.length; i++) {
+      var group = groupedEntries[i];
+      var chain = group.latest;
       var d = new Date(chain.timestamp);
       var timeStr = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + String(d.getMilliseconds()).padStart(3, '0');
       var totalEffects = chain.updates.filter(function(u) { return u.kind === 'effect'; }).length;
@@ -392,8 +515,19 @@
       }
 
       var trigClickAttr = chain.trigger.loc ? ' class="chain-trigger-name clickable" data-file="' + chain.trigger.loc.file + '" data-line="' + chain.trigger.loc.line + '"' : ' class="chain-trigger-name"';
+      var chainPinned = group.pinned;
+      var canExpand = group.visibleChains.length > 1;
+      var expanded = expandAllPinned || expandedPinnedKeys.has(group.key);
+      var hiddenLabel = hiddenChainIds.has(chain.id) ? 'Show' : 'Hide';
 
-      html += '<div class="chain-card">' +
+      var olderHtml = '';
+      if (chainPinned && canExpand && expanded) {
+        for (var k = 1; k < group.visibleChains.length; k++) {
+          olderHtml += renderChainCard(group.visibleChains[k], group.key, false, false, false);
+        }
+      }
+
+      html += '<div class="chain-card' + (chainPinned ? ' chain-pinned' : '') + '">' +
         '<div class="chain-header">' +
           '<span class="chain-time">' + timeStr + '</span>' +
           '<span class="chain-trigger-icon kind-signal">&#9679;</span>' +
@@ -401,16 +535,80 @@
           '<span class="chain-component">[' + shortComponentName(chain.trigger.component) + ']</span>' +
           (valChange ? '<span class="chain-value-change" title="' + escapeHtml(valChangeTitle) + '">' + valChange + '</span>' : '') +
           (summaryStr ? '<span class="chain-summary">' + summaryStr + '</span>' : '') +
+          '<button class="chain-pin-btn' + (chainPinned ? ' active' : '') + '" data-action="toggle-chain-pin" data-key="' + group.key + '">' + (chainPinned ? 'Pinned' : 'Pin') + '</button>' +
+          '<button class="chain-hide-btn' + (hiddenChainIds.has(chain.id) ? ' active' : '') + '" data-action="toggle-chain-visibility" data-id="' + chain.id + '">' + hiddenLabel + '</button>' +
+          (chainPinned && canExpand ? '<button class="chain-hide-btn" data-action="toggle-pinned-expand" data-key="' + group.key + '">' + (expanded ? 'Collapse older' : 'Expand older (' + (group.visibleChains.length - 1) + ')') + '</button>' : '') +
+          (group.hasHidden ? '<span class="chain-summary">hidden: ' + (group.chains.length - group.visibleChains.length) + '</span>' : '') +
         '</div>' +
         (chain.updates.length > 0 ? '<div class="chain-updates">' + updatesHtml + '</div>' : '') +
-        '</div>';
+        '</div>' +
+        olderHtml;
     }
     timelineChainList.innerHTML = html;
+  }
+
+  function renderChainCard(chain, groupKey, pinned, includeActions, includeHiddenBadge) {
+    var d = new Date(chain.timestamp);
+    var timeStr = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + String(d.getMilliseconds()).padStart(3, '0');
+    var trigClickAttr = chain.trigger.loc ? ' class="chain-trigger-name clickable" data-file="' + chain.trigger.loc.file + '" data-line="' + chain.trigger.loc.line + '"' : ' class="chain-trigger-name"';
+    var updatesHtml = '';
+    for (var j = 0; j < chain.updates.length; j++) {
+      var u = chain.updates[j];
+      var uKindIcon = u.kind === 'memo' ? '&#9670;' : '&#9650;';
+      var uKindLabel = u.kind === 'memo' ? 'computed' : 'effect';
+      var durStr = u.duration > 0 ? '(' + u.duration.toFixed(1) + 'ms)' : '';
+      var uClickAttr = u.loc ? ' class="chain-node-name clickable" data-file="' + u.loc.file + '" data-line="' + u.loc.line + '"' : ' class="chain-node-name"';
+      updatesHtml += '<div class="chain-update">' +
+        '<span class="chain-indent">&#9492;&#9472;</span>' +
+        '<span class="chain-icon kind-' + u.kind + '">' + uKindIcon + '</span>' +
+        '<span' + uClickAttr + '>' + u.name + '</span>' +
+        '<span class="chain-component">[' + shortComponentName(u.component) + ']</span>' +
+        '<span class="chain-kind">' + uKindLabel + '</span>' +
+        (durStr ? '<span class="chain-duration">' + durStr + '</span>' : '') +
+        '</div>';
+    }
+    return '<div class="chain-card' + (pinned ? ' chain-pinned' : '') + '">' +
+      '<div class="chain-header">' +
+      '<span class="chain-time">' + timeStr + '</span>' +
+      '<span class="chain-trigger-icon kind-signal">&#9679;</span>' +
+      '<span' + trigClickAttr + '>' + chain.trigger.name + '</span>' +
+      '<span class="chain-component">[' + shortComponentName(chain.trigger.component) + ']</span>' +
+      (includeHiddenBadge ? '<span class="chain-summary">older</span>' : '') +
+      (includeActions ? '<button class="chain-pin-btn' + (pinned ? ' active' : '') + '" data-action="toggle-chain-pin" data-key="' + groupKey + '">' + (pinned ? 'Pinned' : 'Pin') + '</button>' : '') +
+      '</div>' +
+      (updatesHtml ? '<div class="chain-updates">' + updatesHtml + '</div>' : '') +
+      '</div>';
   }
 
   function pad(n) { return n < 10 ? '0' + n : String(n); }
 
   // ── Component cards ───────────────────────────────────────────────────────
+  function renderValueInspector() {
+    var targetId = selectedSignalId || focusedSignalId;
+    var node = targetId ? nodeMap.get(targetId) : null;
+    if (!node) {
+      valuePanel.innerHTML = '<div class="empty-state">Select a signal from Activity to inspect the full value.</div>';
+      return;
+    }
+
+    var value = fullStr(node.value);
+    var locationText = node.loc ? (node.loc.file + ':' + node.loc.line) : 'Unknown';
+    var updated = node.lastUpdated ? timeSince(node.lastUpdated) : 'never';
+    valuePanel.innerHTML =
+      '<div class="value-header">' +
+        '<div class="value-title">' + escapeHtml(node.name) + '</div>' +
+        '<button class="small-btn" data-action="copy-value" data-id="' + node.id + '">Copy value</button>' +
+      '</div>' +
+      '<div class="value-meta">' +
+        '<span>Kind: <strong>' + escapeHtml(node.kind) + '</strong></span>' +
+        '<span>Component: <strong>' + escapeHtml(node.component) + '</strong></span>' +
+        '<span>Updates: <strong>' + node.epoch + '</strong></span>' +
+        '<span>Last update: <strong>' + escapeHtml(updated) + '</strong></span>' +
+      '</div>' +
+      '<div class="value-meta"><span>Location: <strong>' + escapeHtml(locationText) + '</strong></span></div>' +
+      '<pre class="value-code"><code>' + escapeHtml(value) + '</code></pre>';
+  }
+
   function renderComponentCards() {
     if (componentMap.size === 0) {
       componentsPanel.innerHTML = '<div class="empty-state">No components tracked yet.</div>';
@@ -429,8 +627,8 @@
       var deadHtml = '';
       if (deadSignals.length > 0) {
         var uniqueDead = Array.from(new Set(deadSignals.map(function(s) { return s.name; })));
-        deadHtml = '<div class="comp-dead">Unused signals (' + uniqueDead.length + ' unique): ' +
-          uniqueDead.join(', ') + '</div>';
+        deadHtml = '<div class="comp-dead">Suggestion: these signals have no observed writes yet (' + uniqueDead.length + '): ' +
+          uniqueDead.join(', ') + '. This may be intentional.</div>';
       }
 
       var slowestHtml = '';
@@ -493,10 +691,10 @@
       });
       alerts.push({
         severity: 'warn',
-        title: totalUnique + ' unused signal' + (totalUnique > 1 ? 's' : '') +
-               ' across ' + Object.keys(byComp).length + ' component' + (Object.keys(byComp).length > 1 ? 's' : ''),
+        title: totalUnique + ' signal' + (totalUnique > 1 ? 's' : '') +
+               ' with no observed writes across ' + Object.keys(byComp).length + ' component' + (Object.keys(byComp).length > 1 ? 's' : ''),
         desc: descParts.join('<br>'),
-        fix: 'Remove unused signals or connect them to a computed or effect that reads their value.'
+        fix: 'Review these as potential clean-up candidates. Keep them if they are placeholders or driven by future interactions.'
       });
     }
 
@@ -529,14 +727,33 @@
 
   btnClear.addEventListener('click', function() {
     nodeMap.clear();
+    nodeAliasMap.clear();
+    nodeSignatureMap.clear();
     componentMap.clear();
     chainLog = [];
+    pinnedSignalIds.clear();
+    pinnedChainKeys.clear();
+    hiddenChainIds.clear();
+    expandedPinnedKeys.clear();
+    selectedSignalId = null;
+    timelineQuery = '';
+    timelinePinnedOnly = false;
+    timelineShowHidden = false;
+    expandAllPinned = false;
+    if (timelineSearch) timelineSearch.value = '';
+    if (timelinePinnedOnlyToggle) timelinePinnedOnlyToggle.checked = false;
+    if (timelineShowHiddenToggle) timelineShowHiddenToggle.checked = false;
+    if (timelineExpandPinnedBtn) {
+      timelineExpandPinnedBtn.classList.remove('active');
+      timelineExpandPinnedBtn.innerText = 'Expand pinned groups';
+    }
     alerts = [];
     activeChain = null;
     clearTimeout(chainFlushTimer);
     activityTableBody.innerHTML = '<tr class="empty-row"><td colspan="5">Cleared. Interact with your app to begin tracking.</td></tr>';
     timelineChainList.innerHTML = '<div class="empty-state">Cleared.</div>';
     if (componentsPanel) componentsPanel.innerHTML = '<div class="empty-state">No components tracked yet.</div>';
+    if (valuePanel) valuePanel.innerHTML = '<div class="empty-state">Select a signal from Activity to inspect the full value.</div>';
     alertBadge.style.display = 'none';
     alertsSection.style.display = 'none';
     vscode.postMessage({ command: 'clearMetrics' });
@@ -554,8 +771,102 @@
     renderActivityTable();
   });
 
+  if (timelineSearch) {
+    timelineSearch.addEventListener('input', function() {
+      timelineQuery = timelineSearch.value.trim().toLowerCase();
+      renderTimeline();
+    });
+  }
+
+  if (timelinePinnedOnlyToggle) {
+    timelinePinnedOnlyToggle.addEventListener('change', function() {
+      timelinePinnedOnly = timelinePinnedOnlyToggle.checked;
+      renderTimeline();
+    });
+  }
+
+  if (timelineShowHiddenToggle) {
+    timelineShowHiddenToggle.addEventListener('change', function() {
+      timelineShowHidden = timelineShowHiddenToggle.checked;
+      renderTimeline();
+    });
+  }
+
+  if (timelineExpandPinnedBtn) {
+    timelineExpandPinnedBtn.addEventListener('click', function() {
+      expandAllPinned = !expandAllPinned;
+      timelineExpandPinnedBtn.classList.toggle('active', expandAllPinned);
+      timelineExpandPinnedBtn.innerText = expandAllPinned ? 'Collapse pinned groups' : 'Expand pinned groups';
+      renderTimeline();
+    });
+  }
+
+  function copyToClipboard(text, button) {
+    function markCopied() {
+      if (!button) return;
+      button.classList.add('success');
+      var oldLabel = button.innerText;
+      button.innerText = 'Copied';
+      setTimeout(function() {
+        button.classList.remove('success');
+        button.innerText = oldLabel;
+      }, 900);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(markCopied).catch(function() {
+        fallbackCopy(text);
+        markCopied();
+      });
+      return;
+    }
+    fallbackCopy(text);
+    markCopied();
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
   // ── Code Navigation Delegation ───────────────────────────────────────────
   activityTableBody.addEventListener('click', function(e) {
+    var pinBtn = e.target.closest('[data-action="toggle-pin"]');
+    if (pinBtn) {
+      var pinId = pinBtn.dataset.id;
+      if (pinnedSignalIds.has(pinId)) pinnedSignalIds.delete(pinId);
+      else pinnedSignalIds.add(pinId);
+      renderActivityTable();
+      e.stopPropagation();
+      return;
+    }
+
+    var actionBtn = e.target.closest('[data-action]');
+    if (actionBtn) {
+      var action = actionBtn.dataset.action;
+      var actionId = actionBtn.dataset.id;
+      var actionNode = actionId ? nodeMap.get(actionId) : null;
+      if (action === 'copy-value' && actionNode) {
+        copyToClipboard(fullStr(actionNode.value), actionBtn);
+        e.stopPropagation();
+        return;
+      }
+      if (action === 'open-value-tab' && actionNode) {
+        selectedSignalId = actionNode.id;
+        focusedSignalId = actionNode.id;
+        activateTab('tab-value');
+        e.stopPropagation();
+        return;
+      }
+    }
+
     var target = e.target.closest('.clickable');
     if (target) {
       var file = target.dataset.file;
@@ -575,6 +886,7 @@
     var row = e.target.closest('.signal-row');
     if (row) {
       var id = row.dataset.id;
+      selectedSignalId = id;
       focusedSignalId = (focusedSignalId === id) ? null : id; // Toggle collapse/expand
       renderActivityTable();
     }
@@ -597,6 +909,40 @@
   });
 
   timelineChainList.addEventListener('click', function(e) {
+    var pinBtn = e.target.closest('[data-action="toggle-chain-pin"]');
+    if (pinBtn) {
+      var chainKey = pinBtn.dataset.key;
+      if (!chainKey) return;
+      if (pinnedChainKeys.has(chainKey)) {
+        pinnedChainKeys.delete(chainKey);
+        expandedPinnedKeys.delete(chainKey);
+      } else {
+        pinnedChainKeys.add(chainKey);
+      }
+      renderTimeline();
+      return;
+    }
+
+    var hideBtn = e.target.closest('[data-action="toggle-chain-visibility"]');
+    if (hideBtn) {
+      var chainId = hideBtn.dataset.id;
+      if (!chainId) return;
+      if (hiddenChainIds.has(chainId)) hiddenChainIds.delete(chainId);
+      else hiddenChainIds.add(chainId);
+      renderTimeline();
+      return;
+    }
+
+    var expandBtn = e.target.closest('[data-action="toggle-pinned-expand"]');
+    if (expandBtn) {
+      var groupKey = expandBtn.dataset.key;
+      if (!groupKey) return;
+      if (expandedPinnedKeys.has(groupKey)) expandedPinnedKeys.delete(groupKey);
+      else expandedPinnedKeys.add(groupKey);
+      renderTimeline();
+      return;
+    }
+
     var target = e.target.closest('.clickable');
     if (target) {
       var file = target.dataset.file;
@@ -619,6 +965,7 @@
 
     if (msg.type === 'focus-node') {
       focusedSignalId = msg.id;
+      selectedSignalId = msg.id;
       activateTab('tab-activity');
       setTimeout(function() {
         var row = activityTableBody.querySelector('[data-id="' + msg.id + '"]');
@@ -630,11 +977,23 @@
     processEvent(msg);
   });
 
+  if (valuePanel) {
+    valuePanel.addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-action="copy-value"]');
+      if (!btn) return;
+      var id = btn.dataset.id;
+      var node = id ? nodeMap.get(id) : null;
+      if (!node) return;
+      copyToClipboard(fullStr(node.value), btn);
+    });
+  }
+
   // Periodic refresh for timeSince + diagnostics
   setInterval(function() {
     var activeTab = document.querySelector('.tab-content.active');
     if (!activeTab) return;
     if (activeTab.id === 'tab-activity') renderActivityTable();
+    if (activeTab.id === 'tab-value') renderValueInspector();
     if (activeTab.id === 'tab-components') runDiagnosticsCheck();
   }, 4000);
 

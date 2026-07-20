@@ -204,10 +204,10 @@
       <pre><code>// vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { sigtrace } from '@sigtrace/vite';
+import { sigTrace } from '@sigtrace/vite';
 
 export default defineConfig({
-  plugins: [react(), sigtrace()]
+  plugins: [react(), sigTrace()]
 });</code></pre>
 
       <p>Once registered, any <code>signal()</code>, <code>computed()</code>, or <code>effect()</code> declared in your component files is automatically instrumented. You can see the name of the signal, its component context, and the full causal chain of updates directly in your VS Code sidebar.</p>

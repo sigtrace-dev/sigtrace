@@ -1,8 +1,8 @@
 {
   "name": "sigtrace-extension",
   "displayName": "SigTrace",
-  "description": "Universal Reactive Graph & Signal Lifecycle Tracer",
-  "version": "1.1.4",
+  "description": "Angular, Vue, and Solid signals debugger for VS Code",
+  "version": "1.1.6",
   "publisher": "sigtrace",
   "author": "SigTrace Contributors",
   "license": "MIT",
@@ -10,7 +10,7 @@
   "bugs": {
     "url": "https://github.com/sigtrace-dev/sigtrace/issues"
   },
-  "icon": "icon.jpg",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -23,7 +23,8 @@
     "src/webview/**/*",
     "package.json",
     "LICENSE",
-    "icon.jpg"
+    "icon.png",
+    "assets/**/*.svg"
   ],
   "categories": [
     "Debuggers",
@@ -39,7 +40,11 @@
     "solidjs",
     "devtools",
     "visualizer",
-    "causal chain"
+    "causal chain",
+    "angular signals debugger",
+    "vue ref debugger",
+    "solidjs debugger",
+    "signal not updating"
   ],
   "activationEvents": [],
   "main": "./dist/extension.js",
@@ -49,7 +54,7 @@
         {
           "id": "sigtrace-container",
           "title": "SigTrace",
-          "icon": "$(eye)"
+          "icon": "assets/sigtrace-icon.svg"
         }
       ]
     },
@@ -58,9 +63,9 @@
         {
           "type": "webview",
           "id": "sigtrace-explorer",
-          "name": "Reactivity Visualizer",
+          "name": "Signal Debugger",
           "icon": "$(graph)",
-          "contextualTitle": "SigTrace Explorer"
+          "contextualTitle": "SigTrace Signal Debugger"
         }
       ]
     }

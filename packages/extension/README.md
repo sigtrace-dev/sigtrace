@@ -1,6 +1,6 @@
-# SigTrace Reactivity Visualizer
+# Stop Debugging Signals with console.log
 
-SigTrace is a real-time reactive graph visualizer and telemetry overlay built directly inside VS Code. It automatically maps how state flows from writable signals, through computed derivations, to observer effects and HTML templates.
+SigTrace is a free, open-source VS Code extension for Angular, Vue, and Solid developers who are tired of guessing through console.log and browser debugger steps. It shows which signal changed, which computed re-ran, and which effect fired next, so you can find root cause faster.
 
 ---
 

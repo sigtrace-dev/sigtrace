@@ -8,19 +8,20 @@
   <!-- ═══════════════════════════════════════════════════════════ -->
   <!-- PRIMARY SEO META                                            -->
   <!-- ═══════════════════════════════════════════════════════════ -->
-  <title>SigTrace — Real-Time Reactive Signal Debugger for Angular, Vue & SolidJS</title>
-  <meta name="description" content="SigTrace is a zero-config developer tool that visualizes and debugs reactive signals, computed values, and effects in Angular, Vue 3, and SolidJS — directly inside VS Code with live causal chain tracing." />
-  <meta name="keywords" content="Angular signals debugger, Angular reactive signals, Vue ref debugger, SolidJS signals tracer, reactive state visualizer, VS Code extension signals, computed effects debugger, signal lifecycle tracer, sigtrace, angular devtools alternative, toSignal tracker, ngrx signal store debugger" />
+  <title>SigTrace — Stop Debugging Signal Bugs with console.log</title>
+  <meta name="description" content="Tired of console.log and browser debugger loops for reactive bugs? SigTrace shows why your UI did not update, why an effect re-ran, and where signal loops started across Angular, Vue, Solid, React, and Svelte in your editor." />
+  <meta name="keywords" content="angular signals debugger, vue reactivity debugger, solidjs signals debugger, react preact signals debugging, svelte 5 runes debugging, reactive state bug, signal not updating ui, effect rerun debugging, computed dependency debugging, signal loop debugging, root cause timeline debugger, ide signal debugger, open source signal debugger, sigtrace" />
   <meta name="author" content="SigTrace Contributors" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
   <meta name="googlebot" content="index, follow" />
   <link rel="canonical" href="https://sigtrace.dev/" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/favicon.svg" />
 
   <!-- ═══════════════════════════════════════════════════════════ -->
-  <!-- GEO META (Geotargeting)                                     -->
+  <!-- GEO / LANGUAGE TARGETING                                    -->
   <!-- ═══════════════════════════════════════════════════════════ -->
-  <meta name="geo.region" content="IN" />
-  <meta name="geo.placename" content="India" />
   <link rel="alternate" hreflang="en" href="https://sigtrace.dev/" />
   <link rel="alternate" hreflang="x-default" href="https://sigtrace.dev/" />
 
@@ -30,8 +31,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sigtrace.dev/" />
   <meta property="og:site_name" content="SigTrace" />
-  <meta property="og:title" content="SigTrace — Real-Time Reactive Signal Debugger" />
-  <meta property="og:description" content="Zero-config signal lifecycle tracer for Angular, Vue 3, and SolidJS. See every signal write, computed re-evaluation, and effect chain — live — inside VS Code." />
+  <meta property="og:title" content="SigTrace — Debug signal bugs faster in VS Code" />
+  <meta property="og:description" content="Find why your UI did not update, what triggered an effect, and where reactive loops begin in Angular, Vue, Solid, React, and Svelte." />
   <meta property="og:image" content="https://sigtrace.dev/og-image.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -44,8 +45,8 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@sigtrace_dev" />
   <meta name="twitter:creator" content="@sigtrace_dev" />
-  <meta name="twitter:title" content="SigTrace — Real-Time Reactive Signal Debugger" />
-  <meta name="twitter:description" content="Zero-config signal lifecycle tracer for Angular, Vue 3, and SolidJS inside VS Code." />
+  <meta name="twitter:title" content="SigTrace — Debug signal bugs faster in VS Code" />
+  <meta name="twitter:description" content="Trace state changes and fix reactive bugs quickly in Angular, Vue, Solid, React, and Svelte." />
   <meta name="twitter:image" content="https://sigtrace.dev/og-image.png" />
 
   <!-- ═══════════════════════════════════════════════════════════ -->
@@ -59,12 +60,12 @@
         "@type": "SoftwareApplication",
         "@id": "https://sigtrace.dev/#software",
         "name": "SigTrace",
-        "alternateName": "SigTrace Reactivity Visualizer",
+        "alternateName": "SigTrace Signal Debugger",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Windows, macOS, Linux",
         "url": "https://sigtrace.dev",
-        "description": "SigTrace is an open-source developer tool that provides real-time reactive signal lifecycle tracing for Angular Signals, Vue 3 Refs, and SolidJS Signals — directly inside Visual Studio Code.",
-        "softwareVersion": "1.1.4",
+        "description": "SigTrace is an open-source editor extension suite that helps developers debug Angular Signals, Vue refs, SolidJS signals, React signals, and Svelte runes by showing exactly what changed, what re-ran, and why.",
+        "softwareVersion": "1.1.6",
         "datePublished": "2025-01-01",
         "dateModified": "2026-07-16",
         "license": "https://opensource.org/licenses/MIT",
@@ -85,12 +86,12 @@
           "url": "https://sigtrace.dev/docs"
         },
         "featureList": [
-          "Real-time signal activity table",
-          "Causal chain timeline visualization",
-          "Component-level signal grouping",
-          "Click-to-navigate source code",
-          "Full JSON value inspection",
-          "Zero-config setup via CLI loader",
+          "Find why a signal did not update UI",
+          "See full cause-and-effect timeline for each state change",
+          "Understand component-level reactive load and hotspots",
+          "Jump from event to source line in one click",
+          "Inspect full runtime values without truncation",
+          "Zero-config local setup for development",
           "Angular toSignal RxJS interop tracking",
           "Multi-window VS Code syncing"
         ]
@@ -113,7 +114,7 @@
         "@id": "https://sigtrace.dev/#website",
         "url": "https://sigtrace.dev",
         "name": "SigTrace",
-        "description": "Real-Time Reactive Signal Debugger for Angular, Vue 3 and SolidJS",
+        "description": "Editor debugger for Angular, Vue, Solid, React, and Svelte signal state updates",
         "publisher": { "@id": "https://sigtrace.dev/#org" },
         "potentialAction": {
           "@type": "SearchAction",
@@ -133,7 +134,7 @@
             "name": "What is SigTrace?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "SigTrace is an open-source developer tool that provides real-time reactive signal lifecycle tracing for Angular Signals, Vue 3 Refs, and SolidJS Signals inside Visual Studio Code. It shows every signal write, computed re-evaluation, and effect chain as it happens — with no code refactoring required."
+              "text": "SigTrace is an open-source developer tool that provides real-time reactive signal lifecycle tracing for Angular Signals, Vue 3 reactivity, SolidJS signals, React signals, and Svelte 5 runes inside your editor. It shows every signal write, computed re-evaluation, and effect chain as it happens — with no code refactoring required."
             }
           },
           {
@@ -141,7 +142,7 @@
             "name": "How do I install SigTrace?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Install the VS Code extension from the marketplace: search for 'SigTrace' in VS Code extensions. Then install the npm package: npm install --save-dev @sigtrace/core @sigtrace/vite. For Angular, add the Vite plugin to your build config and run your dev server using: npx sigtrace run ng serve."
+              "text": "Install the SigTrace editor extension. For Angular CLI, install @sigtrace/core and run npx sigtrace run ng serve. For Vite projects like Vue, Solid, React, and Svelte, install @sigtrace/core and @sigtrace/vite, then add sigTrace() in vite.config.ts."
             }
           },
           {
@@ -149,15 +150,15 @@
             "name": "Does SigTrace support Angular toSignal from RxJS interop?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. SigTrace 1.1.4+ fully supports Angular's toSignal() from @angular/core/rxjs-interop. It automatically intercepts Observable emissions and registers each value update in the visualizer, showing the signal name, component, source location, and full value history."
+              "text": "Yes. SigTrace 1.1.6+ fully supports Angular's toSignal() from @angular/core/rxjs-interop. It automatically intercepts Observable emissions and registers each value update in the visualizer, showing the signal name, component, source location, and full value history."
             }
           },
           {
             "@type": "Question",
-            "name": "Does SigTrace support Vue 3 and SolidJS?",
+            "name": "Which frameworks and runtimes does SigTrace support?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. SigTrace has dedicated adapters for Vue 3 (ref, computed, watchEffect) and SolidJS (createSignal, createMemo, createEffect) in addition to Angular Signals."
+              "text": "SigTrace supports Angular Signals, Vue 3 reactivity, SolidJS signals, React with Preact Signals, and Svelte 5 runes. It provides per-framework instrumentation so you can trace writes, recomputations, and effects consistently across stacks."
             }
           },
           {
@@ -173,7 +174,7 @@
             "name": "Is SigTrace free and open source?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. SigTrace is completely free and open source under the MIT license. The VS Code extension, npm packages, and CLI are all free to use, modify, and distribute."
+              "text": "Yes. SigTrace is completely free and open source under the MIT license. Its editor extensions, npm packages, and CLI are all free to use, modify, and distribute."
             }
           }
         ]
@@ -188,14 +189,14 @@
           {
             "@type": "HowToStep",
             "position": 1,
-            "name": "Install the VS Code Extension",
-            "text": "Search for 'SigTrace' in the VS Code Extensions marketplace and click Install."
+            "name": "Install the editor extension",
+            "text": "Install SigTrace in your editor: Visual Studio Code Marketplace or JetBrains Marketplace."
           },
           {
             "@type": "HowToStep",
             "position": 2,
             "name": "Install the npm packages",
-            "text": "Run: npm install --save-dev @sigtrace/core @sigtrace/vite"
+            "text": "Run: npm install --save-dev @sigtrace/core"
           },
           {
             "@type": "HowToStep",
@@ -207,7 +208,7 @@
             "@type": "HowToStep",
             "position": 4,
             "name": "Open the SigTrace visualizer",
-            "text": "In VS Code, open the SigTrace panel from the Explorer sidebar. Interact with your app and watch signals update in real-time."
+            "text": "Open the SigTrace panel from your editor sidebar. Interact with your app and watch signals update in real-time."
           }
         ]
       }
@@ -220,7 +221,7 @@
   <!-- ═══════════════════════════════════════════════════════════ -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <style>
     /* ══════════════════════════════════════════════════════════
@@ -252,7 +253,7 @@
       --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.25) 0%, transparent 60%);
       --gradient-card: linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(139,92,246,0.04) 100%);
 
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-sans: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
       --radius-sm: 6px;
@@ -469,6 +470,7 @@
 
     #hero .container {
       max-width: 1440px;
+      width: 100%;
     }
 
     .hero-bg-grid {
@@ -487,6 +489,7 @@
       max-width: 780px;
       margin: 0 auto;
       text-align: center;
+      padding: 0 6px;
     }
 
     .hero-badge {
@@ -494,13 +497,16 @@
     }
 
     h1 {
-      font-size: clamp(40px, 6vw, 72px);
+      font-size: clamp(34px, 8vw, 72px);
       font-weight: 900;
       line-height: 1.05;
       letter-spacing: -0.04em;
       color: var(--text-primary);
       margin-bottom: 24px;
+      overflow-wrap: anywhere;
     }
+
+    .hero-break { display: inline; }
 
     h1 .highlight {
       background: linear-gradient(135deg, var(--accent-light) 0%, var(--violet) 50%, var(--cyan) 100%);
@@ -1270,6 +1276,10 @@
       .quickstart-grid { grid-template-columns: 1fr; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .nav-links { display: none; }
+      .view-explainer { grid-template-columns: 1fr; }
+      .screenshot-switcher { justify-content: center; }
+      .hero-content { max-width: 640px; }
+      .hero-description { max-width: 100%; }
     }
 
     @media (max-width: 600px) {
@@ -1279,6 +1289,36 @@
       .signal-row > *:nth-child(4), .signal-row > *:nth-child(5),
       .table-header-row > *:nth-child(4), .table-header-row > *:nth-child(5) { display: none; }
       .cta-box { padding: 40px 24px; }
+      #hero { min-height: unset; padding: 104px 0 56px; }
+      .container, .nav-inner { padding-left: 16px; padding-right: 16px; }
+      .hero-actions { gap: 10px; }
+      .hero-actions .btn { width: 100%; }
+      .trust-strip { gap: 12px; padding: 12px; }
+      .trust-item { white-space: normal; align-items: flex-start; }
+      .nav-cta .btn-ghost { display: none; }
+      .nav-cta .btn-primary { padding: 8px 14px; font-size: 13px; }
+      .screenshot-topbar .title { display: none; }
+      .screenshot-switcher-btn { font-size: 11px; padding: 7px 11px; }
+      .view-kpis { grid-template-columns: 1fr; }
+      h1 { font-size: 30px; line-height: 1.12; letter-spacing: -0.03em; }
+      .hero-break { display: none; }
+      .hero-description { font-size: 17px; line-height: 1.5; }
+      .screenshot-wrap { margin-top: 40px; }
+      .screenshot-topbar { padding: 10px 12px; }
+      .screenshot-frame img {
+        max-height: none;
+        height: auto;
+        object-fit: contain;
+      }
+      .showcase-intro { font-size: 13px; line-height: 1.6; text-align: left; }
+      .view-card { padding: 14px; }
+    }
+
+    @media (max-width: 420px) {
+      h1 { font-size: 27px; line-height: 1.14; }
+      .hero-stat-row { gap: 10px; }
+      .hero-stat { width: 100%; justify-content: center; }
+      .screenshot-switcher-btn { width: 100%; }
     }
 
     /* ══════════════════════════════════════════════════════════
@@ -1409,47 +1449,105 @@
       color: var(--text-muted);
     }
 
-    /* Interactive Screenshot Tabs */
-    .screenshot-tabs {
-      display: flex;
-      gap: 6px;
+    .showcase-intro {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+      max-width: 760px;
+      margin-left: auto;
       margin-right: auto;
-      margin-left: 24px;
+      line-height: 1.65;
     }
 
-    .screenshot-tab {
+    .view-explainer {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 14px;
+    }
+
+    .view-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .view-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .view-card p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .view-kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .view-kpi {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 10px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .view-kpi strong {
+      display: block;
+      font-size: 16px;
+      line-height: 1;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .view-kpi span {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Showcase switcher */
+    .screenshot-switcher {
+      display: flex;
+      gap: 6px;
+      margin-top: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .screenshot-switcher-btn {
       background: none;
-      border: none;
+      border: 1px solid var(--border);
       color: var(--text-secondary);
       font-family: var(--font-sans);
       font-size: 12px;
       font-weight: 600;
-      padding: 6px 12px;
+      padding: 8px 14px;
       border-radius: var(--radius-sm);
       cursor: pointer;
       transition: all 0.2s;
       outline: none;
     }
 
-    .screenshot-tab:hover {
+    .screenshot-switcher-btn:hover {
       color: var(--text-primary);
       background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.2);
     }
 
-    .screenshot-tab.active {
+    .screenshot-switcher-btn.active {
       color: var(--text-primary);
       background: rgba(99,102,241,0.15);
       border: 1px solid rgba(99,102,241,0.3);
-    }
-
-    .screenshot-tab span {
-      background: rgba(239,68,68,0.2);
-      color: #f87171;
-      font-size: 10px;
-      padding: 1px 6px;
-      border-radius: 10px;
-      margin-left: 6px;
-      font-weight: 700;
     }
 
     /* ══════════════════════════════════════════════════════════
@@ -1504,6 +1602,39 @@
     }
 
     .fw-card.coming .fw-top { display: flex; align-items: center; gap: 14px; }
+
+    /* Final responsive overrides (must come after base section styles) */
+    @media (max-width: 900px) {
+      .view-explainer { grid-template-columns: 1fr; }
+      .screenshot-switcher { justify-content: center; }
+      .hero-content { max-width: 640px; }
+      .hero-description { max-width: 100%; }
+      .showcase-intro { max-width: 100%; }
+      .trust-strip { align-items: flex-start; }
+      .trust-item { width: 100%; white-space: normal; align-items: flex-start; }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 30px; line-height: 1.12; letter-spacing: -0.03em; }
+      .hero-break { display: none; }
+      .hero-description { font-size: 17px; line-height: 1.5; }
+      .screenshot-wrap { margin-top: 40px; }
+      .screenshot-topbar { padding: 10px 12px; }
+      .screenshot-switcher-btn { font-size: 11px; padding: 7px 11px; }
+      .screenshot-frame img { max-height: none; height: auto; object-fit: contain; }
+      .showcase-intro { font-size: 13px; line-height: 1.6; text-align: left; }
+      .view-card { padding: 14px; }
+      .view-kpis { grid-template-columns: 1fr; }
+      .view-explainer .view-card:last-child { display: none; }
+      .screenshot-caption { font-size: 12px; }
+    }
+
+    @media (max-width: 420px) {
+      h1 { font-size: 27px; line-height: 1.14; }
+      .hero-stat-row { gap: 10px; }
+      .hero-stat { width: 100%; justify-content: center; }
+      .screenshot-switcher-btn { width: 100%; }
+    }
 
     /* ══════════════════════════════════════════════════════════
        FRAMEWORK-TAB STEP SYNC
@@ -1577,25 +1708,25 @@
       <div class="hero-badge fade-up">
         <span class="label-pill">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Open Source · v1.1.4 · MIT License
+          Open Source · v1.1.6 · MIT License
         </span>
       </div>
 
       <h1 id="hero-heading" class="fade-up delay-1">
-        The Missing Debugger<br />for <span class="highlight">Reactive Signals</span>
+        Tired of <span class="highlight">console.log</span><span class="hero-break"><br /></span>and browser debugger loops?
       </h1>
 
       <p class="hero-description fade-up delay-2">
-        Trace every signal write, computed re-evaluation, and effect chain — live — inside VS Code. 
-        Zero configuration required. Works with Angular, Vue 3, and SolidJS.
+        SigTrace shows exactly what changed, what re-ran, and what triggered it,
+        so you can fix Angular, Vue, Solid, React, and Svelte signal bugs faster inside your editor.
       </p>
 
       <div class="hero-actions fade-up delay-3">
         <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension"
            class="btn btn-primary btn-lg" target="_blank" rel="noopener" id="hero-vscode-btn"
-           aria-label="Install SigTrace VS Code Extension for free">
+           aria-label="Install SigTrace extension for free">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          Install VS Code Extension
+          Install Extension
         </a>
         <a href="#quickstart" class="btn btn-outline btn-lg" id="hero-docs-btn">
           View Quickstart →
@@ -1621,18 +1752,21 @@
     <!-- Real VS Code Preview Screenshot -->
     <div class="screenshot-wrap fade-up delay-4">
       <div class="screenshot-glow" aria-hidden="true"></div>
+
+      <p class="showcase-intro">Choose a view first, then inspect the panel: Activity helps spot noisy updates, Timeline reveals root-cause chains, and Components shows where reactive cost is concentrated.</p>
+
+      <div class="screenshot-switcher" role="tablist" aria-label="Showcase views">
+        <button class="screenshot-switcher-btn active" onclick="switchScreenshot(this, 'activity')" role="tab" aria-selected="true" id="stab-activity">Activity view</button>
+        <button class="screenshot-switcher-btn" onclick="switchScreenshot(this, 'timeline')" role="tab" aria-selected="false" id="stab-timeline">Timeline view</button>
+        <button class="screenshot-switcher-btn" onclick="switchScreenshot(this, 'components')" role="tab" aria-selected="false" id="stab-components">Components view</button>
+      </div>
+
       <div class="screenshot-frame" role="img" aria-label="SigTrace running in VS Code showing live reactive signal activity table">
         <div class="screenshot-topbar">
           <span class="topbar-dot red" aria-hidden="true"></span>
           <span class="topbar-dot amber" aria-hidden="true"></span>
           <span class="topbar-dot green" aria-hidden="true"></span>
           <span class="title" style="flex:none">SIGTRACE</span>
-          
-          <div class="screenshot-tabs" role="tablist" aria-label="Visualizer views">
-            <button class="screenshot-tab active" onclick="switchScreenshot(this, 'activity')" role="tab" aria-selected="true" id="stab-activity">Activity</button>
-            <button class="screenshot-tab" onclick="switchScreenshot(this, 'timeline')" role="tab" aria-selected="false" id="stab-timeline">Timeline</button>
-            <button class="screenshot-tab" onclick="switchScreenshot(this, 'components')" role="tab" aria-selected="false" id="stab-components">Components <span>2</span></button>
-          </div>
 
           <span class="connected-badge" role="status">Connected</span>
         </div>
@@ -1647,6 +1781,20 @@
         />
       </div>
       <p class="screenshot-caption" id="screenshot-caption">▲ Real SigTrace panel — live signal activity inside VS Code</p>
+
+      <div class="view-explainer" aria-live="polite">
+        <article class="view-card">
+          <h3 id="view-title">Activity: what changed right now</h3>
+          <p id="view-description">Use Activity to catch noisy signals and effect storms instantly. Sort by Most Updates to find the source of jitter or unnecessary reruns in under a minute.</p>
+        </article>
+        <article class="view-card">
+          <h3>What you can answer quickly</h3>
+          <div class="view-kpis">
+            <div class="view-kpi"><strong id="kpi-a">Noisy Signal</strong><span id="kpi-a-label">Top update source</span></div>
+            <div class="view-kpi"><strong id="kpi-b">Fast Triage</strong><span id="kpi-b-label">Prioritize fixes</span></div>
+          </div>
+        </article>
+      </div>
     </div>
 
     <!-- 🔒 Security Trust Strip — visible before the fold -->
@@ -1891,7 +2039,7 @@
             <div class="step-num" aria-hidden="true">3</div>
             <div class="step-content">
               <h4>Register the Vite plugin</h4>
-              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigTrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
             </div>
           </div>
           <div class="step" role="listitem">
@@ -1922,7 +2070,7 @@
             <div class="step-num" aria-hidden="true">3</div>
             <div class="step-content">
               <h4>Register the Vite plugin</h4>
-              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigTrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
             </div>
           </div>
           <div class="step" role="listitem">
@@ -1953,7 +2101,7 @@
             <div class="step-num" aria-hidden="true">3</div>
             <div class="step-content">
               <h4>Register the Vite plugin</h4>
-              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigTrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
             </div>
           </div>
           <div class="step" role="listitem">
@@ -1984,7 +2132,7 @@
             <div class="step-num" aria-hidden="true">3</div>
             <div class="step-content">
               <h4>Register the Vite plugin</h4>
-              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigtrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
+              <p>Add <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">sigTrace()</code> to your <code style="font-family:var(--font-mono);font-size:12px;color:var(--cyan)">vite.config.ts</code>. See the code panel →</p>
             </div>
           </div>
           <div class="step" role="listitem">
@@ -2030,9 +2178,9 @@
             <span class="t-comment"># Step 1: Install packages</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
             <span class="t-comment"># Step 2: Add to vite.config.ts</span><br/>
-            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigtrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
+            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigTrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
             <span class="t-keyword">export default</span> <span class="t-fn">defineConfig</span><span class="t-op">({</span><br/>
-            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">vue</span>(), <span class="t-fn">sigtrace</span>()<span class="t-op">]</span><br/>
+            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">vue</span>(), <span class="t-fn">sigTrace</span>()<span class="t-op">]</span><br/>
             <span class="t-op">})</span><br/><br/>
             <span class="t-comment"># Step 3: Run your dev server normally</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">run</span> <span class="t-string">dev</span>
@@ -2042,9 +2190,9 @@
             <span class="t-comment"># Step 1: Install packages</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
             <span class="t-comment"># Step 2: Add to vite.config.ts</span><br/>
-            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigtrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
+            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigTrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
             <span class="t-keyword">export default</span> <span class="t-fn">defineConfig</span><span class="t-op">({</span><br/>
-            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">solid</span>(), <span class="t-fn">sigtrace</span>()<span class="t-op">]</span><br/>
+            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">solid</span>(), <span class="t-fn">sigTrace</span>()<span class="t-op">]</span><br/>
             <span class="t-op">})</span><br/><br/>
             <span class="t-comment"># Step 3: Run your dev server normally</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">run</span> <span class="t-string">dev</span>
@@ -2054,9 +2202,9 @@
             <span class="t-comment"># Step 1: Install packages</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
             <span class="t-comment"># Step 2: Add to vite.config.ts</span><br/>
-            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigtrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
+            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigTrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
             <span class="t-keyword">export default</span> <span class="t-fn">defineConfig</span><span class="t-op">({</span><br/>
-            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">react</span>(), <span class="t-fn">sigtrace</span>()<span class="t-op">]</span><br/>
+            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">react</span>(), <span class="t-fn">sigTrace</span>()<span class="t-op">]</span><br/>
             <span class="t-op">})</span><br/><br/>
             <span class="t-comment"># Step 3: Run your dev server normally</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">run</span> <span class="t-string">dev</span>
@@ -2066,9 +2214,9 @@
             <span class="t-comment"># Step 1: Install packages</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">install</span> <span class="t-string">--save-dev @sigtrace/core @sigtrace/vite</span><br/><br/>
             <span class="t-comment"># Step 2: Add to vite.config.ts</span><br/>
-            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigtrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
+            <span class="t-keyword">import</span> <span class="t-op">{</span> <span class="t-var">sigTrace</span> <span class="t-op">}</span> <span class="t-keyword">from</span> <span class="t-string">'@sigtrace/vite'</span><br/><br/>
             <span class="t-keyword">export default</span> <span class="t-fn">defineConfig</span><span class="t-op">({</span><br/>
-            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">svelte</span>(), <span class="t-fn">sigtrace</span>()<span class="t-op">]</span><br/>
+            &nbsp;&nbsp;<span class="t-var">plugins</span>: <span class="t-op">[</span><span class="t-fn">svelte</span>(), <span class="t-fn">sigTrace</span>()<span class="t-op">]</span><br/>
             <span class="t-op">})</span><br/><br/>
             <span class="t-comment"># Step 3: Run your dev server normally</span><br/>
             <span class="t-fn">npm</span> <span class="t-keyword">run</span> <span class="t-string">dev</span>
@@ -2097,7 +2245,7 @@
           <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner"><strong>No — not a single byte leaves your machine.</strong> SigTrace runs a WebSocket server bound exclusively to <code style="font-family:monospace;color:#67e8f9">127.0.0.1:8420</code> (localhost). The VS Code extension connects to this local server and receives signal events. There is no cloud backend, no telemetry, no analytics, no crash reporting. You can verify this by reading the source: <a href="https://github.com/sigtrace-dev/sigtrace/blob/main/packages/core/src/index.ts" target="_blank" rel="noopener" style="color:var(--accent-light)">packages/core/src/index.ts</a> shows the WebSocket connect line.</div>
+          <div class="faq-a-inner"><strong>No — not a single byte leaves your machine.</strong> SigTrace runs a WebSocket server bound exclusively to <code style="font-family:monospace;color:#67e8f9">127.0.0.1:8420</code> (localhost). The editor extension connects to this local server and receives signal events. There is no cloud backend, no telemetry, no analytics, no crash reporting. You can verify this by reading the source: <a href="https://github.com/sigtrace-dev/sigtrace/blob/main/packages/core/src/index.ts" target="_blank" rel="noopener" style="color:var(--accent-light)">packages/core/src/index.ts</a> shows the WebSocket connect line.</div>
         </div>
       </div>
 
@@ -2107,7 +2255,7 @@
           <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">SigTrace is a real-time signal lifecycle tracer that works inside VS Code — not in the browser. Unlike Angular DevTools (which shows component trees), SigTrace focuses on the reactive signal graph: every signal write, computed dependency evaluation, and effect execution is shown as a live causal chain. It also supports Vue 3 and SolidJS, not just Angular.</div>
+          <div class="faq-a-inner">SigTrace is a real-time signal lifecycle tracer that works inside your editor, not in a browser-only panel. Unlike Angular DevTools (which shows component trees), SigTrace focuses on the reactive signal graph: every signal write, computed dependency evaluation, and effect execution is shown as a live causal chain. It supports Angular, Vue 3, SolidJS, React (Preact Signals), and Svelte 5 runes.</div>
         </div>
       </div>
 
@@ -2127,7 +2275,7 @@
           <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">Yes, fully supported as of v1.1.3. SigTrace intercepts the Observable stream, registers each emission as a signal write event, and displays the signal name, component, source file location, and full value history in the dashboard. This works with NgRx Store selectors and any other RxJS observables wrapped with toSignal.</div>
+          <div class="faq-a-inner">Yes, fully supported as of v1.1.6. SigTrace intercepts the Observable stream, registers each emission as a signal write event, and displays the signal name, component, source file location, and full value history in the dashboard. This works with NgRx Store selectors and any other RxJS observables wrapped with toSignal.</div>
         </div>
       </div>
 
@@ -2157,7 +2305,7 @@
           <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="faq-a" role="region">
-          <div class="faq-a-inner">SigTrace is 100% free and open source under the MIT license. All packages — @sigtrace/core, @sigtrace/vite, and the VS Code extension — are free forever. The source code is available on GitHub and contributions are welcome.</div>
+          <div class="faq-a-inner">SigTrace is 100% free and open source under the MIT license. All packages and editor extensions are free forever. The source code is available on GitHub and contributions are welcome.</div>
         </div>
       </div>
 
@@ -2187,7 +2335,7 @@
       <div class="cta-actions">
         <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension"
            class="btn btn-primary btn-lg" target="_blank" rel="noopener" id="cta-install-btn">
-          Install VS Code Extension
+          Install Extension
         </a>
         <a href="https://github.com/sigtrace-dev/sigtrace" class="btn btn-outline btn-lg"
            target="_blank" rel="noopener" id="cta-github-btn">
@@ -2285,7 +2433,7 @@
 
   /* ── Switch Real Screenshots ── */
   function switchScreenshot(btn, type) {
-    document.querySelectorAll('.screenshot-tab').forEach(t => {
+    document.querySelectorAll('.screenshot-switcher-btn').forEach(t => {
       t.classList.remove('active');
       t.setAttribute('aria-selected', 'false');
     });
@@ -2317,7 +2465,50 @@
       img.src = sources[type].src;
       img.alt = sources[type].alt;
       caption.textContent = sources[type].cap;
+      updateViewDetails(type);
     }
+  }
+
+  function updateViewDetails(type) {
+    const title = document.getElementById('view-title');
+    const desc = document.getElementById('view-description');
+    const kpiA = document.getElementById('kpi-a');
+    const kpiALabel = document.getElementById('kpi-a-label');
+    const kpiB = document.getElementById('kpi-b');
+    const kpiBLabel = document.getElementById('kpi-b-label');
+    const content = {
+      activity: {
+        title: 'Activity: what changed right now',
+        desc: 'Use Activity to catch noisy signals and effect storms instantly. Sort by Most Updates to find the source of jitter or unnecessary reruns in under a minute.',
+        kpiA: 'Noisy Signal',
+        kpiALabel: 'Top update source',
+        kpiB: 'Fast Triage',
+        kpiBLabel: 'Prioritize fixes'
+      },
+      timeline: {
+        title: 'Timeline: what triggered what',
+        desc: 'Timeline turns one bug report into a clear cause-and-effect path. Start from a signal write and follow every computed and effect execution in order.',
+        kpiA: 'Root Cause',
+        kpiALabel: 'First trigger',
+        kpiB: 'Chain Depth',
+        kpiBLabel: 'Propagation path'
+      },
+      components: {
+        title: 'Components: where reactivity cost lives',
+        desc: 'Components view groups updates by component so you can spot heavy zones, stale watchers, and bottlenecks before they become production incidents.',
+        kpiA: 'Hot Component',
+        kpiALabel: 'Most reactive work',
+        kpiB: 'Cleanup Target',
+        kpiBLabel: 'Unused/dead signals'
+      }
+    };
+    const next = content[type] || content.activity;
+    title.textContent = next.title;
+    desc.textContent = next.desc;
+    kpiA.textContent = next.kpiA;
+    kpiALabel.textContent = next.kpiALabel;
+    kpiB.textContent = next.kpiB;
+    kpiBLabel.textContent = next.kpiBLabel;
   }
 
   /* ── Copy code ── */
