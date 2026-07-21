@@ -16,8 +16,12 @@
   <meta name="googlebot" content="index, follow" />
   <link rel="canonical" href="https://sigtrace.dev/" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
   <link rel="shortcut icon" href="/favicon.svg" />
   <link rel="apple-touch-icon" href="/favicon.svg" />
+  <link rel="manifest" href="/site.webmanifest" />
 
   <!-- ═══════════════════════════════════════════════════════════ -->
   <!-- GEO / LANGUAGE TARGETING                                    -->
@@ -378,7 +382,8 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 12px;
+      margin-left: 28px;
       list-style: none;
     }
 
@@ -1676,7 +1681,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="m19 8-6 2-6-2M12 2v8M12 22v-6M19 16l-7-3-7 3"/>
       </svg>
-      Sig<span>Trace</span>
+      Sig <span>Trace</span>
     </a>
     <ul class="nav-links" role="list">
       <li><a href="#features">Features</a></li>
@@ -1713,7 +1718,7 @@
       </div>
 
       <h1 id="hero-heading" class="fade-up delay-1">
-        Tired of <span class="highlight">console.log</span><span class="hero-break"><br /></span>and browser debugger loops?
+        Tired of <span class="highlight">console.log</span> <span class="hero-break"><br /></span>and browser debugger loops?
       </h1>
 
       <p class="hero-description fade-up delay-2">
@@ -1824,7 +1829,7 @@
     <h2 id="stats-heading" class="sr-only">SigTrace by the numbers</h2>
     <div class="stats-grid" role="list">
       <div class="stat-cell" role="listitem">
-        <div class="stat-value">3</div>
+        <div class="stat-value">5</div>
         <div class="stat-label">Frameworks Supported</div>
       </div>
       <div class="stat-cell" role="listitem">

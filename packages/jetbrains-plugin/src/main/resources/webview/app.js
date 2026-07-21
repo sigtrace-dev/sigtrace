@@ -20,10 +20,10 @@
   const pinnedChainKeys = new Set();
   const hiddenChainIds = new Set();
   const expandedPinnedKeys = new Set();
+  const valueScrollByNodeId = new Map();
   let timelineQuery = '';
   let timelinePinnedOnly = false;
   let timelineShowHidden = false;
-  let expandAllPinned = false;
   let pendingTableRender = false;
 
   // ── DOM refs ─────────────────────────────────────────────────────────────
@@ -32,7 +32,6 @@
   const timelineSearch    = document.getElementById('timeline-search');
   const timelinePinnedOnlyToggle = document.getElementById('timeline-pinned-only');
   const timelineShowHiddenToggle = document.getElementById('timeline-show-hidden');
-  const timelineExpandPinnedBtn = document.getElementById('timeline-expand-pinned');
   const valuePanel        = document.getElementById('value-panel');
   const componentsPanel   = document.getElementById('components-panel');
   const alertsSection     = document.getElementById('alerts-section');
@@ -196,7 +195,6 @@
   function chainGroupKey(chain) {
     if (!chain || !chain.trigger) return 'unknown';
     return [
-      chain.trigger.id || 'id',
       chain.trigger.name || 'name',
       chain.trigger.component || 'Global',
       toLocKey(chain.trigger.loc)
@@ -429,16 +427,16 @@
     var groupedEntries = Array.from(grouped.entries()).map(function(entry) {
       var key = entry[0];
       var chains = entry[1];
-      var visibleChains = chains.filter(function(chain) {
-        return timelineShowHidden || !hiddenChainIds.has(chain.id);
+      var renderChains = chains.filter(function(chain) {
+        return timelineShowHidden ? hiddenChainIds.has(chain.id) : !hiddenChainIds.has(chain.id);
       });
       return {
         key: key,
         chains: chains,
-        visibleChains: visibleChains,
-        latest: visibleChains[0] || chains[0],
+        renderChains: renderChains,
+        latest: renderChains[0] || null,
         pinned: pinnedChainKeys.has(key),
-        hasHidden: chains.length !== visibleChains.length
+        hasHidden: chains.some(function(c) { return hiddenChainIds.has(c.id); })
       };
     }).filter(function(group) {
       if (timelinePinnedOnly && !group.pinned) return false;
@@ -516,14 +514,14 @@
 
       var trigClickAttr = chain.trigger.loc ? ' class="chain-trigger-name clickable" data-file="' + chain.trigger.loc.file + '" data-line="' + chain.trigger.loc.line + '"' : ' class="chain-trigger-name"';
       var chainPinned = group.pinned;
-      var canExpand = group.visibleChains.length > 1;
-      var expanded = expandAllPinned || expandedPinnedKeys.has(group.key);
+      var canExpand = group.renderChains.length > 1;
+      var expanded = expandedPinnedKeys.has(group.key);
       var hiddenLabel = hiddenChainIds.has(chain.id) ? 'Show' : 'Hide';
 
       var olderHtml = '';
       if (chainPinned && canExpand && expanded) {
-        for (var k = 1; k < group.visibleChains.length; k++) {
-          olderHtml += renderChainCard(group.visibleChains[k], group.key, false, false, false);
+        for (var k = 1; k < group.renderChains.length; k++) {
+          olderHtml += renderChainCard(group.renderChains[k], group.key);
         }
       }
 
@@ -537,8 +535,8 @@
           (summaryStr ? '<span class="chain-summary">' + summaryStr + '</span>' : '') +
           '<button class="chain-pin-btn' + (chainPinned ? ' active' : '') + '" data-action="toggle-chain-pin" data-key="' + group.key + '">' + (chainPinned ? 'Pinned' : 'Pin') + '</button>' +
           '<button class="chain-hide-btn' + (hiddenChainIds.has(chain.id) ? ' active' : '') + '" data-action="toggle-chain-visibility" data-id="' + chain.id + '">' + hiddenLabel + '</button>' +
-          (chainPinned && canExpand ? '<button class="chain-hide-btn" data-action="toggle-pinned-expand" data-key="' + group.key + '">' + (expanded ? 'Collapse older' : 'Expand older (' + (group.visibleChains.length - 1) + ')') + '</button>' : '') +
-          (group.hasHidden ? '<span class="chain-summary">hidden: ' + (group.chains.length - group.visibleChains.length) + '</span>' : '') +
+          (chainPinned && canExpand ? '<button class="chain-hide-btn" data-action="toggle-pinned-expand" data-key="' + group.key + '">' + (expanded ? 'Collapse older' : 'Expand older (' + (group.renderChains.length - 1) + ')') + '</button>' : '') +
+          (!timelineShowHidden && group.hasHidden ? '<span class="chain-summary">hidden: ' + group.chains.filter(function(c) { return hiddenChainIds.has(c.id); }).length + '</span>' : '') +
         '</div>' +
         (chain.updates.length > 0 ? '<div class="chain-updates">' + updatesHtml + '</div>' : '') +
         '</div>' +
@@ -547,7 +545,7 @@
     timelineChainList.innerHTML = html;
   }
 
-  function renderChainCard(chain, groupKey, pinned, includeActions, includeHiddenBadge) {
+  function renderChainCard(chain) {
     var d = new Date(chain.timestamp);
     var timeStr = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + String(d.getMilliseconds()).padStart(3, '0');
     var trigClickAttr = chain.trigger.loc ? ' class="chain-trigger-name clickable" data-file="' + chain.trigger.loc.file + '" data-line="' + chain.trigger.loc.line + '"' : ' class="chain-trigger-name"';
@@ -567,14 +565,15 @@
         (durStr ? '<span class="chain-duration">' + durStr + '</span>' : '') +
         '</div>';
     }
-    return '<div class="chain-card' + (pinned ? ' chain-pinned' : '') + '">' +
+    var isHidden = hiddenChainIds.has(chain.id);
+    return '<div class="chain-card">' +
       '<div class="chain-header">' +
       '<span class="chain-time">' + timeStr + '</span>' +
       '<span class="chain-trigger-icon kind-signal">&#9679;</span>' +
       '<span' + trigClickAttr + '>' + chain.trigger.name + '</span>' +
       '<span class="chain-component">[' + shortComponentName(chain.trigger.component) + ']</span>' +
-      (includeHiddenBadge ? '<span class="chain-summary">older</span>' : '') +
-      (includeActions ? '<button class="chain-pin-btn' + (pinned ? ' active' : '') + '" data-action="toggle-chain-pin" data-key="' + groupKey + '">' + (pinned ? 'Pinned' : 'Pin') + '</button>' : '') +
+      '<span class="chain-summary">older</span>' +
+      '<button class="chain-hide-btn' + (isHidden ? ' active' : '') + '" data-action="toggle-chain-visibility" data-id="' + chain.id + '">' + (isHidden ? 'Show' : 'Hide') + '</button>' +
       '</div>' +
       (updatesHtml ? '<div class="chain-updates">' + updatesHtml + '</div>' : '') +
       '</div>';
@@ -587,8 +586,16 @@
     var targetId = selectedSignalId || focusedSignalId;
     var node = targetId ? nodeMap.get(targetId) : null;
     if (!node) {
+      if (valuePanel && valuePanel.dataset.nodeId) {
+        valueScrollByNodeId.set(valuePanel.dataset.nodeId, valuePanel.scrollTop);
+      }
       valuePanel.innerHTML = '<div class="empty-state">Select a signal from Activity to inspect the full value.</div>';
+      valuePanel.dataset.nodeId = '';
       return;
+    }
+
+    if (valuePanel && valuePanel.dataset.nodeId) {
+      valueScrollByNodeId.set(valuePanel.dataset.nodeId, valuePanel.scrollTop);
     }
 
     var value = fullStr(node.value);
@@ -607,6 +614,12 @@
       '</div>' +
       '<div class="value-meta"><span>Location: <strong>' + escapeHtml(locationText) + '</strong></span></div>' +
       '<pre class="value-code"><code>' + escapeHtml(value) + '</code></pre>';
+
+    valuePanel.dataset.nodeId = node.id;
+    var savedScroll = valueScrollByNodeId.get(node.id);
+    if (typeof savedScroll === 'number') {
+      valuePanel.scrollTop = savedScroll;
+    }
   }
 
   function renderComponentCards() {
@@ -739,14 +752,10 @@
     timelineQuery = '';
     timelinePinnedOnly = false;
     timelineShowHidden = false;
-    expandAllPinned = false;
+    valueScrollByNodeId.clear();
     if (timelineSearch) timelineSearch.value = '';
     if (timelinePinnedOnlyToggle) timelinePinnedOnlyToggle.checked = false;
     if (timelineShowHiddenToggle) timelineShowHiddenToggle.checked = false;
-    if (timelineExpandPinnedBtn) {
-      timelineExpandPinnedBtn.classList.remove('active');
-      timelineExpandPinnedBtn.innerText = 'Expand pinned groups';
-    }
     alerts = [];
     activeChain = null;
     clearTimeout(chainFlushTimer);
@@ -788,15 +797,6 @@
   if (timelineShowHiddenToggle) {
     timelineShowHiddenToggle.addEventListener('change', function() {
       timelineShowHidden = timelineShowHiddenToggle.checked;
-      renderTimeline();
-    });
-  }
-
-  if (timelineExpandPinnedBtn) {
-    timelineExpandPinnedBtn.addEventListener('click', function() {
-      expandAllPinned = !expandAllPinned;
-      timelineExpandPinnedBtn.classList.toggle('active', expandAllPinned);
-      timelineExpandPinnedBtn.innerText = expandAllPinned ? 'Collapse pinned groups' : 'Expand pinned groups';
       renderTimeline();
     });
   }

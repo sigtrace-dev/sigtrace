@@ -1,7 +1,7 @@
 {
   "name": "SigTrace — Reactive Signal Debugger",
   "short_name": "SigTrace",
-  "description": "Real-time reactive signal lifecycle tracer for Angular, Vue 3, and SolidJS",
+  "description": "Real-time reactive signal lifecycle tracer for Angular, Vue, Solid, React, and Svelte",
   "start_url": "/",
   "display": "browser",
   "background_color": "#080c14",
