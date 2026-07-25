@@ -26,21 +26,21 @@
 
 ## 📸 Screenshots
 
-> **DevTools Panel** — Activity Table · Timeline · Component Cards · D3 Force Graph
+### 📊 Activity Tab & Value Inspector
+Showcases the structured signal activity, copy-name buttons, and the new collapsible line-wise JSON Tree Viewer.
+![Activity Tab & Value Inspector](docs/sigtrace-activity.jpg)
 
-<!-- Replace with actual screenshots once CI generates them -->
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  SigTrace DevTools                              [Graph] [Dashboard] │
-│─────────────────────────────────────────────────────────────────────│
-│  ACTIVITY TABLE                              🔍 Filter by signal... │
-│  ──────────────────────────────────────────────────────────────────  │
-│  signal      event    value          file                  time      │
-│  count       write    42 → 43        counter.component.ts  12:01:44  │
-│  doubleCount computed 84 → 86        counter.component.ts  12:01:44  │
-│  cartTotal   computed $142.50        cart.service.ts       12:01:44  │
-└─────────────────────────────────────────────────────────────────────┘
-```
+### ⏱️ Timeline Tab (Causal Event Chains)
+Chronological swimlane details showing exact update event counters (e.g. `event 1/7`) and group collapse controls.
+![Timeline Event History](docs/sigtrace-timeline.jpg)
+
+### 🧩 Component View & Diagnostics
+Flags memory hotspots, recursive cycles, and dead signals directly inside the editor sidebar.
+![Component & Issues Panel](docs/sigtrace-components.jpg)
+
+### 💻 IDE Integration Context
+Full workspace layout demonstrating editor sync with the running application.
+![SigTrace IDE Context](docs/sigtrace-preview.jpg)
 
 ---
 
@@ -96,10 +96,13 @@ export default defineConfig({
 Cmd+Shift+P → "SigTrace: Open DevTools Panel"
 ```
 
-**4. Run your app and watch the signal graph come alive:**
+**4. Run your app with the CLI wrapper and watch the signal graph come alive:**
 ```bash
-npm run start
+npx sigtrace run <project run command>
 ```
+
+> [!NOTE]
+> Replace `<project run command>` with your actual local project execution command (for example: `npm run dev`, `vite`, `ng serve`, etc.).
 
 ---
 

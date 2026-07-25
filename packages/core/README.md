@@ -38,14 +38,11 @@ yarn add @sigtrace/core --dev
 Instead of rewriting your project's code imports or build configuration files, simply prefix your normal startup command with our CLI wrapper:
 
 ```bash
-# For Angular CLI
-npx sigtrace run ng serve
-
-# For Vite / Vue / SolidJS
-npx sigtrace run yarn develop
-# or
-npx sigtrace run npm run start
+npx sigtrace run <project run command>
 ```
+
+> [!NOTE]
+> Replace `<project run command>` with your actual local project execution command (for example: `npm run dev`, `vite`, `ng serve`, etc.).
 
 ### How it works:
 1. The CLI registers the Node compilation preloader in your local workspace environment.

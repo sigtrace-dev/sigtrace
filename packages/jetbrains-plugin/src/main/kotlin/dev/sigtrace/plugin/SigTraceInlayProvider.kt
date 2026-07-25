@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.refactoring.suggested.startOffset
 import com.intellij.psi.util.PsiTreeUtil
 
 class SigTraceInlayProvider : InlayHintsProvider {
@@ -27,7 +26,8 @@ class SigTraceInlayProvider : InlayHintsProvider {
                     text.startsWith("createMemo")) {
                     
                     val document = editor.document
-                    val line = document.getLineNumber(element.startOffset) + 1 // 1-indexed
+                    val offset = element.textRange.startOffset
+                    val line = document.getLineNumber(offset) + 1 // 1-indexed
                     val metric = fileMetrics[line]
                     
                     if (metric != null) {
@@ -41,7 +41,7 @@ class SigTraceInlayProvider : InlayHintsProvider {
 
                         // Add inline inlay hint using declarative presentation API
                         sink.addPresentation(
-                            InlineInlayPosition(element.startOffset, relatedToPrevious = true),
+                            InlineInlayPosition(offset, relatedToPrevious = true),
                             hasBackground = true,
                             tooltip = null
                         ) {

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "dev.sigtrace"
-version = "1.0.0"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -34,7 +34,6 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("232")
-        untilBuild.set("241.*")
     }
 
     compileKotlin {

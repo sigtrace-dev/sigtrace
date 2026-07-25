@@ -156,7 +156,7 @@ class SigTraceToolWindowFactory : ToolWindowFactory {
             var pathString = filePath
             if (pathString.startsWith("http://") || pathString.startsWith("https://")) {
                 try {
-                    val url = java.net.URL(pathString)
+                    val url = java.net.URI.create(pathString).toURL()
                     pathString = url.path
                 } catch (e: Exception) {
                     // ignore

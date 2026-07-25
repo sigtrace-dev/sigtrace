@@ -42,8 +42,11 @@ This extension contributes the following settings:
    ```
 4. Start your dev server prefixed with our CLI wrapper:
    ```bash
-   npx sigtrace run ng serve
+   npx sigtrace run <project run command>
    ```
+   > [!NOTE]
+   > Replace `<project run command>` with your actual local project execution command (for example: `npm run dev`, `vite`, `ng serve`, etc.).
+
 5. Open your browser and interact with your app; watch the visualizer map your reactivity live!
 
 ---

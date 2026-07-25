@@ -17,6 +17,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] – 2026-07-26
+
+### Added — Webview UI Improvements
+- **Activity — Pinned column**: Pin `📌` button moved to a dedicated rightmost column with a column header; pinned rows get a subtle gold left-border highlight.
+- **Activity — Copy-name button**: A `⧉` copy icon appears on hover next to each signal name; click to copy the name to clipboard for quick paste into the search bar.
+- **Activity — Pinned persistence**: Pinned signals survive **Clear** (tombstoned — data reset, signal stays visible).
+- **Activity — Scroll lock**: Table scroll position is preserved across every re-render; expanding a detail row no longer jumps back to the top.
+- **Timeline — All events shown**: Every individual update event is shown as its own timestamped card (`event 1/7`), not just the latest. Total count badge per group.
+- **Timeline — Pinned chains survive Clear**: Pinned timeline groups are preserved after Clear.
+- **Timeline — True hide behaviour**: Hidden items are filtered out of the main list entirely. "Show hidden" reveals **only** hidden items.
+- **Timeline — Disabled checkboxes**: "Pinned only" and "Show hidden" checkboxes are disabled (dimmed) when empty, preventing confusing no-op states.
+- **Timeline — Expand edge case fix**: "Expand older" button only appears when a group is pinned **and** has more than one visible event.
+- **Value panel — Interactive JSON tree**: Objects and arrays render as a collapsible tree (`▶ /▼` toggles) with syntax-coloured keys and values (blue keys, green strings, pink numbers, purple booleans, grey null/italic).
+- **Value panel — Collapse state persistence**: JSON tree collapse state is preserved across signal re-renders; nodes do not auto-reset when a signal updates.
+- **Record button**: Now shows green `● Tracing` when active and amber `⏸ Paused` when stopped; removed the old red state.
+
+### Changed
+- Bumped monorepo, npm packages, and extension manifest to `1.2.0`.
+- Extension `.vsix` rebuilt to include all webview improvements.
+- JetBrains plugin resource webview updated to sync all webview features.
+- JetBrains plugin version bumped to `1.2.0` and `.zip` packaged.
+
+---
+
 ## [1.1.6] – 2026-07-21
 
 ### Changed

@@ -46,7 +46,20 @@
       display:flex; align-items:center; gap:3px; transition:all 0.15s;
     }
     .btn:hover { background:var(--bg3); }
-    .btn.active { background:rgba(239,68,68,0.15); border-color:#ef4444; color:#fca5a5; }
+    /* Tracing state — green */
+    .btn-tracing {
+      background: rgba(16,185,129,0.1);
+      border-color: rgba(16,185,129,0.6);
+      color: #34d399;
+    }
+    .btn-tracing:hover { background: rgba(16,185,129,0.18); }
+    /* Paused state — amber */
+    .btn-paused {
+      background: rgba(251,191,36,0.08);
+      border-color: rgba(251,191,36,0.5);
+      color: #fbbf24;
+    }
+    .btn-paused:hover { background: rgba(251,191,36,0.14); }
     .tabs-header {
       display:flex; border-bottom:1px solid var(--border);
       flex-shrink:0; background:rgba(15,23,42,0.4);
@@ -87,6 +100,8 @@
       color:var(--muted); cursor:pointer; white-space:nowrap; font-size:11px;
     }
     .inactive-label input { accent-color:var(--accent); cursor:pointer; }
+    .inactive-label input:disabled { opacity: 0.4; cursor: not-allowed; }
+    .inactive-label.disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
     .controls-note { color: var(--muted); font-size: 10px; }
     .activity-table-wrap { flex:1; overflow-y:auto; overflow-x:hidden; }
     .activity-table { width:100%; border-collapse:collapse; }
@@ -99,27 +114,46 @@
     .signal-row { border-bottom:1px solid rgba(255,255,255,0.025); cursor:pointer; transition:background 0.1s; }
     .signal-row:hover { background:var(--bg2); }
     .signal-row.row-focused { background:rgba(59,130,246,0.09); }
+    .signal-row.row-pinned { background:rgba(251,191,36,0.04); border-left: 2px solid rgba(251,191,36,0.35); }
     .signal-row td { padding:5px 8px; vertical-align:middle; }
-    .col-name { max-width:160px; }
+    .col-name { max-width:150px; }
     .col-component { max-width:120px; color:var(--muted); font-size:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .col-value { max-width:110px; font-family:monospace; font-size:10px; color:#94a3b8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .col-updates { text-align:center; font-weight:600; font-size:11px; width:60px; }
     .col-updates.hot-count { color:var(--error); }
     .col-activity { width:80px; }
+    .col-pin { width:34px; text-align:center; }
+    /* Pin button — rightmost column */
     .pin-btn {
-      margin-left: 6px;
       border: 1px solid var(--border);
       border-radius: 4px;
       background: transparent;
       color: var(--muted);
       font-size: 10px;
       line-height: 1;
-      padding: 1px 4px;
+      padding: 2px 5px;
       cursor: pointer;
     }
     .pin-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
     .pin-btn.active { color: #fbbf24; border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.08); }
-    .signal-name { font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; max-width:140px; }
+    /* Copy-name button next to signal name */
+    .copy-name-btn {
+      margin-left: 5px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1;
+      padding: 1px 3px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    .signal-row:hover .copy-name-btn { opacity: 1; }
+    .copy-name-btn:hover { color: var(--accent); border-color: rgba(59,130,246,0.3); opacity: 1; }
+    .copy-name-btn.success { color: var(--green); border-color: rgba(16,185,129,0.4); opacity: 1; }
+    .signal-name { font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block; max-width:130px; }
     .kind-icon { margin-right:4px; font-size:9px; }
     .kind-signal { color:var(--signal); }
     .kind-memo { color:var(--memo); }
@@ -311,6 +345,63 @@
       word-break: break-all;
       line-height: 1.5;
     }
+    /* ── Interactive JSON Tree ─────────────────────────────────────────────── */
+    .json-tree {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: rgba(0,0,0,0.22);
+      padding: 8px 10px;
+      font-family: monospace;
+      font-size: 11px;
+      line-height: 1.7;
+      overflow: auto;
+      min-height: 120px;
+    }
+    .json-line {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+    .json-group {
+      display: block;
+    }
+    .json-toggle {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 9px;
+      user-select: none;
+      width: 14px;
+      flex-shrink: 0;
+      display: inline-block;
+      text-align: center;
+    }
+    .json-toggle:hover { color: var(--accent); }
+    .json-toggle.leaf { cursor: default; color: transparent; }
+    .json-key { color: #93c5fd; }
+    .json-colon { color: var(--muted); margin-right: 4px; }
+    .json-str { color: #86efac; }
+    .json-num { color: #fda4af; }
+    .json-bool { color: #c084fc; }
+    .json-null { color: var(--muted); font-style: italic; }
+    .json-bracket { color: var(--muted); }
+    .json-children {
+      padding-left: 14px;
+      border-left: 1px dashed rgba(255, 255, 255, 0.05);
+      margin-left: 6px;
+    }
+    .json-preview { color: var(--muted); font-size: 10px; margin: 0 4px; }
+    .category-header-row td {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -320,7 +411,7 @@
       SigTrace
     </div>
     <div class="header-controls">
-      <button id="btn-record" class="btn active">&#9679; Rec</button>
+      <button id="btn-record" class="btn btn-tracing">&#9679; Tracing</button>
       <button id="btn-clear" class="btn">Clear</button>
     </div>
   </header>
@@ -354,11 +445,12 @@
             <th>Value</th>
             <th style="text-align:center">Updates</th>
             <th>Activity</th>
+            <th class="col-pin" title="Pin">&#128204;</th>
           </tr>
         </thead>
         <tbody id="activity-table-body">
           <tr class="empty-row">
-            <td colspan="5">Waiting for signals...<br>Run your app with SigTrace to begin tracking.</td>
+            <td colspan="6">Waiting for signals...<br>Run your app with SigTrace to begin tracking.</td>
           </tr>
         </tbody>
       </table>
@@ -368,13 +460,12 @@
   <div id="tab-timeline" class="tab-content">
     <div class="timeline-controls">
       <input type="text" id="timeline-search" placeholder="Search chains, nodes, components...">
-      <label class="inactive-label">
-        <input type="checkbox" id="timeline-pinned-only"> Pinned only
+      <label class="inactive-label" id="label-pinned-only">
+        <input type="checkbox" id="timeline-pinned-only" disabled> Pinned only
       </label>
-      <label class="inactive-label">
-        <input type="checkbox" id="timeline-show-hidden"> Show hidden
+      <label class="inactive-label" id="label-show-hidden">
+        <input type="checkbox" id="timeline-show-hidden" disabled> Show hidden
       </label>
-      <span class="controls-note">Hide is per timeline item. Hidden items can be restored from Show hidden mode.</span>
     </div>
     <div class="chain-list" id="timeline-chain-list">
       <div class="empty-state">No activity yet.<br>Interact with your app to see causal chains appear here.</div>

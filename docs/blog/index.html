@@ -43,6 +43,17 @@
     "blogPost": [
       {
         "@type": "BlogPosting",
+        "headline": "How to Debug Reactive Signal Invalidation Loops & Performance Hotspots Inside VS Code",
+        "url": "https://sigtrace.dev/blog/how-to-debug-reactive-signal-loops-and-performance-hotspots-inside-vs-code.html",
+        "datePublished": "2026-07-26",
+        "description": "Learn how to diagnose recursive reactivity cycles, find memo/computed performance bottlenecks, and trace causal chains in Angular, Vue, and SolidJS inside VS Code.",
+        "author": {
+          "@type": "Person",
+          "name": "SigTrace Contributors"
+        }
+      },
+      {
+        "@type": "BlogPosting",
         "headline": "Reactivity is Magic (Until You Have to Debug It): Visualizing React & Svelte 5 Signals",
         "url": "https://sigtrace.dev/blog/react-svelte-signals-debugging.html",
         "datePublished": "2026-07-18",
@@ -186,7 +197,12 @@
 </header>
 
 <main class="container">
-  <div class="blog-list" role="list">
+    <article class="post-card" onclick="location.href='/blog/how-to-debug-reactive-signal-loops-and-performance-hotspots-inside-vs-code.html'" role="listitem">
+      <div class="post-meta">July 26, 2026 · Tutorials & Releases</div>
+      <h2 class="post-title">How to Debug Reactive Signal Invalidation Loops & Performance Hotspots Inside VS Code</h2>
+      <p class="post-desc">Learn how to inspect deep state variables with the new line-wise JSON tree, track chronological timeline sequences, and catch infinite recursive rendering loops directly inside your editor.</p>
+      <span class="post-readmore">Read Article →</span>
+    </article>
     <article class="post-card" onclick="location.href='/blog/react-svelte-signals-debugging.html'" role="listitem">
       <div class="post-meta">July 18, 2026 · Releases</div>
       <h2 class="post-title">Reactivity is Magic (Until You Have to Debug It): Visualizing React & Svelte 5 Signals</h2>

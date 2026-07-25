@@ -10,7 +10,9 @@
 
     <!-- Product compatibility -->
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.javascript</depends>
+    
+    <!-- Optional JavaScript/TypeScript integration -->
+    <depends optional="true" config-file="sigtrace-js.xml">com.intellij.modules.javascript</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Tool Window for the webview visualizer -->
@@ -19,14 +21,6 @@
                     secondary="false"
                     icon="AllIcons.General.Modified"
                     factoryClass="dev.sigtrace.plugin.SigTraceToolWindowFactory"/>
-
-        <!-- Inlay Hints (CodeLens equivalent) for signal update counts -->
-        <codeInsight.declarativeInlayProvider
-                language="TypeScript"
-                implementationClass="dev.sigtrace.plugin.SigTraceInlayProvider"
-                isEnabledByDefault="true"
-                groupId="sigtrace"
-                id="sigtrace.updates"/>
     </extensions>
 
     <actions>
