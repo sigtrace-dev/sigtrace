@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- PRIMARY SEO META                                            -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <title>How to Debug Reactive Signal Loops & Performance Hotspots in VS Code</title>
+  <meta name="description" content="Learn how to diagnose recursive reactivity cycles, debug memo/computed performance bottlenecks, and trace causal chains in Angular, Vue, and SolidJS inside VS Code." />
+  <meta name="keywords" content="debug reactive signals, angular signals debugger, vue ref update count, solidjs createMemo tracing, dependency graph visualizer, code lens telemetry, sigtrace" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://sigtrace.dev/blog/how-to-debug-reactive-signal-loops-and-performance-hotspots-inside-vs-code.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://sigtrace.dev/blog/how-to-debug-reactive-signal-loops-and-performance-hotspots-inside-vs-code.html" />
+  <meta property="og:title" content="How to Debug Reactive Signal Loops & Performance Hotspots in VS Code" />
+  <meta property="og:description" content="Stop context-switching to browser DevTools. Learn how to audit your reactivity graph and clean up dangling state inside your editor." />
+  <meta property="og:image" content="https://sigtrace.dev/sigtrace-preview.jpg" />
+  <meta property="article:published_time" content="2026-07-26" />
+  <meta property="article:author" content="SigTrace Contributors" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="How to Debug Reactive Signal Loops & Performance Hotspots in VS Code" />
+  <meta name="twitter:description" content="Stop context-switching. Audit your reactivity graph and find memory bottlenecks inside your editor." />
+
+  <!-- JSON-LD (AEO / SEO / Schema) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": "https://sigtrace.dev/blog/how-to-debug-reactive-signal-loops-and-performance-hotspots-inside-vs-code.html#article",
+    "headline": "How to Debug Reactive Signal Loops & Performance Hotspots in VS Code",
+    "url": "https://sigtrace.dev/blog/how-to-debug-reactive-signal-loops-and-performance-hotspots-inside-vs-code.html",
+    "datePublished": "2026-07-26",
+    "dateModified": "2026-07-26",
+    "description": "Learn how to diagnose recursive reactivity cycles, find memo/computed performance bottlenecks, and trace causal chains in Angular, Vue, and SolidJS inside VS Code.",
+    "author": {
+      "@type": "Person",
+      "name": "SigTrace Contributors"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "SigTrace",
+      "logo": "https://sigtrace.dev/logo.svg"
+    },
+    "mainEntityOfPage": "https://sigtrace.dev/blog/how-to-debug-reactive-signal-loops-and-performance-hotspots-inside-vs-code.html"
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-base: #080c14;
+      --bg-surface: #0d1422;
+      --bg-card: #111827;
+      --border: rgba(255,255,255,0.07);
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --font-sans: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-md: 10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+    .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+    
+    /* Nav */
+    nav {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      background: rgba(8,12,20,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-logo svg {
+      color: var(--accent-light);
+    }
+    .nav-logo span {
+      background: linear-gradient(135deg, var(--accent-light), #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    header {
+      padding: 56px 0 28px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 36px;
+    }
+    .post-meta {
+      font-size: 13px;
+      color: var(--accent-light);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 36px;
+      line-height: 1.25;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+    .post-author {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    main {
+      padding-bottom: 80px;
+    }
+    article p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      font-weight: 400;
+    }
+    article h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 40px 0 16px 0;
+    }
+    article h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 28px 0 12px 0;
+    }
+    article code {
+      font-family: var(--font-mono);
+      background: rgba(255,255,255,0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    article pre {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      overflow: auto;
+      margin-bottom: 28px;
+    }
+    article pre code {
+      background: none;
+      padding: 0;
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    article img {
+      width: 100%;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin: 24px 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .callout {
+      background: rgba(99, 102, 241, 0.08);
+      border-left: 4px solid var(--accent);
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin: 28px 0;
+    }
+    .callout p {
+      margin: 0;
+      color: var(--text-primary);
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<nav role="navigation">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:2px; vertical-align:middle;">
+        <path d="m19 8-6 2-6-2M12 2v8M12 22v-6M19 16l-7-3-7 3"/>
+      </svg>
+      Sig<span>Trace</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="/#features">Features</a></li>
+      <li><a href="/#quickstart">Quickstart</a></li>
+      <li><a href="/docs">Docs</a></li>
+      <li><a href="/blog">Blog</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <header>
+    <div class="post-meta">July 26, 2026 · Tutorials & Releases</div>
+    <h1>How to Debug Reactive Signal Invalidation Loops & Performance Hotspots Inside VS Code</h1>
+    <div class="post-author">By the SigTrace Contributors</div>
+  </header>
+
+  <main role="main">
+    <article>
+      <p>Fine-grained reactivity is the standard state-management system of the modern web. With Angular's native Signals, Vue 3's Refs/Computed APIs, and SolidJS's createSignal, updating the UI has never been faster. However, as reactive graphs grow, developers face a new class of problems: invalidation loops, slow computation updates, and unformatted deep state diagnostics.</p>
+
+      <p>To inspect a complex reactive chain, developers typically rely on print-debugging (<code>console.log()</code>) or browser breakpoints. But switching back and forth between your code and the browser's developer tools creates a context-switching tax that slows you down. That is why we built <strong>SigTrace</strong>—to embed reactivity diagnostics right inside your editor.</p>
+
+      <img src="../sigtrace-preview.jpg" alt="SigTrace running inside VS Code side-by-side with App.tsx and browser preview panel" />
+
+      <h2>1. Analyzing Live Signal Activity with the Collapsible JSON Tree</h2>
+      <p>When you trigger mutations, SigTrace logs every read, write, and effect inside the Activity tab. We recently upgraded the Value Inspector panel to render complex nested objects and arrays as a <strong>line-wise collapsible JSON tree</strong>. It matches the VS Code layout with vertical guidelines and alternating collapse nodes, meaning you can inspect deep, complex payloads without cluttered strings or horizontal overflow.</p>
+
+      <img src="../sigtrace-activity.jpg" alt="SigTrace Activity Tab showing signal mutations, copy-name buttons, and line-wise collapsible JSON Tree inspector" />
+
+      <p>Pasting names into your search bar is also easier. A small copy icon (<code>⧉</code>) appears on hover next to every signal name in the list. More importantly, pinned signals survive <strong>Clears</strong> (using a tombstone strategy) so you can compare states across different application workflows.</p>
+
+      <h2>2. Visualizing Sequenced Updates in the Causal Timeline</h2>
+      <p>Reactivity cascades happen in milliseconds. If user information gets updated multiple times in a row, typical devtools only show the final state. SigTrace's **Timeline view** renders each event as its own chronological card, showing counts (like <code>event 1/7</code>) so you can step through every single state trigger in order.</p>
+
+      <img src="../sigtrace-timeline.jpg" alt="SigTrace Timeline view displaying sequenced causal chain events, loop alerts, and hide/unpin toggles" />
+
+      <p>Additionally, SigTrace features a **Circular Invalidation Safeguard**. If a reactive loop gets triggered recursively (>25 evaluations per second), SigTrace will automatically intercept the loop to prevent your browser tab from freezing, alerting you to the exact file and line number causing the issue.</p>
+
+      <h2>3. Auditing Component Health & Memory Leaks</h2>
+      <p>Dangling computations and unused selectors waste memory and CPU cycles. The **Components Tab** automatically groups reactive state by its parent component. It audits your graph to flag "Dead Signals" (variables declared and registered but never read by any computed memo or rendering template) and computation hotspots taking longer than 2ms.</p>
+
+      <img src="../sigtrace-components.jpg" alt="SigTrace Components & Issues Panel displaying component stats, computation hotspots, and dead signal notifications" />
+
+      <div class="callout">
+        <p><strong>Zero Configuration CLI Startup:</strong> To start tracing your application's reactivity, simply prefix your normal startup command with our wrapper. E.g.: <code>npx sigtrace run <project run command></code> (such as <code>npm run dev</code> or <code>ng serve</code>).</p>
+      </div>
+
+      <h2>Conclusion</h2>
+      <p>SigTrace v1.2.0 is out! The layout updates, verifier fixes, and new line-wise JSON trees are available now for both VS Code and WebStorm. Download the extension package directly to start debugging reactivity where you write code.</p>
+      
+      <p>Check out our <a href="https://github.com/sigtrace-dev/sigtrace" style="color:var(--accent-light)">GitHub Repository</a> to read the code, contribute features, or report issues!</p>
+    </article>
+  </main>
+</div>
+
+<footer>
+  <div class="container">
+    <p>© 2026 SigTrace Contributors. Released under the PolyForm Noncommercial License 1.0.0.</p>
+  </div>
+</footer>
+
+</body>
+</html>
