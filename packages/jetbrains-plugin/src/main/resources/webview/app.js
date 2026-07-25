@@ -324,9 +324,7 @@
       return;
     }
 
-    var html = '';
-    for (var i = 0; i < rows.length; i++) {
-      var node = rows[i];
+    function renderRowHtml(node) {
       var valueStr = safeStr(node.value, 60);
       var valueFull = fullStr(node.value);
 
@@ -344,7 +342,7 @@
         locHtml = '<span class="signal-loc clickable" data-file="' + node.loc.file + '" data-line="' + node.loc.line + '" title="' + node.loc.file + '">' + fileBase + ':' + node.loc.line + '</span>';
       }
 
-      html += '<tr class="signal-row' + (isHot ? ' row-hot' : '') + (isFocused ? ' row-focused' : '') + (isPinned ? ' row-pinned' : '') + '" data-id="' + node.id + '">' +
+      var rowHtml = '<tr class="signal-row' + (isHot ? ' row-hot' : '') + (isFocused ? ' row-focused' : '') + (isPinned ? ' row-pinned' : '') + '" data-id="' + node.id + '">' +
         '<td class="col-name"><div class="col-name-wrap"><span class="kind-icon ' + kindClass + '">' + kindIcon + '</span><span class="signal-name" title="' + node.name + '">' + node.name + '</span>' +
         '<button class="copy-name-btn" data-action="copy-name" data-name="' + escapeHtml(node.name) + '" title="Copy signal name to clipboard">&#10697;</button>' +
         '</div>' + (locHtml ? '<div class="loc-wrap">' + locHtml + '</div>' : '') + '</td>' +
@@ -360,7 +358,7 @@
           ? '<span class="detail-label">Location:</span> <span class="detail-loc-link clickable" data-file="' + node.loc.file + '" data-line="' + node.loc.line + '">' + node.loc.file + ':' + node.loc.line + '</span>'
           : '<span class="detail-label">Location:</span> <span class="detail-val">Unknown</span>';
 
-        html += '<tr class="details-row">' +
+        rowHtml += '<tr class="details-row">' +
           '<td colspan="6">' +
             '<div class="details-box">' +
               '<div class="details-meta">' +
@@ -375,6 +373,25 @@
           '</td>' +
           '</tr>';
       }
+      return rowHtml;
+    }
+
+    var html = '';
+    var pinnedRows = rows.filter(function(n) { return pinnedSignalIds.has(n.id); });
+    var unpinnedRows = rows.filter(function(n) { return !pinnedSignalIds.has(n.id); });
+
+    if (pinnedRows.length >= 2) {
+      html += '<tr class="category-header-row"><td colspan="6">Pinned</td></tr>';
+    }
+    for (var i = 0; i < pinnedRows.length; i++) {
+      html += renderRowHtml(pinnedRows[i]);
+    }
+
+    if (pinnedRows.length >= 1 && unpinnedRows.length >= 1) {
+      html += '<tr class="category-header-row"><td colspan="6">Others</td></tr>';
+    }
+    for (var j = 0; j < unpinnedRows.length; j++) {
+      html += renderRowHtml(unpinnedRows[j]);
     }
     activityTableBody.innerHTML = html;
 
@@ -931,6 +948,16 @@
     pinnedNodesCopy.forEach(function(node, id) {
       nodeMap.set(id, node);
       ensureComponent(node);
+      
+      // Re-populate maps so future events link up to the existing pinned node references
+      nodeAliasMap.set(id, id);
+      var signature = [
+        node.kind,
+        node.component,
+        node.name,
+        toLocKey(node.loc)
+      ].join('|');
+      nodeSignatureMap.set(signature, id);
     });
 
     // Restore pinned chains
