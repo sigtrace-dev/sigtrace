@@ -1273,16 +1273,87 @@
       text-align: right;
     }
 
+    /* ── Showcase layout and Mobile Nav ── */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 28px;
+      align-items: start;
+      margin-top: 32px;
+      text-align: left;
+    }
+    .showcase-visual {
+      display: flex;
+      flex-direction: column;
+    }
+    .showcase-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .screenshot-switcher {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 0;
+    }
+    .view-explainer {
+      margin-top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 6px;
+      margin-left: 8px;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-toggle svg {
+      width: 20px;
+      height: 20px;
+    }
+
     /* ══════════════════════════════════════════════════════════
        RESPONSIVE
     ══════════════════════════════════════════════════════════ */
     @media (max-width: 900px) {
+      .showcase-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .screenshot-switcher {
+        justify-content: flex-start;
+      }
       .features-grid { grid-template-columns: repeat(2, 1fr); }
       .quickstart-grid { grid-template-columns: 1fr; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .nav-links { display: none; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(10, 10, 12, 0.96);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        flex-direction: column;
+        padding: 20px 24px;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .nav-links.mobile-active {
+        display: flex;
+      }
+      .nav-toggle {
+        display: inline-flex;
+      }
       .view-explainer { grid-template-columns: 1fr; }
-      .screenshot-switcher { justify-content: center; }
       .hero-content { max-width: 640px; }
       .hero-description { max-width: 100%; }
     }
@@ -1698,6 +1769,13 @@
       <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension" class="btn btn-primary" target="_blank" rel="noopener" id="nav-install-btn">
         Install Free
       </a>
+      <button class="nav-toggle" aria-label="Toggle menu" onclick="toggleMobileMenu()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
     </div>
   </div>
 </nav>
@@ -1758,47 +1836,54 @@
     <div class="screenshot-wrap fade-up delay-4">
       <div class="screenshot-glow" aria-hidden="true"></div>
 
-      <p class="showcase-intro">Choose a view first, then inspect the panel: Activity helps spot noisy updates, Timeline reveals root-cause chains, and Components shows where reactive cost is concentrated.</p>
+      <p class="showcase-intro">Choose a view first, then inspect the panel: Activity spots noisy updates, Timeline tracks causal flows, and Components audits reactive health.</p>
 
-      <div class="screenshot-switcher" role="tablist" aria-label="Showcase views">
-        <button class="screenshot-switcher-btn active" onclick="switchScreenshot(this, 'activity')" role="tab" aria-selected="true" id="stab-activity">Activity view</button>
-        <button class="screenshot-switcher-btn" onclick="switchScreenshot(this, 'timeline')" role="tab" aria-selected="false" id="stab-timeline">Timeline view</button>
-        <button class="screenshot-switcher-btn" onclick="switchScreenshot(this, 'components')" role="tab" aria-selected="false" id="stab-components">Components view</button>
-      </div>
-
-      <div class="screenshot-frame" role="img" aria-label="SigTrace running in VS Code showing live reactive signal activity table">
-        <div class="screenshot-topbar">
-          <span class="topbar-dot red" aria-hidden="true"></span>
-          <span class="topbar-dot amber" aria-hidden="true"></span>
-          <span class="topbar-dot green" aria-hidden="true"></span>
-          <span class="title" style="flex:none">SIGTRACE</span>
-
-          <span class="connected-badge" role="status">Connected</span>
-        </div>
-        <img
-          id="screenshot-img"
-          src="/sigtrace-activity.jpg"
-          alt="SigTrace VS Code extension panel showing a live signal activity table with signals like searchQuery, filteredResults, autoSyncEffect, selectedTab and userPreferences"
-          width="1280"
-          height="440"
-          loading="eager"
-          decoding="async"
-        />
-      </div>
-      <p class="screenshot-caption" id="screenshot-caption">▲ Real SigTrace panel — live signal activity inside VS Code</p>
-
-      <div class="view-explainer" aria-live="polite">
-        <article class="view-card">
-          <h3 id="view-title">Activity: what changed right now</h3>
-          <p id="view-description">Use Activity to catch noisy signals and effect storms instantly. Sort by Most Updates to find the source of jitter or unnecessary reruns in under a minute.</p>
-        </article>
-        <article class="view-card">
-          <h3>What you can answer quickly</h3>
-          <div class="view-kpis">
-            <div class="view-kpi"><strong id="kpi-a">Noisy Signal</strong><span id="kpi-a-label">Top update source</span></div>
-            <div class="view-kpi"><strong id="kpi-b">Fast Triage</strong><span id="kpi-b-label">Prioritize fixes</span></div>
+      <div class="showcase-grid">
+        <!-- Left Column: Visual Screenshot & Caption -->
+        <div class="showcase-visual">
+          <div class="screenshot-frame" role="img" aria-label="SigTrace running in VS Code showing live reactive signal activity table">
+            <div class="screenshot-topbar">
+              <span class="topbar-dot red" aria-hidden="true"></span>
+              <span class="topbar-dot amber" aria-hidden="true"></span>
+              <span class="topbar-dot green" aria-hidden="true"></span>
+              <span class="title" style="flex:none">SIGTRACE</span>
+              <span class="connected-badge" role="status">Connected</span>
+            </div>
+            <img
+              id="screenshot-img"
+              src="sigtrace-activity.jpg"
+              alt="SigTrace VS Code extension panel showing a live signal activity table with Pinned and Others separators"
+              width="1280"
+              height="440"
+              loading="eager"
+              decoding="async"
+            />
           </div>
-        </article>
+          <p class="screenshot-caption" id="screenshot-caption">▲ Real SigTrace panel — live signal activity inside VS Code</p>
+        </div>
+
+        <!-- Right Column: Interactive Switcher & Pain-point Explainer -->
+        <div class="showcase-info">
+          <div class="screenshot-switcher" role="tablist" aria-label="Showcase views">
+            <button class="screenshot-switcher-btn active" onclick="switchScreenshot(this, 'activity')" role="tab" aria-selected="true" id="stab-activity">Activity view</button>
+            <button class="screenshot-switcher-btn" onclick="switchScreenshot(this, 'timeline')" role="tab" aria-selected="false" id="stab-timeline">Timeline view</button>
+            <button class="screenshot-switcher-btn" onclick="switchScreenshot(this, 'components')" role="tab" aria-selected="false" id="stab-components">Components view</button>
+          </div>
+
+          <div class="view-explainer" aria-live="polite">
+            <article class="view-card">
+              <h3 id="view-title">Activity: instant reactivity profiling</h3>
+              <p id="view-description">No more guessing through console.logs. Shows a live, filterable table of signal reads, writes, and effect triggers in real time. Spot which signals are over-triggering and sort by update counts to isolate jitter instantly.</p>
+            </article>
+            <article class="view-card">
+              <h3>Solve Developer Pain Points</h3>
+              <div class="view-kpis">
+                <div class="view-kpi"><strong id="kpi-a">Noisy Signal</strong><span id="kpi-a-label">Top update source</span></div>
+                <div class="view-kpi"><strong id="kpi-b">Fast Triage</strong><span id="kpi-b-label">Prioritize fixes</span></div>
+              </div>
+            </article>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2436,6 +2521,14 @@
     if (btn) { btn.textContent = '✓ You\'re on the list!'; btn.disabled = true; }
   }
 
+  /* ── Mobile menu toggle ── */
+  function toggleMobileMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    if (navLinks) {
+      navLinks.classList.toggle('mobile-active');
+    }
+  }
+
   /* ── Switch Real Screenshots ── */
   function switchScreenshot(btn, type) {
     document.querySelectorAll('.screenshot-switcher-btn').forEach(t => {
@@ -2450,17 +2543,17 @@
     
     const sources = {
       activity: {
-        src: '/sigtrace-activity.jpg',
+        src: 'sigtrace-activity.jpg',
         alt: 'SigTrace VS Code extension panel showing live signal activity table',
         cap: '▲ Real SigTrace panel — live signal activity inside VS Code'
       },
       timeline: {
-        src: '/sigtrace-timeline.jpg',
+        src: 'sigtrace-timeline.jpg',
         alt: 'SigTrace VS Code extension panel showing live signal timeline causal chains',
         cap: '▲ Real SigTrace panel — causal propagation timeline of signal events'
       },
       components: {
-        src: '/sigtrace-components.jpg',
+        src: 'sigtrace-components.jpg',
         alt: 'SigTrace VS Code extension panel showing registered component performance analysis and warnings',
         cap: '▲ Real SigTrace panel — component signal usage analysis and performance alerts'
       }
@@ -2483,24 +2576,24 @@
     const kpiBLabel = document.getElementById('kpi-b-label');
     const content = {
       activity: {
-        title: 'Activity: what changed right now',
-        desc: 'Use Activity to catch noisy signals and effect storms instantly. Sort by Most Updates to find the source of jitter or unnecessary reruns in under a minute.',
+        title: 'Activity: instant reactivity profiling',
+        desc: 'No more guessing through console.logs. Shows a live, filterable table of signal reads, writes, and effect triggers in real time. Spot which signals are over-triggering and sort by update counts to isolate jitter instantly.',
         kpiA: 'Noisy Signal',
         kpiALabel: 'Top update source',
         kpiB: 'Fast Triage',
         kpiBLabel: 'Prioritize fixes'
       },
       timeline: {
-        title: 'Timeline: what triggered what',
-        desc: 'Timeline turns one bug report into a clear cause-and-effect path. Start from a signal write and follow every computed and effect execution in order.',
+        title: 'Timeline: trigger-flow causal chains',
+        desc: 'Trace the exact propagation tree of a signal update. Follow every computed evaluation and effect reaction in order (e.g. event 1/7). Unpin or hide chains to isolate clean causal pathways.',
         kpiA: 'Root Cause',
         kpiALabel: 'First trigger',
         kpiB: 'Chain Depth',
         kpiBLabel: 'Propagation path'
       },
       components: {
-        title: 'Components: where reactivity cost lives',
-        desc: 'Components view groups updates by component so you can spot heavy zones, stale watchers, and bottlenecks before they become production incidents.',
+        title: 'Components & Issues: health audit',
+        desc: 'Audit your application\'s reactive health inside the IDE. Spot components with heavy work counts, discover computation hotspots taking >2ms, and clean up dangling dead signals before committing.',
         kpiA: 'Hot Component',
         kpiALabel: 'Most reactive work',
         kpiB: 'Cleanup Target',
