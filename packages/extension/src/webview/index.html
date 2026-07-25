@@ -357,8 +357,14 @@
       overflow: auto;
       min-height: 120px;
     }
-    .json-node { display: block; }
-    .json-row { display: flex; align-items: baseline; gap: 2px; padding: 0 0 0 0; }
+    .json-line {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+    .json-group {
+      display: block;
+    }
     .json-toggle {
       cursor: pointer;
       color: var(--muted);
@@ -372,15 +378,18 @@
     .json-toggle:hover { color: var(--accent); }
     .json-toggle.leaf { cursor: default; color: transparent; }
     .json-key { color: #93c5fd; }
-    .json-colon { color: var(--muted); margin: 0 3px; }
+    .json-colon { color: var(--muted); margin-right: 4px; }
     .json-str { color: #86efac; }
     .json-num { color: #fda4af; }
     .json-bool { color: #c084fc; }
     .json-null { color: var(--muted); font-style: italic; }
     .json-bracket { color: var(--muted); }
-    .json-children { padding-left: 18px; border-left: 1px solid rgba(255,255,255,0.05); margin-left: 6px; }
-    .json-children.collapsed { display: none; }
-    .json-preview { color: var(--muted); font-size: 10px; margin-left: 4px; }
+    .json-children {
+      padding-left: 14px;
+      border-left: 1px dashed rgba(255, 255, 255, 0.05);
+      margin-left: 6px;
+    }
+    .json-preview { color: var(--muted); font-size: 10px; margin: 0 4px; }
   </style>
 </head>
 <body>

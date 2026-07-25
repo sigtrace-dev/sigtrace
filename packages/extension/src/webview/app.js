@@ -433,60 +433,83 @@
   }
 
   // ── Interactive JSON Tree ─────────────────────────────────────────────────
-  function buildJsonTree(val, nodeId, path) {
+  function buildJsonTree(key, val, nodeId, path, isLast) {
     path = path || 'root';
-    if (val === null) return '<span class="json-null">null</span>';
-    if (typeof val === 'boolean') return '<span class="json-bool">' + val + '</span>';
-    if (typeof val === 'number') return '<span class="json-num">' + val + '</span>';
-    if (typeof val === 'string') return '<span class="json-str">"' + escapeHtml(val) + '"</span>';
-
-    if (Array.isArray(val)) {
-      if (val.length === 0) return '<span class="json-bracket">[]</span>';
-      var collapseKey = nodeId + '::' + path;
-      var isCollapsed = jsonCollapseState.get(collapseKey) === true;
-      var preview = '[' + val.length + ' items]';
-      var inner = '';
-      for (var i = 0; i < val.length; i++) {
-        var childPath = path + '[' + i + ']';
-        inner += '<div class="json-node json-row">' +
-          '<span class="json-toggle leaf">&#9474;</span>' +
-          '<span class="json-key">' + i + '</span><span class="json-colon">:</span>' +
-          buildJsonTree(val[i], nodeId, childPath) +
-          (i < val.length - 1 ? '<span class="json-bracket">,</span>' : '') +
-          '</div>';
+    var comma = isLast ? '' : '<span class="json-bracket">,</span>';
+    var keyPart = '';
+    if (key !== null) {
+      if (typeof key === 'number') {
+        keyPart = '<span class="json-key">' + key + '</span><span class="json-colon">:</span> ';
+      } else {
+        keyPart = '<span class="json-key">"' + escapeHtml(key) + '"</span><span class="json-colon">:</span> ';
       }
-      return '<span class="json-toggle" data-collapse-key="' + escapeHtml(collapseKey) + '">' + (isCollapsed ? '&#9654;' : '&#9660;') + '</span>' +
-        '<span class="json-bracket">[</span>' +
-        (isCollapsed ? '<span class="json-preview">' + escapeHtml(preview) + '</span>' : '') +
-        '<div class="json-children' + (isCollapsed ? ' collapsed' : '') + '">' + inner + '</div>' +
-        (isCollapsed ? '' : '<span class="json-bracket">]</span>');
     }
 
-    if (typeof val === 'object') {
-      var keys = Object.keys(val);
-      if (keys.length === 0) return '<span class="json-bracket">{}</span>';
-      var collapseKey = nodeId + '::' + path;
-      var isCollapsed = jsonCollapseState.get(collapseKey) === true;
-      var preview = '{' + keys.slice(0, 3).join(', ') + (keys.length > 3 ? ', ...' : '') + '}';
-      var inner = '';
-      for (var k = 0; k < keys.length; k++) {
-        var key = keys[k];
-        var childPath = path + '.' + key;
-        inner += '<div class="json-node json-row">' +
-          '<span class="json-toggle leaf">&#9474;</span>' +
-          '<span class="json-key">"' + escapeHtml(key) + '"</span><span class="json-colon">:</span>' +
-          buildJsonTree(val[key], nodeId, childPath) +
-          (k < keys.length - 1 ? '<span class="json-bracket">,</span>' : '') +
-          '</div>';
-      }
-      return '<span class="json-toggle" data-collapse-key="' + escapeHtml(collapseKey) + '">' + (isCollapsed ? '&#9654;' : '&#9660;') + '</span>' +
-        '<span class="json-bracket">{</span>' +
-        (isCollapsed ? '<span class="json-preview">' + escapeHtml(preview) + '</span>' : '') +
-        '<div class="json-children' + (isCollapsed ? ' collapsed' : '') + '">' + inner + '</div>' +
-        (isCollapsed ? '' : '<span class="json-bracket">}</span>');
+    if (val === null) {
+      return '<div class="json-line">' +
+        '<span class="json-toggle leaf">&#9474;</span>' +
+        keyPart + '<span class="json-null">null</span>' + comma +
+        '</div>';
+    }
+    if (typeof val === 'boolean') {
+      return '<div class="json-line">' +
+        '<span class="json-toggle leaf">&#9474;</span>' +
+        keyPart + '<span class="json-bool">' + val + '</span>' + comma +
+        '</div>';
+    }
+    if (typeof val === 'number') {
+      return '<div class="json-line">' +
+        '<span class="json-toggle leaf">&#9474;</span>' +
+        keyPart + '<span class="json-num">' + val + '</span>' + comma +
+        '</div>';
+    }
+    if (typeof val === 'string') {
+      return '<div class="json-line">' +
+        '<span class="json-toggle leaf">&#9474;</span>' +
+        keyPart + '<span class="json-str">"' + escapeHtml(val) + '"</span>' + comma +
+        '</div>';
     }
 
-    return '<span>' + escapeHtml(String(val)) + '</span>';
+    // Objects and Arrays
+    var isArr = Array.isArray(val);
+    var keys = isArr ? val.map(function(_, idx) { return idx; }) : Object.keys(val);
+    var openBrack = isArr ? '[' : '{';
+    var closeBrack = isArr ? ']' : '}';
+
+    if (keys.length === 0) {
+      return '<div class="json-line">' +
+        '<span class="json-toggle leaf">&#9474;</span>' +
+        keyPart + '<span class="json-bracket">' + openBrack + closeBrack + '</span>' + comma +
+        '</div>';
+    }
+
+    var collapseKey = nodeId + '::' + path;
+    var isCollapsed = jsonCollapseState.get(collapseKey) === true;
+    var preview = isArr
+      ? '[' + val.length + ' items]'
+      : '{' + keys.slice(0, 3).join(', ') + (keys.length > 3 ? ', ...' : '') + '}';
+
+    var innerHtml = '';
+    if (!isCollapsed) {
+      for (var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        var childVal = val[k];
+        var childPath = isArr ? path + '[' + i + ']' : path + '.' + k;
+        innerHtml += buildJsonTree(k, childVal, nodeId, childPath, i === keys.length - 1);
+      }
+    }
+
+    var toggleIcon = '<span class="json-toggle" data-collapse-key="' + escapeHtml(collapseKey) + '">' + (isCollapsed ? '&#9654;' : '&#9660;') + '</span>';
+
+    return '<div class="json-group">' +
+      '<div class="json-line">' +
+        toggleIcon +
+        keyPart + '<span class="json-bracket">' + openBrack + '</span>' +
+        (isCollapsed ? '<span class="json-preview">' + escapeHtml(preview) + '</span><span class="json-bracket">' + closeBrack + '</span>' + comma : '') +
+      '</div>' +
+      (isCollapsed ? '' : '<div class="json-children">' + innerHtml + '</div>' +
+      '<div class="json-line"><span class="json-toggle leaf">&#9474;</span><span class="json-bracket">' + closeBrack + '</span>' + comma + '</div>') +
+      '</div>';
   }
 
   // ── Timeline ──────────────────────────────────────────────────────────────
@@ -711,10 +734,8 @@
     try {
       var parsed = (typeof node.value === 'object' && node.value !== null)
         ? node.value
-        : JSON.parse(JSON.stringify(node.value)); // reparse to ensure clean object
-      treeHtml = '<div class="json-node json-row">' +
-        buildJsonTree(node.value, node.id, 'root') +
-        '</div>';
+        : JSON.parse(JSON.stringify(node.value));
+      treeHtml = buildJsonTree(null, node.value, node.id, 'root', true);
     } catch(e) {
       treeHtml = '<span>' + escapeHtml(fullStr(node.value)) + '</span>';
     }
