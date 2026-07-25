@@ -10,7 +10,7 @@
 <p>
   <a href="https://www.npmjs.com/package/@sigtrace/core"><img src="https://img.shields.io/npm/v/@sigtrace/core?color=6C63FF&style=flat-square&label=npm%20%40sigtrace%2Fcore" alt="npm version" /></a>
   <a href="https://marketplace.visualstudio.com/items?itemName=sigtrace.sigtrace-extension"><img src="https://img.shields.io/visual-studio-marketplace/d/sigtrace.sigtrace-extension?color=007ACC&style=flat-square&label=VS%20Code%20installs" alt="VS Code installs" /></a>
-  <a href="https://github.com/sigtrace-dev/sigtrace/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-22c55e?style=flat-square" alt="License MIT" /></a>
+  <a href="https://github.com/sigtrace-dev/sigtrace/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-ELv2-22c55e?style=flat-square" alt="License ELv2" /></a>
   <a href="https://github.com/sigtrace-dev/sigtrace/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/sigtrace-dev/sigtrace/ci.yml?branch=main&style=flat-square&label=CI&color=6C63FF" alt="CI status" /></a>
   <a href="https://github.com/sponsors/sigtrace-dev"><img src="https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?style=flat-square&logo=github-sponsors" alt="Sponsor on GitHub" /></a>
 </p>
@@ -232,7 +232,10 @@ See [**CHANGELOG.md**](./CHANGELOG.md) for a detailed history of changes across 
 
 ## 📄 License
 
-SigTrace is open-source software released under the [**MIT License**](./LICENSE).
+SigTrace is released under the [**Elastic License 2.0 (ELv2)**](./LICENSE).
+
+- **Allowed**: Free for everyone (individuals, startups, and commercial enterprises) to use, modify, and run in development and production workflows.
+- **Prohibited**: You may not provide SigTrace to third parties as a hosted or managed commercial service, or sell competing developer tools derived directly from this repository.
 
 Copyright © 2025 SigTrace Contributors.
 
