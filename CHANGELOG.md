@@ -34,8 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Record button**: Now shows green `● Tracing` when active and amber `⏸ Paused` when stopped; removed the old red state.
 
 ### Changed
-- Bumped monorepo and all package manifests to `1.2.0`.
+- Bumped monorepo, npm packages, and extension manifest to `1.2.0`.
 - Extension `.vsix` rebuilt to include all webview improvements.
+- JetBrains plugin resource webview updated to sync all webview features.
+- JetBrains plugin version bumped to `1.2.0` and `.zip` packaged.
 
 ---
 

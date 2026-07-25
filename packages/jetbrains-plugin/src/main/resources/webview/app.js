@@ -16,11 +16,13 @@
   let sortBy = 'updates';
   let focusedSignalId = null;
   let selectedSignalId = null;
-  const pinnedSignalIds = new Set();
-  const pinnedChainKeys = new Set();
+  const pinnedSignalIds = new Set();   // persists across Clear
+  const pinnedChainKeys = new Set();   // persists across Clear
   const hiddenChainIds = new Set();
   const expandedPinnedKeys = new Set();
   const valueScrollByNodeId = new Map();
+  // JSON tree collapse state: key = nodeId + '::' + jsonPath, value = true (collapsed)
+  const jsonCollapseState = new Map();
   let timelineQuery = '';
   let timelinePinnedOnly = false;
   let timelineShowHidden = false;
@@ -28,10 +30,13 @@
 
   // ── DOM refs ─────────────────────────────────────────────────────────────
   const activityTableBody = document.getElementById('activity-table-body');
+  const activityTableWrap = document.querySelector('.activity-table-wrap');
   const timelineChainList = document.getElementById('timeline-chain-list');
   const timelineSearch    = document.getElementById('timeline-search');
   const timelinePinnedOnlyToggle = document.getElementById('timeline-pinned-only');
   const timelineShowHiddenToggle = document.getElementById('timeline-show-hidden');
+  const labelPinnedOnly   = document.getElementById('label-pinned-only');
+  const labelShowHidden   = document.getElementById('label-show-hidden');
   const valuePanel        = document.getElementById('value-panel');
   const componentsPanel   = document.getElementById('components-panel');
   const alertsSection     = document.getElementById('alerts-section');
@@ -133,10 +138,13 @@
           if (value === resolved) stillReferenced = true;
         });
         if (!stillReferenced) {
-          nodeMap.delete(resolved);
-          nodeSignatureMap.forEach(function(value, key) {
-            if (value === resolved) nodeSignatureMap.delete(key);
-          });
+          // Don't delete pinned nodes
+          if (!pinnedSignalIds.has(resolved)) {
+            nodeMap.delete(resolved);
+            nodeSignatureMap.forEach(function(value, key) {
+              if (value === resolved) nodeSignatureMap.delete(key);
+            });
+          }
         }
         scheduleUiRender();
         break;
@@ -162,7 +170,6 @@
 
   // ── Name cleaning ─────────────────────────────────────────────────────────
   function cleanName(name) {
-    // "computed_line120" -> keep as-is for now; future AST fix will improve this
     return name;
   }
 
@@ -273,7 +280,7 @@
   function finalizeChain() {
     if (!activeChain) return;
     chainLog.unshift(activeChain);
-    if (chainLog.length > 60) chainLog.pop();
+    if (chainLog.length > 200) chainLog.pop();
     activeChain = null;
     var activeTab = document.querySelector('.tab-content.active');
     if (activeTab && activeTab.id === 'tab-timeline') renderTimeline();
@@ -281,11 +288,14 @@
 
   // ── Activity table ────────────────────────────────────────────────────────
   function renderActivityTable() {
+    // Save scroll position before re-render
+    var savedScroll = activityTableWrap ? activityTableWrap.scrollTop : 0;
+
     var query = searchBar.value.trim().toLowerCase();
     var rows = Array.from(nodeMap.values());
 
     if (!showInactive) {
-      rows = rows.filter(function(n) { return n.epoch > 0; });
+      rows = rows.filter(function(n) { return n.epoch > 0 || pinnedSignalIds.has(n.id); });
     }
 
     if (query) {
@@ -300,6 +310,7 @@
     else if (sortBy === 'component') rows.sort(function(a, b) { return a.component.localeCompare(b.component); });
     else if (sortBy === 'recent') rows.sort(function(a, b) { return (b.lastUpdated || 0) - (a.lastUpdated || 0); });
 
+    // Pinned rows float to top
     rows.sort(function(a, b) {
       var pinDelta = Number(pinnedSignalIds.has(b.id)) - Number(pinnedSignalIds.has(a.id));
       return pinDelta;
@@ -309,7 +320,7 @@
       var msg = !showInactive
         ? 'No active signals yet.<br>Interact with your app or enable <strong>Show inactive</strong> to see all registered signals.'
         : 'No signals found' + (query ? ' matching <strong>' + query + '</strong>' : '') + '.';
-      activityTableBody.innerHTML = '<tr class="empty-row"><td colspan="5">' + msg + '</td></tr>';
+      activityTableBody.innerHTML = '<tr class="empty-row"><td colspan="6">' + msg + '</td></tr>';
       return;
     }
 
@@ -319,7 +330,6 @@
       var valueStr = safeStr(node.value, 60);
       var valueFull = fullStr(node.value);
 
-      var timeStr = node.lastUpdated ? timeSince(node.lastUpdated) : 'never';
       var kindIcon = node.kind === 'signal' ? '&#9679;' : node.kind === 'memo' ? '&#9670;' : '&#9650;';
       var kindClass = 'kind-' + node.kind;
       var isHot = node.epoch > 30;
@@ -334,12 +344,15 @@
         locHtml = '<span class="signal-loc clickable" data-file="' + node.loc.file + '" data-line="' + node.loc.line + '" title="' + node.loc.file + '">' + fileBase + ':' + node.loc.line + '</span>';
       }
 
-      html += '<tr class="signal-row' + (isHot ? ' row-hot' : '') + (isFocused ? ' row-focused' : '') + '" data-id="' + node.id + '">' +
-        '<td class="col-name"><div class="col-name-wrap"><span class="kind-icon ' + kindClass + '">' + kindIcon + '</span><span class="signal-name" title="' + node.name + '">' + node.name + '</span><button class="pin-btn' + (isPinned ? ' active' : '') + '" data-action="toggle-pin" data-id="' + node.id + '" title="' + (isPinned ? 'Unpin signal' : 'Pin signal') + '">&#128204;</button></div>' + (locHtml ? '<div class="loc-wrap">' + locHtml + '</div>' : '') + '</td>' +
+      html += '<tr class="signal-row' + (isHot ? ' row-hot' : '') + (isFocused ? ' row-focused' : '') + (isPinned ? ' row-pinned' : '') + '" data-id="' + node.id + '">' +
+        '<td class="col-name"><div class="col-name-wrap"><span class="kind-icon ' + kindClass + '">' + kindIcon + '</span><span class="signal-name" title="' + node.name + '">' + node.name + '</span>' +
+        '<button class="copy-name-btn" data-action="copy-name" data-name="' + escapeHtml(node.name) + '" title="Copy signal name to clipboard">&#10697;</button>' +
+        '</div>' + (locHtml ? '<div class="loc-wrap">' + locHtml + '</div>' : '') + '</td>' +
         '<td class="col-component" title="' + node.component + '">' + compShort + '</td>' +
         '<td class="col-value" title="' + escapeHtml(valueFull) + '">' + escapeHtml(valueStr) + '</td>' +
         '<td class="col-updates' + (isHot ? ' hot-count' : '') + '">' + node.epoch + '</td>' +
         '<td class="col-activity">' + actBar + '</td>' +
+        '<td class="col-pin"><button class="pin-btn' + (isPinned ? ' active' : '') + '" data-action="toggle-pin" data-id="' + node.id + '" title="' + (isPinned ? 'Unpin signal' : 'Pin signal') + '">&#128204;</button></td>' +
         '</tr>';
 
       if (isFocused) {
@@ -348,7 +361,7 @@
           : '<span class="detail-label">Location:</span> <span class="detail-val">Unknown</span>';
 
         html += '<tr class="details-row">' +
-          '<td colspan="5">' +
+          '<td colspan="6">' +
             '<div class="details-box">' +
               '<div class="details-meta">' +
                 '<div><span class="detail-label">Kind:</span> <span class="detail-val">' + node.kind + '</span></div>' +
@@ -364,6 +377,11 @@
       }
     }
     activityTableBody.innerHTML = html;
+
+    // Restore scroll position after render
+    if (activityTableWrap) {
+      activityTableWrap.scrollTop = savedScroll;
+    }
   }
 
   function renderSparkBar(sparkline, total) {
@@ -414,8 +432,90 @@
       .replace(/'/g, "&#039;");
   }
 
+  // ── Interactive JSON Tree ─────────────────────────────────────────────────
+  function buildJsonTree(val, nodeId, path) {
+    path = path || 'root';
+    if (val === null) return '<span class="json-null">null</span>';
+    if (typeof val === 'boolean') return '<span class="json-bool">' + val + '</span>';
+    if (typeof val === 'number') return '<span class="json-num">' + val + '</span>';
+    if (typeof val === 'string') return '<span class="json-str">"' + escapeHtml(val) + '"</span>';
+
+    if (Array.isArray(val)) {
+      if (val.length === 0) return '<span class="json-bracket">[]</span>';
+      var collapseKey = nodeId + '::' + path;
+      var isCollapsed = jsonCollapseState.get(collapseKey) === true;
+      var preview = '[' + val.length + ' items]';
+      var inner = '';
+      for (var i = 0; i < val.length; i++) {
+        var childPath = path + '[' + i + ']';
+        inner += '<div class="json-node json-row">' +
+          '<span class="json-toggle leaf">&#9474;</span>' +
+          '<span class="json-key">' + i + '</span><span class="json-colon">:</span>' +
+          buildJsonTree(val[i], nodeId, childPath) +
+          (i < val.length - 1 ? '<span class="json-bracket">,</span>' : '') +
+          '</div>';
+      }
+      return '<span class="json-toggle" data-collapse-key="' + escapeHtml(collapseKey) + '">' + (isCollapsed ? '&#9654;' : '&#9660;') + '</span>' +
+        '<span class="json-bracket">[</span>' +
+        (isCollapsed ? '<span class="json-preview">' + escapeHtml(preview) + '</span>' : '') +
+        '<div class="json-children' + (isCollapsed ? ' collapsed' : '') + '">' + inner + '</div>' +
+        (isCollapsed ? '' : '<span class="json-bracket">]</span>');
+    }
+
+    if (typeof val === 'object') {
+      var keys = Object.keys(val);
+      if (keys.length === 0) return '<span class="json-bracket">{}</span>';
+      var collapseKey = nodeId + '::' + path;
+      var isCollapsed = jsonCollapseState.get(collapseKey) === true;
+      var preview = '{' + keys.slice(0, 3).join(', ') + (keys.length > 3 ? ', ...' : '') + '}';
+      var inner = '';
+      for (var k = 0; k < keys.length; k++) {
+        var key = keys[k];
+        var childPath = path + '.' + key;
+        inner += '<div class="json-node json-row">' +
+          '<span class="json-toggle leaf">&#9474;</span>' +
+          '<span class="json-key">"' + escapeHtml(key) + '"</span><span class="json-colon">:</span>' +
+          buildJsonTree(val[key], nodeId, childPath) +
+          (k < keys.length - 1 ? '<span class="json-bracket">,</span>' : '') +
+          '</div>';
+      }
+      return '<span class="json-toggle" data-collapse-key="' + escapeHtml(collapseKey) + '">' + (isCollapsed ? '&#9654;' : '&#9660;') + '</span>' +
+        '<span class="json-bracket">{</span>' +
+        (isCollapsed ? '<span class="json-preview">' + escapeHtml(preview) + '</span>' : '') +
+        '<div class="json-children' + (isCollapsed ? ' collapsed' : '') + '">' + inner + '</div>' +
+        (isCollapsed ? '' : '<span class="json-bracket">}</span>');
+    }
+
+    return '<span>' + escapeHtml(String(val)) + '</span>';
+  }
+
   // ── Timeline ──────────────────────────────────────────────────────────────
+  function updateTimelineCheckboxStates() {
+    var hasPinned = pinnedChainKeys.size > 0;
+    var hasHidden = hiddenChainIds.size > 0;
+
+    if (timelinePinnedOnlyToggle) {
+      timelinePinnedOnlyToggle.disabled = !hasPinned;
+      if (!hasPinned) {
+        timelinePinnedOnly = false;
+        timelinePinnedOnlyToggle.checked = false;
+      }
+    }
+    if (labelPinnedOnly) labelPinnedOnly.classList.toggle('disabled', !hasPinned);
+
+    if (timelineShowHiddenToggle) {
+      timelineShowHiddenToggle.disabled = !hasHidden;
+      if (!hasHidden) {
+        timelineShowHidden = false;
+        timelineShowHiddenToggle.checked = false;
+      }
+    }
+    if (labelShowHidden) labelShowHidden.classList.toggle('disabled', !hasHidden);
+  }
+
   function renderTimeline() {
+    updateTimelineCheckboxStates();
+
     var grouped = new Map();
     for (var idx = 0; idx < chainLog.length; idx++) {
       var chain = chainLog[idx];
@@ -427,180 +527,198 @@
     var groupedEntries = Array.from(grouped.entries()).map(function(entry) {
       var key = entry[0];
       var chains = entry[1];
-      var renderChains = chains.filter(function(chain) {
+
+      // In "show hidden" mode: show ONLY hidden items
+      // In normal mode: show only non-hidden items
+      var visibleChains = chains.filter(function(chain) {
         return timelineShowHidden ? hiddenChainIds.has(chain.id) : !hiddenChainIds.has(chain.id);
       });
+
       return {
         key: key,
         chains: chains,
-        renderChains: renderChains,
-        latest: renderChains[0] || null,
+        visibleChains: visibleChains,
         pinned: pinnedChainKeys.has(key),
-        hasHidden: chains.some(function(c) { return hiddenChainIds.has(c.id); })
+        hasHidden: chains.some(function(c) { return hiddenChainIds.has(c.id); }),
+        hiddenCount: chains.filter(function(c) { return hiddenChainIds.has(c.id); }).length
       };
     }).filter(function(group) {
       if (timelinePinnedOnly && !group.pinned) return false;
-      if (!group.latest) return false;
+      if (group.visibleChains.length === 0) return false;
+
       if (!timelineQuery) return true;
       var q = timelineQuery;
-      var latest = group.latest;
-      if (latest.trigger.name.toLowerCase().indexOf(q) !== -1) return true;
-      if ((latest.trigger.component || '').toLowerCase().indexOf(q) !== -1) return true;
-      return latest.updates.some(function(u) {
-        return u.name.toLowerCase().indexOf(q) !== -1 ||
-          (u.component || '').toLowerCase().indexOf(q) !== -1 ||
-          (u.kind || '').toLowerCase().indexOf(q) !== -1;
+      // Search across all visible chains in the group
+      return group.visibleChains.some(function(chain) {
+        if (chain.trigger.name.toLowerCase().indexOf(q) !== -1) return true;
+        if ((chain.trigger.component || '').toLowerCase().indexOf(q) !== -1) return true;
+        return chain.updates.some(function(u) {
+          return u.name.toLowerCase().indexOf(q) !== -1 ||
+            (u.component || '').toLowerCase().indexOf(q) !== -1 ||
+            (u.kind || '').toLowerCase().indexOf(q) !== -1;
+        });
       });
     });
 
+    // Sort: pinned groups first, then newest first within groups
     groupedEntries.sort(function(a, b) {
       var pinDelta = Number(b.pinned) - Number(a.pinned);
       if (pinDelta !== 0) return pinDelta;
-      return (b.latest.timestamp || 0) - (a.latest.timestamp || 0);
+      var latestA = a.visibleChains[0] ? a.visibleChains[0].timestamp : 0;
+      var latestB = b.visibleChains[0] ? b.visibleChains[0].timestamp : 0;
+      return latestB - latestA;
     });
 
     if (groupedEntries.length === 0) {
       var emptyMsg = chainLog.length === 0
         ? 'No activity yet.<br>Interact with your app to see causal chains appear here.'
-        : 'No timeline entries match the current filter.';
+        : (timelineShowHidden ? 'No hidden items.' : 'No timeline entries match the current filter.');
       timelineChainList.innerHTML = '<div class="empty-state">' + emptyMsg + '</div>';
       return;
     }
 
     var html = '';
+
     for (var i = 0; i < groupedEntries.length; i++) {
       var group = groupedEntries[i];
-      var chain = group.latest;
-      var d = new Date(chain.timestamp);
-      var timeStr = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + String(d.getMilliseconds()).padStart(3, '0');
-      var totalEffects = chain.updates.filter(function(u) { return u.kind === 'effect'; }).length;
-      var totalMemos   = chain.updates.filter(function(u) { return u.kind === 'memo'; }).length;
-      var totalMs      = chain.updates.reduce(function(s, u) { return s + (u.duration || 0); }, 0);
-      var summaryParts = [];
-      if (totalMemos > 0) summaryParts.push(totalMemos + ' computed');
-      if (totalEffects > 0) summaryParts.push(totalEffects + ' effect' + (totalEffects > 1 ? 's' : ''));
-      if (totalMs > 0.1) summaryParts.push(totalMs.toFixed(1) + 'ms');
-      var summaryStr = summaryParts.join(' &middot; ');
+      var chainPinned = group.pinned;
 
-      var prevFull = fullStr(chain.trigger.previousValue);
-      var newFull = fullStr(chain.trigger.value);
-      var prevStr = safeStr(chain.trigger.previousValue, 30);
-      var newStr  = safeStr(chain.trigger.value, 35);
-      var valChange = prevStr ? prevStr + ' &rarr; ' + newStr : newStr;
-      var valChangeTitle = prevFull ? prevFull + ' -> ' + newFull : newFull;
+      // Expand/collapse control: only available when pinned AND multiple visible events
+      var canExpand = chainPinned && group.visibleChains.length > 1;
+      var expanded = expandedPinnedKeys.has(group.key);
 
-      var updatesHtml = '';
-      for (var j = 0; j < chain.updates.length; j++) {
-        var u = chain.updates[j];
-        var uKindIcon = u.kind === 'memo' ? '&#9670;' : '&#9650;';
-        var uKindLabel = u.kind === 'memo' ? 'computed' : 'effect';
-        var durStr = u.duration > 0 ? '(' + u.duration.toFixed(1) + 'ms)' : '';
-        var isUHot = u.duration > 2;
-        var uValStr = u.value !== undefined ? safeStr(u.value, 30) : '';
-        var uValFull = u.value !== undefined ? fullStr(u.value) : '';
-        
-        var uClickAttr = u.loc ? ' class="chain-node-name clickable" data-file="' + u.loc.file + '" data-line="' + u.loc.line + '"' : ' class="chain-node-name"';
+      // Determine which events to render:
+      // - Not pinned: show all visible events
+      // - Pinned + not expanded: show only the latest (first) event
+      // - Pinned + expanded: show all visible events
+      var eventsToRender = group.visibleChains;
+      if (chainPinned && !expanded) {
+        eventsToRender = [group.visibleChains[0]];
+      }
 
-        updatesHtml += '<div class="chain-update' + (isUHot ? ' chain-hot' : '') + '">' +
-          '<span class="chain-indent">&#9492;&#9472;</span>' +
-          '<span class="chain-icon kind-' + u.kind + '">' + uKindIcon + '</span>' +
-          '<span' + uClickAttr + '>' + u.name + '</span>' +
-          '<span class="chain-component">[' + shortComponentName(u.component) + ']</span>' +
-          '<span class="chain-kind">' + uKindLabel + '</span>' +
-          (uValStr ? '<span class="chain-value" title="' + escapeHtml(uValFull) + '">' + escapeHtml(uValStr) + '</span>' : '') +
-          (durStr ? '<span class="chain-duration">' + durStr + '</span>' : '') +
+      // Group header wrapper (for pinned groups with multiple events)
+      var groupLabel = group.visibleChains.length > 1
+        ? '<span class="chain-summary">' + group.visibleChains.length + ' events</span>'
+        : '';
+
+      var hiddenBadge = (!timelineShowHidden && group.hasHidden)
+        ? '<span class="chain-summary">hidden: ' + group.hiddenCount + '</span>'
+        : '';
+
+      // Render each event card for this group
+      for (var e = 0; e < eventsToRender.length; e++) {
+        var chain = eventsToRender[e];
+        var isFirstInGroup = (e === 0);
+
+        var d = new Date(chain.timestamp);
+        var timeStr = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + String(d.getMilliseconds()).padStart(3, '0');
+        var totalEffects = chain.updates.filter(function(u) { return u.kind === 'effect'; }).length;
+        var totalMemos   = chain.updates.filter(function(u) { return u.kind === 'memo'; }).length;
+        var totalMs      = chain.updates.reduce(function(s, u) { return s + (u.duration || 0); }, 0);
+        var summaryParts = [];
+        if (totalMemos > 0) summaryParts.push(totalMemos + ' computed');
+        if (totalEffects > 0) summaryParts.push(totalEffects + ' effect' + (totalEffects > 1 ? 's' : ''));
+        if (totalMs > 0.1) summaryParts.push(totalMs.toFixed(1) + 'ms');
+        var summaryStr = summaryParts.join(' &middot; ');
+
+        var prevFull = fullStr(chain.trigger.previousValue);
+        var newFull  = fullStr(chain.trigger.value);
+        var prevStr  = safeStr(chain.trigger.previousValue, 30);
+        var newStr   = safeStr(chain.trigger.value, 35);
+        var valChange = prevStr ? prevStr + ' &rarr; ' + newStr : newStr;
+        var valChangeTitle = prevFull ? prevFull + ' -> ' + newFull : newFull;
+
+        var updatesHtml = '';
+        for (var j = 0; j < chain.updates.length; j++) {
+          var u = chain.updates[j];
+          var uKindIcon  = u.kind === 'memo' ? '&#9670;' : '&#9650;';
+          var uKindLabel = u.kind === 'memo' ? 'computed' : 'effect';
+          var durStr = u.duration > 0 ? '(' + u.duration.toFixed(1) + 'ms)' : '';
+          var isUHot = u.duration > 2;
+          var uValStr  = u.value !== undefined ? safeStr(u.value, 30) : '';
+          var uValFull = u.value !== undefined ? fullStr(u.value) : '';
+          var uClickAttr = u.loc
+            ? ' class="chain-node-name clickable" data-file="' + u.loc.file + '" data-line="' + u.loc.line + '"'
+            : ' class="chain-node-name"';
+
+          updatesHtml += '<div class="chain-update' + (isUHot ? ' chain-hot' : '') + '">' +
+            '<span class="chain-indent">&#9492;&#9472;</span>' +
+            '<span class="chain-icon kind-' + u.kind + '">' + uKindIcon + '</span>' +
+            '<span' + uClickAttr + '>' + u.name + '</span>' +
+            '<span class="chain-component">[' + shortComponentName(u.component) + ']</span>' +
+            '<span class="chain-kind">' + uKindLabel + '</span>' +
+            (uValStr ? '<span class="chain-value" title="' + escapeHtml(uValFull) + '">' + escapeHtml(uValStr) + '</span>' : '') +
+            (durStr ? '<span class="chain-duration">' + durStr + '</span>' : '') +
+            '</div>';
+        }
+
+        var trigClickAttr = chain.trigger.loc
+          ? ' class="chain-trigger-name clickable" data-file="' + chain.trigger.loc.file + '" data-line="' + chain.trigger.loc.line + '"'
+          : ' class="chain-trigger-name"';
+
+        var isHidden = hiddenChainIds.has(chain.id);
+        var hiddenLabel = isHidden ? 'Show' : 'Hide';
+
+        html += '<div class="chain-card' + (chainPinned ? ' chain-pinned' : '') + '">' +
+          '<div class="chain-header">' +
+            '<span class="chain-time">' + timeStr + '</span>' +
+            '<span class="chain-trigger-icon kind-signal">&#9679;</span>' +
+            '<span' + trigClickAttr + '>' + chain.trigger.name + '</span>' +
+            '<span class="chain-component">[' + shortComponentName(chain.trigger.component) + ']</span>' +
+            (valChange ? '<span class="chain-value-change" title="' + escapeHtml(valChangeTitle) + '">' + valChange + '</span>' : '') +
+            (summaryStr ? '<span class="chain-summary">' + summaryStr + '</span>' : '') +
+            // Show event number if group has multiple events
+            (group.visibleChains.length > 1 ? '<span class="chain-summary">event ' + (e + 1) + '/' + group.visibleChains.length + '</span>' : '') +
+            hiddenBadge +
+            // Pin button only on first card of the group
+            (isFirstInGroup ? '<button class="chain-pin-btn' + (chainPinned ? ' active' : '') + '" data-action="toggle-chain-pin" data-key="' + group.key + '">' + (chainPinned ? 'Pinned' : 'Pin') + '</button>' : '') +
+            // Hide/Show button on each event
+            '<button class="chain-hide-btn' + (isHidden ? ' active' : '') + '" data-action="toggle-chain-visibility" data-id="' + chain.id + '">' + hiddenLabel + '</button>' +
+            // Expand/Collapse button: only on first card of a pinned group with multiple events
+            (isFirstInGroup && canExpand ? '<button class="chain-hide-btn" data-action="toggle-pinned-expand" data-key="' + group.key + '">' + (expanded ? 'Collapse older' : 'Expand older (' + (group.visibleChains.length - 1) + ')') + '</button>' : '') +
+          '</div>' +
+          (chain.updates.length > 0 ? '<div class="chain-updates">' + updatesHtml + '</div>' : '') +
           '</div>';
       }
-
-      var trigClickAttr = chain.trigger.loc ? ' class="chain-trigger-name clickable" data-file="' + chain.trigger.loc.file + '" data-line="' + chain.trigger.loc.line + '"' : ' class="chain-trigger-name"';
-      var chainPinned = group.pinned;
-      var canExpand = group.renderChains.length > 1;
-      var expanded = expandedPinnedKeys.has(group.key);
-      var hiddenLabel = hiddenChainIds.has(chain.id) ? 'Show' : 'Hide';
-
-      var olderHtml = '';
-      if (chainPinned && canExpand && expanded) {
-        for (var k = 1; k < group.renderChains.length; k++) {
-          olderHtml += renderChainCard(group.renderChains[k], group.key);
-        }
-      }
-
-      html += '<div class="chain-card' + (chainPinned ? ' chain-pinned' : '') + '">' +
-        '<div class="chain-header">' +
-          '<span class="chain-time">' + timeStr + '</span>' +
-          '<span class="chain-trigger-icon kind-signal">&#9679;</span>' +
-          '<span' + trigClickAttr + '>' + chain.trigger.name + '</span>' +
-          '<span class="chain-component">[' + shortComponentName(chain.trigger.component) + ']</span>' +
-          (valChange ? '<span class="chain-value-change" title="' + escapeHtml(valChangeTitle) + '">' + valChange + '</span>' : '') +
-          (summaryStr ? '<span class="chain-summary">' + summaryStr + '</span>' : '') +
-          '<button class="chain-pin-btn' + (chainPinned ? ' active' : '') + '" data-action="toggle-chain-pin" data-key="' + group.key + '">' + (chainPinned ? 'Pinned' : 'Pin') + '</button>' +
-          '<button class="chain-hide-btn' + (hiddenChainIds.has(chain.id) ? ' active' : '') + '" data-action="toggle-chain-visibility" data-id="' + chain.id + '">' + hiddenLabel + '</button>' +
-          (chainPinned && canExpand ? '<button class="chain-hide-btn" data-action="toggle-pinned-expand" data-key="' + group.key + '">' + (expanded ? 'Collapse older' : 'Expand older (' + (group.renderChains.length - 1) + ')') + '</button>' : '') +
-          (!timelineShowHidden && group.hasHidden ? '<span class="chain-summary">hidden: ' + group.chains.filter(function(c) { return hiddenChainIds.has(c.id); }).length + '</span>' : '') +
-        '</div>' +
-        (chain.updates.length > 0 ? '<div class="chain-updates">' + updatesHtml + '</div>' : '') +
-        '</div>' +
-        olderHtml;
     }
+
     timelineChainList.innerHTML = html;
-  }
-
-  function renderChainCard(chain) {
-    var d = new Date(chain.timestamp);
-    var timeStr = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '.' + String(d.getMilliseconds()).padStart(3, '0');
-    var trigClickAttr = chain.trigger.loc ? ' class="chain-trigger-name clickable" data-file="' + chain.trigger.loc.file + '" data-line="' + chain.trigger.loc.line + '"' : ' class="chain-trigger-name"';
-    var updatesHtml = '';
-    for (var j = 0; j < chain.updates.length; j++) {
-      var u = chain.updates[j];
-      var uKindIcon = u.kind === 'memo' ? '&#9670;' : '&#9650;';
-      var uKindLabel = u.kind === 'memo' ? 'computed' : 'effect';
-      var durStr = u.duration > 0 ? '(' + u.duration.toFixed(1) + 'ms)' : '';
-      var uClickAttr = u.loc ? ' class="chain-node-name clickable" data-file="' + u.loc.file + '" data-line="' + u.loc.line + '"' : ' class="chain-node-name"';
-      updatesHtml += '<div class="chain-update">' +
-        '<span class="chain-indent">&#9492;&#9472;</span>' +
-        '<span class="chain-icon kind-' + u.kind + '">' + uKindIcon + '</span>' +
-        '<span' + uClickAttr + '>' + u.name + '</span>' +
-        '<span class="chain-component">[' + shortComponentName(u.component) + ']</span>' +
-        '<span class="chain-kind">' + uKindLabel + '</span>' +
-        (durStr ? '<span class="chain-duration">' + durStr + '</span>' : '') +
-        '</div>';
-    }
-    var isHidden = hiddenChainIds.has(chain.id);
-    return '<div class="chain-card">' +
-      '<div class="chain-header">' +
-      '<span class="chain-time">' + timeStr + '</span>' +
-      '<span class="chain-trigger-icon kind-signal">&#9679;</span>' +
-      '<span' + trigClickAttr + '>' + chain.trigger.name + '</span>' +
-      '<span class="chain-component">[' + shortComponentName(chain.trigger.component) + ']</span>' +
-      '<span class="chain-summary">older</span>' +
-      '<button class="chain-hide-btn' + (isHidden ? ' active' : '') + '" data-action="toggle-chain-visibility" data-id="' + chain.id + '">' + (isHidden ? 'Show' : 'Hide') + '</button>' +
-      '</div>' +
-      (updatesHtml ? '<div class="chain-updates">' + updatesHtml + '</div>' : '') +
-      '</div>';
   }
 
   function pad(n) { return n < 10 ? '0' + n : String(n); }
 
-  // ── Component cards ───────────────────────────────────────────────────────
+  // ── Value Inspector ───────────────────────────────────────────────────────
   function renderValueInspector() {
     var targetId = selectedSignalId || focusedSignalId;
     var node = targetId ? nodeMap.get(targetId) : null;
     if (!node) {
-      if (valuePanel && valuePanel.dataset.nodeId) {
-        valueScrollByNodeId.set(valuePanel.dataset.nodeId, valuePanel.scrollTop);
-      }
       valuePanel.innerHTML = '<div class="empty-state">Select a signal from Activity to inspect the full value.</div>';
       valuePanel.dataset.nodeId = '';
       return;
     }
 
-    if (valuePanel && valuePanel.dataset.nodeId) {
-      valueScrollByNodeId.set(valuePanel.dataset.nodeId, valuePanel.scrollTop);
+    // Save scroll of previous node before switching
+    var prevNodeId = valuePanel.dataset.nodeId;
+    if (prevNodeId && prevNodeId !== node.id) {
+      valueScrollByNodeId.set(prevNodeId, valuePanel.scrollTop);
     }
 
-    var value = fullStr(node.value);
     var locationText = node.loc ? (node.loc.file + ':' + node.loc.line) : 'Unknown';
     var updated = node.lastUpdated ? timeSince(node.lastUpdated) : 'never';
+
+    // Build interactive JSON tree or fallback to primitive display
+    var treeHtml;
+    try {
+      var parsed = (typeof node.value === 'object' && node.value !== null)
+        ? node.value
+        : JSON.parse(JSON.stringify(node.value)); // reparse to ensure clean object
+      treeHtml = '<div class="json-node json-row">' +
+        buildJsonTree(node.value, node.id, 'root') +
+        '</div>';
+    } catch(e) {
+      treeHtml = '<span>' + escapeHtml(fullStr(node.value)) + '</span>';
+    }
+
     valuePanel.innerHTML =
       '<div class="value-header">' +
         '<div class="value-title">' + escapeHtml(node.name) + '</div>' +
@@ -613,15 +731,18 @@
         '<span>Last update: <strong>' + escapeHtml(updated) + '</strong></span>' +
       '</div>' +
       '<div class="value-meta"><span>Location: <strong>' + escapeHtml(locationText) + '</strong></span></div>' +
-      '<pre class="value-code"><code>' + escapeHtml(value) + '</code></pre>';
+      '<div class="json-tree">' + treeHtml + '</div>';
 
     valuePanel.dataset.nodeId = node.id;
+
+    // Restore scroll position after setting innerHTML
     var savedScroll = valueScrollByNodeId.get(node.id);
     if (typeof savedScroll === 'number') {
       valuePanel.scrollTop = savedScroll;
     }
   }
 
+  // ── Component cards ───────────────────────────────────────────────────────
   function renderComponentCards() {
     if (componentMap.size === 0) {
       componentsPanel.innerHTML = '<div class="empty-state">No components tracked yet.</div>';
@@ -734,35 +855,77 @@
   // ── Controls ──────────────────────────────────────────────────────────────
   btnRecord.addEventListener('click', function() {
     isRecording = !isRecording;
-    btnRecord.classList.toggle('active', isRecording);
-    btnRecord.innerHTML = isRecording ? '&#9679; Rec' : '&#9675; Paused';
+    if (isRecording) {
+      btnRecord.className = 'btn btn-tracing';
+      btnRecord.innerHTML = '&#9679; Tracing';
+    } else {
+      btnRecord.className = 'btn btn-paused';
+      btnRecord.innerHTML = '&#9646;&#9646; Paused';
+    }
   });
 
   btnClear.addEventListener('click', function() {
+    // Preserve pinned signal nodes — tombstone them (reset data, keep id/name)
+    var pinnedNodesCopy = new Map();
+    pinnedSignalIds.forEach(function(id) {
+      var node = nodeMap.get(id);
+      if (node) {
+        pinnedNodesCopy.set(id, {
+          id: node.id,
+          name: node.name,
+          component: node.component,
+          kind: node.kind,
+          value: node.value,
+          epoch: 0,
+          duration: 0,
+          lastUpdated: null,
+          sparkline: [],
+          loc: node.loc
+        });
+      }
+    });
+
+    // Preserve pinned chain log entries
+    var pinnedChains = chainLog.filter(function(c) {
+      return pinnedChainKeys.has(chainGroupKey(c));
+    });
+
+    // Clear everything
     nodeMap.clear();
     nodeAliasMap.clear();
     nodeSignatureMap.clear();
     componentMap.clear();
     chainLog = [];
-    pinnedSignalIds.clear();
-    pinnedChainKeys.clear();
     hiddenChainIds.clear();
     expandedPinnedKeys.clear();
     selectedSignalId = null;
     timelineQuery = '';
-    timelinePinnedOnly = false;
-    timelineShowHidden = false;
     valueScrollByNodeId.clear();
     if (timelineSearch) timelineSearch.value = '';
-    if (timelinePinnedOnlyToggle) timelinePinnedOnlyToggle.checked = false;
-    if (timelineShowHiddenToggle) timelineShowHiddenToggle.checked = false;
     alerts = [];
     activeChain = null;
     clearTimeout(chainFlushTimer);
-    activityTableBody.innerHTML = '<tr class="empty-row"><td colspan="5">Cleared. Interact with your app to begin tracking.</td></tr>';
-    timelineChainList.innerHTML = '<div class="empty-state">Cleared.</div>';
+
+    // Restore pinned nodes
+    pinnedNodesCopy.forEach(function(node, id) {
+      nodeMap.set(id, node);
+      ensureComponent(node);
+    });
+
+    // Restore pinned chains
+    chainLog = pinnedChains;
+
+    // Update checkbox states
+    updateTimelineCheckboxStates();
+
+    // Re-render
+    renderActivityTable();
+    renderTimeline();
     if (componentsPanel) componentsPanel.innerHTML = '<div class="empty-state">No components tracked yet.</div>';
-    if (valuePanel) valuePanel.innerHTML = '<div class="empty-state">Select a signal from Activity to inspect the full value.</div>';
+    if (valuePanel) {
+      valuePanel.innerHTML = '<div class="empty-state">Select a signal from Activity to inspect the full value.</div>';
+      valuePanel.dataset.nodeId = '';
+    }
     alertBadge.style.display = 'none';
     alertsSection.style.display = 'none';
     vscode.postMessage({ command: 'clearMetrics' });
@@ -789,15 +952,19 @@
 
   if (timelinePinnedOnlyToggle) {
     timelinePinnedOnlyToggle.addEventListener('change', function() {
-      timelinePinnedOnly = timelinePinnedOnlyToggle.checked;
-      renderTimeline();
+      if (!timelinePinnedOnlyToggle.disabled) {
+        timelinePinnedOnly = timelinePinnedOnlyToggle.checked;
+        renderTimeline();
+      }
     });
   }
 
   if (timelineShowHiddenToggle) {
     timelineShowHiddenToggle.addEventListener('change', function() {
-      timelineShowHidden = timelineShowHiddenToggle.checked;
-      renderTimeline();
+      if (!timelineShowHiddenToggle.disabled) {
+        timelineShowHidden = timelineShowHiddenToggle.checked;
+        renderTimeline();
+      }
     });
   }
 
@@ -836,7 +1003,7 @@
     document.body.removeChild(ta);
   }
 
-  // ── Code Navigation Delegation ───────────────────────────────────────────
+  // ── Activity Table Click Delegation ──────────────────────────────────────
   activityTableBody.addEventListener('click', function(e) {
     var pinBtn = e.target.closest('[data-action="toggle-pin"]');
     if (pinBtn) {
@@ -844,6 +1011,13 @@
       if (pinnedSignalIds.has(pinId)) pinnedSignalIds.delete(pinId);
       else pinnedSignalIds.add(pinId);
       renderActivityTable();
+      e.stopPropagation();
+      return;
+    }
+
+    var copyNameBtn = e.target.closest('[data-action="copy-name"]');
+    if (copyNameBtn) {
+      copyToClipboard(copyNameBtn.dataset.name, copyNameBtn);
       e.stopPropagation();
       return;
     }
@@ -872,12 +1046,7 @@
       var file = target.dataset.file;
       var line = parseInt(target.dataset.line, 10);
       if (file && line) {
-        vscode.postMessage({
-          command: 'openFile',
-          file: file,
-          line: line,
-          column: 0
-        });
+        vscode.postMessage({ command: 'openFile', file: file, line: line, column: 0 });
         e.stopPropagation();
         return;
       }
@@ -887,7 +1056,7 @@
     if (row) {
       var id = row.dataset.id;
       selectedSignalId = id;
-      focusedSignalId = (focusedSignalId === id) ? null : id; // Toggle collapse/expand
+      focusedSignalId = (focusedSignalId === id) ? null : id;
       renderActivityTable();
     }
   });
@@ -898,16 +1067,12 @@
       var id = row.dataset.id;
       var node = nodeMap.get(id);
       if (node && node.loc) {
-        vscode.postMessage({
-          command: 'openFile',
-          file: node.loc.file,
-          line: node.loc.line,
-          column: 0
-        });
+        vscode.postMessage({ command: 'openFile', file: node.loc.file, line: node.loc.line, column: 0 });
       }
     }
   });
 
+  // ── Timeline Click Delegation ─────────────────────────────────────────────
   timelineChainList.addEventListener('click', function(e) {
     var pinBtn = e.target.closest('[data-action="toggle-chain-pin"]');
     if (pinBtn) {
@@ -948,15 +1113,39 @@
       var file = target.dataset.file;
       var line = parseInt(target.dataset.line, 10);
       if (file && line) {
-        vscode.postMessage({
-          command: 'openFile',
-          file: file,
-          line: line,
-          column: 0
-        });
+        vscode.postMessage({ command: 'openFile', file: file, line: line, column: 0 });
       }
     }
   });
+
+  // ── Value Panel Click Delegation ──────────────────────────────────────────
+  if (valuePanel) {
+    valuePanel.addEventListener('click', function(e) {
+      // Copy value button
+      var copyBtn = e.target.closest('[data-action="copy-value"]');
+      if (copyBtn) {
+        var id = copyBtn.dataset.id;
+        var node = id ? nodeMap.get(id) : null;
+        if (!node) return;
+        copyToClipboard(fullStr(node.value), copyBtn);
+        return;
+      }
+
+      // JSON tree toggle
+      var toggle = e.target.closest('[data-collapse-key]');
+      if (toggle) {
+        var collapseKey = toggle.dataset.collapseKey;
+        if (!collapseKey) return;
+        var isCollapsed = jsonCollapseState.get(collapseKey) === true;
+        jsonCollapseState.set(collapseKey, !isCollapsed);
+        // Re-render value inspector preserving scroll
+        var currentScroll = valuePanel.scrollTop;
+        renderValueInspector();
+        valuePanel.scrollTop = currentScroll;
+        return;
+      }
+    });
+  }
 
   // ── VS Code message handler ───────────────────────────────────────────────
   window.addEventListener('message', function(event) {
@@ -976,17 +1165,6 @@
 
     processEvent(msg);
   });
-
-  if (valuePanel) {
-    valuePanel.addEventListener('click', function(e) {
-      var btn = e.target.closest('[data-action="copy-value"]');
-      if (!btn) return;
-      var id = btn.dataset.id;
-      var node = id ? nodeMap.get(id) : null;
-      if (!node) return;
-      copyToClipboard(fullStr(node.value), btn);
-    });
-  }
 
   // Periodic refresh for timeSince + diagnostics
   setInterval(function() {
