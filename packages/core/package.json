@@ -17,7 +17,7 @@
   },
   "homepage": "https://sigtrace.dev",
   "author": "SigTrace Contributors",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "exports": {
     ".": "./dist/index.js",
     "./solid": "./dist/adapters/solid.js",

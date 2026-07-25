@@ -1,21 +1,23 @@
-MIT License
+PolyForm Noncommercial License 1.0.0
+
+https://polyformproject.org/licenses/noncommercial/1.0.0/
 
 Copyright (c) 2025 SigTrace Contributors
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Acceptance
+1. Licensor grants you the rights in this license for material the Licensor provides under this license.
+2. You accept this license and agree to its terms when you exercise any of the rights granted.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Copyright Grant
+1. Licensor grants you a copyright license to make, modify, use, and distribute the software solely for Noncommercial Purposes.
+2. "Noncommercial Purposes" means any use that is not primarily intended for or directed towards commercial advantage or monetary compensation. Personal use, private study, educational use, and non-commercial open-source research are permitted.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Commercial Licensing & Restrictions
+1. Any commercial use, enterprise production deployment, integration into commercial SaaS or proprietary software products, or selling/reselling copies of the software is strictly prohibited without a separate commercial license.
+2. To request permission or obtain a commercial license, please contact the maintainers at contact@sigtrace.dev or via https://github.com/sigtrace-dev/sigtrace.
+
+Notice Requirement
+You must retain all copyright notices, this license text, and all legal disclaimers present in the software in all copies or substantial portions of the software.
+
+DISCLAIMER
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
