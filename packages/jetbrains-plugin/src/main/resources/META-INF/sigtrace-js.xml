@@ -1,0 +1,11 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Inlay Hints (CodeLens equivalent) for signal update counts -->
+        <codeInsight.declarativeInlayProvider
+                language="TypeScript"
+                implementationClass="dev.sigtrace.plugin.SigTraceInlayProvider"
+                isEnabledByDefault="true"
+                groupId="sigtrace"
+                id="sigtrace.updates"/>
+    </extensions>
+</idea-plugin>
