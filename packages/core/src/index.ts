@@ -45,6 +45,7 @@ class SigTraceClient {
   private port = 8420;
   private frameFlushScheduled = false;
   private freqTrackers = new Map<string, SignalFrequencyTracker>();
+  private registeredSignals: TraceEvent[] = [];
 
   constructor() {
     // In production: export a no-op instance — connect() is never called.
@@ -74,6 +75,12 @@ class SigTraceClient {
         this.isConnecting = false;
         console.log(`[SigTrace] Connected to VS Code dev server on ws://localhost:${this.port}`);
         console.log('[SigTrace] 🔒 All data stays local — no external servers, no telemetry.');
+        
+        // Re-send all registered signals to populate the new host's cache
+        this.registeredSignals.forEach(reg => {
+          this.sendImmediate(reg);
+        });
+
         this.flushQueue();
       };
 
@@ -146,6 +153,13 @@ class SigTraceClient {
   /** Enqueue event for the next animation frame flush. */
   public send(event: TraceEvent) {
     if (IS_PRODUCTION) return; // no-op in production
+
+    if (event.type === 'register') {
+      const reg = event;
+      if (!this.registeredSignals.some(s => s.type === 'register' && s.id === reg.id)) {
+        this.registeredSignals.push(event);
+      }
+    }
 
     // Check high-frequency throttle
     if (this.isThrottled(event)) return;
