@@ -1,23 +1,21 @@
-PolyForm Noncommercial License 1.0.0
-
-https://polyformproject.org/licenses/noncommercial/1.0.0/
+Elastic License v2.0
 
 Copyright (c) 2025 SigTrace Contributors
 
 Acceptance
-1. Licensor grants you the rights in this license for material the Licensor provides under this license.
-2. You accept this license and agree to its terms when you exercise any of the rights granted.
+By using, modifying, or distributing the software, you agree to the terms of this license.
 
 Copyright Grant
-1. Licensor grants you a copyright license to make, modify, use, and distribute the software solely for Noncommercial Purposes.
-2. "Noncommercial Purposes" means any use that is not primarily intended for or directed towards commercial advantage or monetary compensation. Personal use, private study, educational use, and non-commercial open-source research are permitted.
+Subject to the terms of this license, Licensor grants you a non-exclusive, worldwide, royalty-free copyright license to use, copy, modify, and distribute the software.
 
-Commercial Licensing & Restrictions
-1. Any commercial use, enterprise production deployment, integration into commercial SaaS or proprietary software products, or selling/reselling copies of the software is strictly prohibited without a separate commercial license.
-2. To request permission or obtain a commercial license, please contact the maintainers at contact@sigtrace.dev or via https://github.com/sigtrace-dev/sigtrace.
+Limitations
+You may not:
+1. Provide the software to third parties as a hosted or managed service, where the service provides the user with access to any substantial portion of the functionality of the software;
+2. Circumvent the license key functionality or remove/alter any licensing, copyright, or other notices; or
+3. Move, change, remove, or obscure any copyright, trademark, or other notices in the software.
 
-Notice Requirement
-You must retain all copyright notices, this license text, and all legal disclaimers present in the software in all copies or substantial portions of the software.
+Patents
+Subject to the terms of this license, Licensor grants you a non-exclusive, worldwide, royalty-free patent license under any patent claims Licensor owns or has the right to license that are necessarily infringed by the software.
 
-DISCLAIMER
+Disclaimer
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
