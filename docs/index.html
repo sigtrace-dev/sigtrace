@@ -1274,34 +1274,35 @@
     }
 
     /* ── Showcase layout and Mobile Nav ── */
-    .showcase-grid {
-      display: grid;
-      grid-template-columns: 1.25fr 1fr;
-      gap: 28px;
-      align-items: start;
-      margin-top: 32px;
-      text-align: left;
-    }
-    .showcase-visual {
+    .screenshot-wrap {
+      margin-top: 56px;
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
       display: flex;
       flex-direction: column;
+      gap: 64px;
+    }
+    .showcase-row {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      text-align: left;
+    }
+    .showcase-row:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+    .showcase-visual {
+      flex: 1.25;
+      min-width: 0;
     }
     .showcase-info {
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 20px;
-    }
-    .screenshot-switcher {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 0;
-    }
-    .view-explainer {
-      margin-top: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
     }
     .nav-toggle {
       display: none;
@@ -1323,12 +1324,12 @@
        RESPONSIVE
     ══════════════════════════════════════════════════════════ */
     @media (max-width: 900px) {
-      .showcase-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
+      .showcase-row, .showcase-row:nth-child(even) {
+        flex-direction: column;
+        gap: 28px;
       }
-      .screenshot-switcher {
-        justify-content: flex-start;
+      .screenshot-wrap {
+        gap: 48px;
       }
       .features-grid { grid-template-columns: repeat(2, 1fr); }
       .quickstart-grid { grid-template-columns: 1fr; }
