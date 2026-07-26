@@ -1,6 +1,6 @@
 {
   "name": "@sigtrace/core",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "description": "Client-side runtime tracer for SigTrace",
   "main": "dist/index.js",

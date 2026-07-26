@@ -2,7 +2,7 @@
   "name": "sigtrace-extension",
   "displayName": "SigTrace",
   "description": "Angular, Vue, and Solid signals debugger for VS Code",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "sigtrace",
   "author": "SigTrace Contributors",
   "license": "ELv2",
@@ -18,14 +18,6 @@
     "type": "git",
     "url": "git+https://github.com/sigtrace-dev/sigtrace.git"
   },
-  "files": [
-    "dist/**/*.js",
-    "src/webview/**/*",
-    "package.json",
-    "LICENSE",
-    "icon.png",
-    "assets/**/*.svg"
-  ],
   "categories": [
     "Debuggers",
     "Visualization",

@@ -7,10 +7,12 @@ SigTrace is a free, open-source VS Code extension for Angular, Vue, and Solid de
 ## Key Features
 
 ### 1. Visualizer Sidebar
-- **Component Clustering**: Automatically groups signals, computed memos, and effects inside visual container cards corresponding to their parent components (e.g. `FilterPanel`, `SearchResultsComponent`).
-- **Focus Path Isolation**: Click a node to immediately dim the rest of the graph to 10% opacity, highlighting only that node's direct upstream producers and downstream subscribers.
-- **Timeline Playback Player**: Step backward and forward through a chronological history of reactivity ticks, watching the graph update and flash step-by-step.
-- **Search Filtering**: Filter out nodes and component containers using the text search bar.
+- **Component Clustering & Auditing**: Automatically groups signals, computed memos, and effects inside visual container cards corresponding to their parent components (e.g. `FilterPanel`, `SearchResultsComponent`).
+- **Pinned vs Others Categories**: Automatically splits signal logs into Pinned and Others sections. Pinned nodes survive logs clearing (tombstoned) to make comparison testing easy.
+- **VS Code Style JSON Inspector**: Formats complex object payloads line-by-line with vertical guidelines and collapsible guidelines. Retains expanded/collapsed node states during active updates.
+- **Chronological Playback Timeline**: Step backward and forward through a history of ticks, showing sequential event counter cards (e.g., `event 1/7`) with hide/unpin controls.
+- **Focus Path Isolation**: Click a node to immediately dim the rest of the graph, highlighting only that node's direct upstream producers and downstream subscribers.
+- **Interactive Search & Hover Copy**: Filter nodes and component containers instantly. Click the copy icon (`⧉`) next to any signal name on hover to copy it to clipboard.
 
 ### 2. VS Code CodeLens Telemetry Overlay
 - Floating inline telemetry is injected directly above signal/computed/effect declarations inside your editor code files:

@@ -48,12 +48,12 @@ Full workspace layout demonstrating editor sync with the running application.
 
 | Feature | Description |
 |---------|-------------|
-| 📊 **Activity Table** | Live, filterable event log for every signal read, write, and effect. Search by name, file, or value. |
-| ⏱️ **Timeline (Causal Chains)** | Swimlane visualization showing which writes triggered which reads. Critical paths highlighted. |
-| 🧩 **Component Cards** | Per-component signal snapshot — current values, last-updated timestamps, click to filter. |
-| 🎯 **Click-to-Navigate** | Click any signal event or graph node to jump to the exact source line in your editor. |
-| 🪟 **Multi-window Sync** | Multiple VS Code windows can connect to the same SigTrace server simultaneously. |
-| ⚡ **Zero-refactoring Setup** | Build-time AST instrumentation — no `import { trace }` required. Your code stays clean. |
+| 📊 **Activity Table** | Live, filterable event log for every signal read, write, and effect. Features Pinned/Others categorizations, hover copy icons, and a line-wise collapsible JSON tree inspector. |
+| ⏱️ **Timeline (Causal Chains)** | Chronological swimlane list showing sequential tick-by-tick update paths, event counts, and chain collapse/hide filters. |
+| 🧩 **Component Audits & Loops** | Group updates by component. Flags circular invalidation loops, computation hotspots (>2.0ms), and unused dead signals. |
+| 🎯 **Click-to-Navigate** | Click any signal event, timeline card, or warning log to jump to the exact source declaration line in your editor. |
+| 🪟 **Universal IDE Support** | Native extensions for both **VS Code** and **JetBrains (WebStorm, IntelliJ)** with full Webview synchronisation. |
+| ⚡ **Zero-refactoring Setup** | Built-in CLI wrapper (`npx sigtrace run`) injects transformation compile hooks dynamically without editing your source code. |
 
 ---
 
@@ -62,8 +62,10 @@ Full workspace layout demonstrating editor sync with the running application.
 | Framework | Version | Status |
 |-----------|---------|--------|
 | **Angular** | 17+ (Signals API) | ✅ Fully supported |
-| **Vue** | 3+ (Composition API) | 🔜 Coming in v1.2 |
-| **SolidJS** | 1.8+ | 🔜 Coming in v1.2 |
+| **Vue** | 3+ (Composition API) | ✅ Fully supported |
+| **SolidJS** | 1.8+ | ✅ Fully supported |
+| **React** | 18+ (Signals API) | 🔜 Coming soon |
+| **Svelte** | 5 (Runes) | 🔜 Coming soon |
 
 ---
 

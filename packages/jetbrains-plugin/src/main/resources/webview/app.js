@@ -903,37 +903,33 @@
   });
 
   btnClear.addEventListener('click', function() {
-    // Preserve pinned signal nodes — tombstone them (reset data, keep id/name)
-    var pinnedNodesCopy = new Map();
-    pinnedSignalIds.forEach(function(id) {
-      var node = nodeMap.get(id);
-      if (node) {
-        pinnedNodesCopy.set(id, {
-          id: node.id,
-          name: node.name,
-          component: node.component,
-          kind: node.kind,
-          value: node.value,
-          epoch: 0,
-          duration: 0,
-          lastUpdated: null,
-          sparkline: [],
-          loc: node.loc
-        });
-      }
-    });
-
     // Preserve pinned chain log entries
     var pinnedChains = chainLog.filter(function(c) {
       return pinnedChainKeys.has(chainGroupKey(c));
     });
 
-    // Clear everything
-    nodeMap.clear();
-    nodeAliasMap.clear();
-    nodeSignatureMap.clear();
-    componentMap.clear();
-    chainLog = [];
+    // Reset statistics of all registered nodes without removing them from registry
+    nodeMap.forEach(function(node, id) {
+      node.epoch = 0;
+      node.duration = 0;
+      node.lastUpdated = null;
+      node.sparkline = [];
+      if (!pinnedSignalIds.has(id)) {
+        node.value = undefined; // clear value of unpinned nodes
+      }
+    });
+
+    // Reset component statistics
+    componentMap.forEach(function(comp) {
+      comp.totalUpdates = 0;
+      comp.slowestNode = null;
+      comp.slowestMs = 0;
+      comp.mostActiveNode = null;
+      comp.mostActiveCount = 0;
+    });
+
+    // Clear history logs and timeline chains
+    chainLog = pinnedChains;
     hiddenChainIds.clear();
     expandedPinnedKeys.clear();
     selectedSignalId = null;
@@ -943,25 +939,6 @@
     alerts = [];
     activeChain = null;
     clearTimeout(chainFlushTimer);
-
-    // Restore pinned nodes
-    pinnedNodesCopy.forEach(function(node, id) {
-      nodeMap.set(id, node);
-      ensureComponent(node);
-      
-      // Re-populate maps so future events link up to the existing pinned node references
-      nodeAliasMap.set(id, id);
-      var signature = [
-        node.kind,
-        node.component,
-        node.name,
-        toLocKey(node.loc)
-      ].join('|');
-      nodeSignatureMap.set(signature, id);
-    });
-
-    // Restore pinned chains
-    chainLog = pinnedChains;
 
     // Update checkbox states
     updateTimelineCheckboxStates();

@@ -1,0 +1,20 @@
+# Ignore parent directories in monorepo
+..
+../**
+../../**
+# Ignore other monorepo directories
+packages/core/**
+packages/vite-plugin/**
+packages/jetbrains-plugin/**
+demo/**
+docs/**
+releases/**
+# Ignore local dev files
+node_modules/**
+src/*.ts
+tsconfig.json
+tsconfig.tsbuildinfo
+*.vsix
+.vscode/**
+.gitignore
+.gitattributes
