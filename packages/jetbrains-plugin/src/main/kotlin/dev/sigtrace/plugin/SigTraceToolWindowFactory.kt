@@ -29,8 +29,13 @@ class SigTraceToolWindowFactory : ToolWindowFactory {
     private val mapper = jacksonObjectMapper()
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        // Start Ktor WebSocket Server
-        SigTraceWebSocketServer.start()
+        // Deliberately do NOT start the WebSocket server here. The IDE can
+        // create this tool window's content just from restoring a project
+        // that had the SigTrace panel open, with no user action involved —
+        // tracing was silently "on" the moment the IDE opened. Tracing now
+        // only starts when the user explicitly asks for it via the
+        // Tracing/Paused button in the panel (routed through the
+        // "startTracing"/"stopTracing" webview commands below).
 
         val browser = JBCefBrowser()
         val client = browser.jbCefClient.cefClient
@@ -81,6 +86,7 @@ class SigTraceToolWindowFactory : ToolWindowFactory {
                     
                     when (command) {
                         "ready" -> {
+                            sendTracingState(browser)
                             sendToWebview(browser, "ready")
                         }
                         "clearMetrics" -> {
@@ -94,6 +100,14 @@ class SigTraceToolWindowFactory : ToolWindowFactory {
                             if (filePath != null) {
                                 openFileInEditor(project, filePath, line, column)
                             }
+                        }
+                        "startTracing" -> {
+                            SigTraceWebSocketServer.start()
+                            sendTracingState(browser)
+                        }
+                        "stopTracing" -> {
+                            SigTraceWebSocketServer.stop()
+                            sendTracingState(browser)
                         }
                     }
                     callback?.success("")
@@ -134,6 +148,16 @@ class SigTraceToolWindowFactory : ToolWindowFactory {
                 SigTraceState.removeListener(stateListener)
             }
         })
+    }
+
+    private fun sendTracingState(browser: CefBrowser?) {
+        if (browser == null) return
+        val active = SigTraceWebSocketServer.isRunning()
+        browser.executeJavaScript(
+            "window.postMessage({ type: 'tracing-state', active: $active }, '*');",
+            browser.url,
+            0
+        )
     }
 
     private fun sendToWebview(browser: CefBrowser?, command: String) {

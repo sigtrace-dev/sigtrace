@@ -97,4 +97,6 @@ object SigTraceWebSocketServer {
         server?.stop(1000, 2000)
         server = null
     }
+
+    fun isRunning(): Boolean = server != null
 }

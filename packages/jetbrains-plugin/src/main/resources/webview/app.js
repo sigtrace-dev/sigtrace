@@ -11,7 +11,7 @@
   let activeChain = null;
   let chainFlushTimer = null;
   const CHAIN_FLUSH_MS = 120;
-  let isRecording = true;
+  let isRecording = false; // off until the user explicitly starts tracing
   let showInactive = false;
   let sortBy = 'updates';
   let focusedSignalId = null;
@@ -287,9 +287,26 @@
   }
 
   // ── Activity table ────────────────────────────────────────────────────────
+  function findActivityRow(id) {
+    if (!id) return null;
+    var candidates = activityTableBody.querySelectorAll('tr.signal-row');
+    for (var i = 0; i < candidates.length; i++) {
+      if (candidates[i].dataset.id === id) return candidates[i];
+    }
+    return null;
+  }
+
   function renderActivityTable() {
-    // Save scroll position before re-render
+    // Save scroll position before re-render. When a row is focused/expanded,
+    // anchor to that row's on-screen position instead of a raw pixel offset.
+    // Live trace events keep resorting rows (default sort is by update count),
+    // so the expanded row can move underneath a fixed scrollTop on every
+    // re-render — which looks like the table "jumps back" even though the
+    // pixel offset itself never changed. Anchoring to the row's viewport
+    // position keeps it visually in place regardless of reordering.
     var savedScroll = activityTableWrap ? activityTableWrap.scrollTop : 0;
+    var anchorRowBefore = activityTableWrap && focusedSignalId ? findActivityRow(focusedSignalId) : null;
+    var anchorOffset = anchorRowBefore ? (anchorRowBefore.getBoundingClientRect().top - activityTableWrap.getBoundingClientRect().top) : 0;
 
     var query = searchBar.value.trim().toLowerCase();
     var rows = Array.from(nodeMap.values());
@@ -397,7 +414,13 @@
 
     // Restore scroll position after render
     if (activityTableWrap) {
-      activityTableWrap.scrollTop = savedScroll;
+      var anchorRowAfter = anchorRowBefore ? findActivityRow(focusedSignalId) : null;
+      if (anchorRowAfter) {
+        var newOffset = anchorRowAfter.getBoundingClientRect().top - activityTableWrap.getBoundingClientRect().top;
+        activityTableWrap.scrollTop += (newOffset - anchorOffset);
+      } else {
+        activityTableWrap.scrollTop = savedScroll;
+      }
     }
   }
 
@@ -737,9 +760,12 @@
       return;
     }
 
-    // Save scroll of previous node before switching
+    // Save scroll for whatever node is currently displayed — including in-place
+    // live updates to the SAME node (not just when switching to a different one).
+    // Previously this only ran on node switch, so a live event for the node you
+    // were already viewing would blow away your scroll position on every update.
     var prevNodeId = valuePanel.dataset.nodeId;
-    if (prevNodeId && prevNodeId !== node.id) {
+    if (prevNodeId) {
       valueScrollByNodeId.set(prevNodeId, valuePanel.scrollTop);
     }
 
@@ -775,9 +801,7 @@
 
     // Restore scroll position after setting innerHTML
     var savedScroll = valueScrollByNodeId.get(node.id);
-    if (typeof savedScroll === 'number') {
-      valuePanel.scrollTop = savedScroll;
-    }
+    valuePanel.scrollTop = (typeof savedScroll === 'number') ? savedScroll : 0;
   }
 
   // ── Component cards ───────────────────────────────────────────────────────
@@ -891,15 +915,24 @@
   }
 
   // ── Controls ──────────────────────────────────────────────────────────────
-  btnRecord.addEventListener('click', function() {
-    isRecording = !isRecording;
+  function applyTracingState(active) {
+    isRecording = active;
     if (isRecording) {
       btnRecord.className = 'btn btn-tracing';
       btnRecord.innerHTML = '&#9679; Tracing';
     } else {
       btnRecord.className = 'btn btn-paused';
-      btnRecord.innerHTML = '&#9646;&#9646; Paused';
+      btnRecord.innerHTML = '&#9646;&#9646; Start Tracing';
     }
+  }
+  applyTracingState(false);
+
+  btnRecord.addEventListener('click', function() {
+    // Ask the extension to actually start/stop the local WebSocket server —
+    // this button is the only thing allowed to turn tracing on. The UI only
+    // flips once the extension confirms via a 'tracing-state' message below,
+    // so it can never show "Tracing" while no socket is actually listening.
+    vscode.postMessage({ command: isRecording ? 'stopTracing' : 'startTracing' });
   });
 
   btnClear.addEventListener('click', function() {
@@ -1185,6 +1218,11 @@
         var row = activityTableBody.querySelector('[data-id="' + msg.id + '"]');
         if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 120);
+      return;
+    }
+
+    if (msg.type === 'tracing-state') {
+      applyTracingState(!!msg.active);
       return;
     }
 

@@ -103,8 +103,8 @@
     .inactive-label input:disabled { opacity: 0.4; cursor: not-allowed; }
     .inactive-label.disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
     .controls-note { color: var(--muted); font-size: 10px; }
-    .activity-table-wrap { flex:1; overflow-y:auto; overflow-x:hidden; }
-    .activity-table { width:100%; border-collapse:collapse; }
+    .activity-table-wrap { flex:1; overflow-y:auto; overflow-x:auto; }
+    .activity-table { width:100%; min-width:560px; border-collapse:collapse; }
     .activity-table thead { position:sticky; top:0; background:rgba(15,23,42,0.97); z-index:2; }
     .activity-table th {
       text-align:left; padding:5px 8px; font-size:10px; font-weight:600;
@@ -411,7 +411,7 @@
       SigTrace
     </div>
     <div class="header-controls">
-      <button id="btn-record" class="btn btn-tracing">&#9679; Tracing</button>
+      <button id="btn-record" class="btn btn-paused">&#9646;&#9646; Start Tracing</button>
       <button id="btn-clear" class="btn">Clear</button>
     </div>
   </header>

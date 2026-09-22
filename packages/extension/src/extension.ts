@@ -10,6 +10,11 @@ let eventBuffer: any[] = [];
 let visualizerSockets = new Set<WebSocket>();
 let isHost = false;
 let clientSocket: WebSocket | null = null;
+// Tracks whether the user has explicitly asked to trace — set only by the
+// startTracing/stopTracing commands, never automatically. Auto-reconnect
+// after a host disconnect is gated on this so a stopped session doesn't
+// silently start listening again.
+let tracingRequested = false;
 
 // Store metrics for CodeLens overlays: filePath -> line -> metricObj
 const nodeMetrics = new Map<string, Map<number, { id: string, name: string, epoch: number, duration?: number, isHotspot?: boolean }>>();
@@ -30,6 +35,7 @@ function connectToHost() {
   ws.on('open', () => {
     console.log('SigTrace: Connected to Host Server on port 8420');
     ws.send(JSON.stringify({ type: 'register-visualizer' }));
+    broadcastTracingState();
   });
 
   ws.on('message', (message) => {
@@ -61,9 +67,11 @@ function connectToHost() {
   });
 
   ws.on('close', () => {
-    console.log('SigTrace: Host Server disconnected. Retrying startServer in 3s...');
     clientSocket = null;
-    setTimeout(startServer, 3000);
+    if (tracingRequested) {
+      console.log('SigTrace: Host Server disconnected. Retrying startServer in 3s...');
+      setTimeout(startServer, 3000);
+    }
   });
 
   ws.on('error', () => {
@@ -72,6 +80,13 @@ function connectToHost() {
 }
 
 function startServer() {
+  if (tracingRequested && (wss || clientSocket)) {
+    // Already running — nothing to do.
+    return;
+  }
+  tracingRequested = true;
+  vscode.commands.executeCommand('setContext', 'sigtrace.tracingActive', true);
+
   const port = 8420;
   isHost = false;
   
@@ -81,6 +96,7 @@ function startServer() {
     wss = tempWss;
     isHost = true;
     console.log(`SigTrace: WS Server running as Host on port ${port}`);
+    broadcastTracingState();
     
     wss.on('connection', (ws) => {
       let isVisualizer = false;
@@ -186,6 +202,28 @@ function startServer() {
   });
 }
 
+function stopServer() {
+  tracingRequested = false;
+  if (wss) {
+    wss.close();
+    wss = null;
+  }
+  if (clientSocket) {
+    clientSocket.close();
+    clientSocket = null;
+  }
+  isHost = false;
+  vscode.commands.executeCommand('setContext', 'sigtrace.tracingActive', false);
+  broadcastTracingState();
+}
+
+function broadcastTracingState() {
+  const msg = { type: 'tracing-state', active: tracingRequested };
+  for (const webview of activeWebviews) {
+    webview.postMessage(msg);
+  }
+}
+
 function getLocalFsPath(filePath: string): string | null {
   let p = filePath;
   if (p.startsWith('http://') || p.startsWith('https://')) {
@@ -219,7 +257,26 @@ function getLocalFsPath(filePath: string): string | null {
 export function activate(context: vscode.ExtensionContext) {
   console.log('SigTrace Extension is now active!');
 
-  startServer();
+  // Deliberately do NOT start the WebSocket server here. Activating the
+  // extension (which VS Code can do automatically just from restoring a
+  // window that had the SigTrace view open) used to immediately open a
+  // listening socket on port 8420 with no user action involved — tracing
+  // was silently "on" the moment the IDE opened. Tracing now only starts
+  // when the user explicitly asks for it, via the Tracing/Paused button in
+  // the panel or the commands below.
+  vscode.commands.executeCommand('setContext', 'sigtrace.tracingActive', false);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('sigtrace.startTracing', () => {
+      startServer();
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('sigtrace.stopTracing', () => {
+      stopServer();
+    })
+  );
 
   // Register Webview Provider
   const provider = new SigTraceViewProvider(context.extensionUri);
@@ -348,12 +405,21 @@ class SigTraceViewProvider implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.command) {
         case 'ready': {
+          webviewView.webview.postMessage({ type: 'tracing-state', active: tracingRequested });
           for (const node of cachedSignals.values()) {
             webviewView.webview.postMessage(node);
           }
           for (const event of eventBuffer) {
             webviewView.webview.postMessage(event);
           }
+          break;
+        }
+        case 'startTracing': {
+          vscode.commands.executeCommand('sigtrace.startTracing');
+          break;
+        }
+        case 'stopTracing': {
+          vscode.commands.executeCommand('sigtrace.stopTracing');
           break;
         }
         case 'openFile': {

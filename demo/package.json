@@ -8,12 +8,12 @@
     "build": "vite build"
   },
   "dependencies": {
-    "solid-js": "^1.8.0",
-    "@sigtrace/core": "*"
+    "@sigtrace/core": "*",
+    "solid-js": "^1.8.0"
   },
   "devDependencies": {
     "@sigtrace/vite": "*",
-    "vite": "^5.0.0",
+    "vite": "^8.1.5",
     "vite-plugin-solid": "^2.8.0"
   }
 }
