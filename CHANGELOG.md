@@ -9,11 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`npx sigtrace web`**: opens the SigTrace dashboard in a browser tab on a free local port — no VS Code or JetBrains required. Reuses the same tracing WebSocket protocol as the IDE panels (attaches to an existing session instead of double-hosting if one is already tracing on port 8420).
+
+### Fixed
+- **Activity tab scroll reset (regression from 1.2.0's scroll lock)**: expanding a signal and scrolling would snap back near the top during live tracing, because the default "sort by updates" re-ordered rows on every incoming event out from under a fixed scroll offset. Scroll now anchors to the focused row's on-screen position instead of a raw pixel offset, so it holds steady regardless of re-sorting.
+- **Value tab scroll reset**: scroll position was only preserved when switching between signals, not during live updates to the signal currently being viewed — so it reset to the top on every event for an actively-updating signal. Now preserved on every render.
+- **Activity table not responsive**: narrowing the panel clipped columns with no way to recover them (`overflow-x: hidden`, no minimum width). Now scrolls horizontally below a sensible minimum width instead of hiding content.
+- **Tracing no longer starts automatically on IDE open**: the extension previously opened a listening WebSocket server the moment VS Code (or JetBrains) activated the extension — which can happen just from restoring a window, with no user action at all. Tracing now only starts when explicitly requested via the panel's Start Tracing button or the `SigTrace: Start Tracing` / `SigTrace: Stop Tracing` commands.
+
 ### Planned
 - Vue 3 signals (`ref`, `computed`, `watchEffect`) adapter
 - SolidJS 1.8+ `createSignal` / `createMemo` adapter
 - Performance timeline integration with browser DevTools
-- npm `sigtrace` CLI for zero-config setup
 
 ---
 

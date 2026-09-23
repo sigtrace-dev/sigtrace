@@ -7,16 +7,33 @@ const args = process.argv.slice(2);
 
 if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
   console.log(`
-Usage: npx sigtrace run <command>
+Usage:
+  npx sigtrace run <command>   Zero-configuration reactivity tracing loader.
+                                Run your serve/dev command prefixed with
+                                sigtrace to dynamically trace signals and
+                                reactivity without modifying any source code
+                                or config files.
 
-Zero-configuration reactivity tracing loader. Run your serve/dev command prefixed with sigtrace to dynamically trace signals and reactivity without modifying any source code or config files.
+  npx sigtrace web              Open the SigTrace dashboard in your browser
+                                on a free local port — no VS Code or
+                                JetBrains required. Works alongside an IDE
+                                session too: if one is already tracing, this
+                                just attaches to it instead of starting a
+                                second one.
 
 Examples:
   npx sigtrace run ng serve
   npx sigtrace run yarn develop
   npx sigtrace run npm run start
+  npx sigtrace web
   `);
   process.exit(0);
+}
+
+if (args[0] === 'web') {
+  const { startWebDashboard } = require('./web-server.cjs');
+  startWebDashboard();
+  return;
 }
 
 if (args[0] === 'run') {

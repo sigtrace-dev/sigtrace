@@ -2,7 +2,7 @@
   "name": "sigtrace-extension",
   "displayName": "SigTrace",
   "description": "Angular, Vue, and Solid signals debugger for VS Code",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "publisher": "sigtrace",
   "author": "SigTrace Contributors",
   "license": "ELv2",
@@ -58,6 +58,32 @@
           "name": "Signal Debugger",
           "icon": "$(graph)",
           "contextualTitle": "SigTrace Signal Debugger"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "sigtrace.startTracing",
+        "title": "SigTrace: Start Tracing",
+        "icon": "$(play)"
+      },
+      {
+        "command": "sigtrace.stopTracing",
+        "title": "SigTrace: Stop Tracing",
+        "icon": "$(debug-stop)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "sigtrace.startTracing",
+          "when": "view == sigtrace-explorer && !sigtrace.tracingActive",
+          "group": "navigation"
+        },
+        {
+          "command": "sigtrace.stopTracing",
+          "when": "view == sigtrace-explorer && sigtrace.tracingActive",
+          "group": "navigation"
         }
       ]
     }
